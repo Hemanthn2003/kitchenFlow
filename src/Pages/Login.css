@@ -1079,3 +1079,81 @@ body {
     padding: 0;
   }
 }
+
+
+/* Authentication Message */
+
+.auth-message {
+  margin-top: -8px;
+  margin-bottom: 18px;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.auth-message.error {
+  color: #ff5c5c;
+}
+
+.auth-message.success {
+  color: #55c98a;
+}
+
+
+/* Disabled Button */
+
+.login-button:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* Back To Login */
+
+.back-login {
+  display: block;
+
+  width: 100%;
+
+  margin-top: 18px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #4e92d2;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.back-login:hover {
+  color: #d9ad45;
+}
+
+
+/* OTP Input */
+
+.otp-input {
+  text-align: center;
+
+  letter-spacing: 8px;
+
+  font-size: 20px !important;
+
+  font-weight: 600;
+}
+
+.otp-input::placeholder {
+  letter-spacing: 0;
+  font-size: 14px;
+  font-weight: 400;
+}
