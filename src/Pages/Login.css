@@ -1,8 +1,97 @@
-/* Fonts — royal serif for display text, Inter stays for body/UI legibility */
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;550;600;650;700;750;900&display=swap");
 
+/* ==================== THEME COLORS ====================
+   Change ONLY these variables to retheme the entire page.
+   ==================== */
 
-/* Global Reset */
+:root {
+  /* Core */
+  --c-bg: #050b18;
+  --c-surface: #081329;
+  --c-brand-dark: #061127;
+  --c-brand-mid: #081a35;
+  --c-brand-deep: #07152c;
+
+  /* Primary Blue */
+  --c-primary: #145da8;
+  --c-primary-light: #176fc1;
+  --c-primary-hover: #1c7bd0;
+  --c-primary-dark: #0d3970;
+  --c-primary-deeper: #0a2852;
+  --c-primary-strong: #1d5fa6;
+  --c-button-border: #2876bd;
+  --c-focus-blue: #2477c7;
+  --c-input-hover: #27517f;
+
+  /* Gold Accent */
+  --c-accent: #d9ad45;
+  --c-accent-light: #f0cd7a;
+  --c-accent-dark: #b8862c;
+
+  /* Text */
+  --c-white: #ffffff;
+  --c-text-muted: #a7bad4;
+  --c-text-dim: #7288a7;
+  --c-text-faint: #465e7f;
+  --c-text-secondary: #7086a6;
+  --c-label: #c4d2e5;
+  --c-text-subtle: #7d92af;
+  --c-footer: #3f5675;
+  --c-link: #4e92d2;
+  --c-hint: #6c84a4;
+  --c-placeholder: #4d6382;
+  --c-icon: #52749e;
+
+  /* Form */
+  --c-input-bg: #060f20;
+  --c-input-border: #1b385e;
+  --c-input-focus-bg: #071226;
+
+  /* Status */
+  --c-error: #d9534f;
+  --c-error-soft: #e07975;
+  --c-error-bright: #ff5c5c;
+  --c-success: #3fb27f;
+  --c-success-bright: #55c98a;
+  --c-border: #17375f;
+
+  /* Transparent Variants */
+  --a-primary-14: rgba(20, 93, 168, 0.14);
+  --a-primary-08: rgba(20, 93, 168, 0.08);
+  --a-primary-28: rgba(22, 102, 190, 0.28);
+  --a-primary-glow: rgba(24, 101, 187, 0.09);
+  --a-primary-22: rgba(20, 93, 168, 0.22);
+  --a-primary-30: rgba(20, 93, 168, 0.3);
+  --a-brand-deep-28: rgba(13, 56, 110, 0.28);
+
+  --a-accent-03: rgba(217, 173, 69, 0.03);
+  --a-accent-05: rgba(217, 173, 69, 0.05);
+  --a-accent-06: rgba(217, 173, 69, 0.06);
+  --a-accent-08: rgba(217, 173, 69, 0.08);
+  --a-accent-12: rgba(217, 173, 69, 0.12);
+  --a-accent-15: rgba(217, 173, 69, 0.15);
+  --a-accent-16: rgba(217, 173, 69, 0.16);
+  --a-accent-28: rgba(217, 173, 69, 0.28);
+  --a-accent-35: rgba(217, 173, 69, 0.35);
+
+  --a-focus-blue-14: rgba(36, 119, 199, 0.14);
+
+  --a-error-12: rgba(217, 83, 79, 0.12);
+  --a-success-12: rgba(63, 178, 127, 0.12);
+
+  --a-white-05: rgba(255, 255, 255, 0.05);
+  --a-white-08: rgba(255, 255, 255, 0.08);
+  --a-white-16: rgba(255, 255, 255, 0.16);
+  --a-white-35: rgba(255, 255, 255, 0.35);
+
+  --a-black-25: rgba(0, 0, 0, 0.25);
+  --a-black-35: rgba(0, 0, 0, 0.35);
+  --a-black-40: rgba(0, 0, 0, 0.4);
+  --a-black-45: rgba(0, 0, 0, 0.45);
+}
+
+
+/* ==================== GLOBAL RESET ==================== */
 
 * {
   margin: 0;
@@ -28,38 +117,40 @@ body {
     Arial,
     sans-serif;
 
-  background: #050b18;
+  background: var(--c-bg);
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: rgba(217, 173, 69, 0.28);
-  color: #ffffff;
+  background: var(--a-accent-28);
+  color: var(--c-white);
 }
 
-/* Scrollbar polish (webkit) */
+
+/* ==================== SCROLLBAR ==================== */
+
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #050b18;
+  background: var(--c-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #17375f;
+  background: var(--c-border);
   border-radius: 10px;
-  border: 2px solid #050b18;
+  border: 2px solid var(--c-bg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1d5fa6;
+  background: var(--c-primary-strong);
 }
 
 
-/* Main Page */
+/* ==================== MAIN PAGE ==================== */
 
 .login-page {
   width: 100%;
@@ -69,26 +160,26 @@ body {
   background:
     radial-gradient(
       circle at 15% 20%,
-      rgba(20, 93, 168, 0.14),
+      var(--a-primary-14),
       transparent 32%
     ),
     radial-gradient(
       circle at 85% 80%,
-      rgba(217, 173, 69, 0.06),
+      var(--a-accent-06),
       transparent 32%
     ),
     radial-gradient(
       circle at 50% 100%,
-      rgba(20, 93, 168, 0.08),
+      var(--a-primary-08),
       transparent 45%
     ),
-    #050b18;
+    var(--c-bg);
 
-  color: #ffffff;
+  color: var(--c-white);
 }
 
 
-/* Main Container */
+/* ==================== MAIN CONTAINER ==================== */
 
 .login-container {
   width: 100%;
@@ -99,13 +190,13 @@ body {
 
   grid-template-columns: 30% 70%;
 
-  background: #081329;
+  background: var(--c-surface);
 
   overflow: hidden;
 }
 
 
-/* Left Brand Section */
+/* ==================== LEFT BRAND SECTION ==================== */
 
 .login-brand {
   position: relative;
@@ -123,27 +214,29 @@ body {
   background:
     radial-gradient(
       circle at 15% 20%,
-      rgba(22, 102, 190, 0.28),
+      var(--a-primary-28),
       transparent 40%
     ),
     radial-gradient(
       circle at 80% 90%,
-      rgba(13, 56, 110, 0.28),
+      var(--a-brand-deep-28),
       transparent 38%
     ),
     linear-gradient(
       145deg,
-      #061127 0%,
-      #081a35 50%,
-      #07152c 100%
+      var(--c-brand-dark) 0%,
+      var(--c-brand-mid) 50%,
+      var(--c-brand-deep) 100%
     );
 
-  border-right: 1px solid #17375f;
+  border-right: 1px solid var(--c-border);
 
   overflow: hidden;
 }
 
-/* Faint gold hairline separating brand from glow, drawn as an inner border */
+
+/* ==================== BRAND HAIRLINE ==================== */
+
 .login-brand::after {
   content: "";
 
@@ -154,7 +247,7 @@ body {
   background:
     linear-gradient(
       180deg,
-      rgba(217, 173, 69, 0.05),
+      var(--a-accent-05),
       transparent 18%
     );
 
@@ -162,7 +255,7 @@ body {
 }
 
 
-/* Decorative Glow */
+/* ==================== DECORATIVE GLOW ==================== */
 
 .login-brand::before {
   content: "";
@@ -179,7 +272,7 @@ body {
 
   border-radius: 50%;
 
-  background: rgba(24, 101, 187, 0.09);
+  background: var(--a-primary-glow);
 
   filter: blur(40px);
 
@@ -194,6 +287,7 @@ body {
     opacity: 0.7;
     transform: translateY(-50%) scale(1);
   }
+
   50% {
     opacity: 1;
     transform: translateY(-50%) scale(1.08);
@@ -207,7 +301,7 @@ body {
 }
 
 
-/* Brand Content */
+/* ==================== BRAND CONTENT ==================== */
 
 .brand-content {
   position: relative;
@@ -225,6 +319,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -232,7 +327,7 @@ body {
 }
 
 
-/* Brand Icon */
+/* ==================== BRAND ICON ==================== */
 
 .brand-icon {
   width: 68px;
@@ -248,38 +343,44 @@ body {
 
   background: linear-gradient(
     145deg,
-    #0d3970,
-    #0a2852
+    var(--c-primary-dark),
+    var(--c-primary-deeper)
   );
 
-  border: 1px solid #1d5fa6;
+  border: 1px solid var(--c-primary-strong);
 
-  color: #d9ad45;
+  color: var(--c-accent);
 
   font-size: 28px;
 
   box-shadow:
-    0 15px 40px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(217, 173, 69, 0.05) inset,
-    0 0 34px rgba(20, 93, 168, 0.14);
+    0 15px 40px var(--a-black-40),
+    0 0 0 1px var(--a-accent-05) inset,
+    0 0 34px var(--a-primary-14);
 
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .brand-icon:hover {
   transform: translateY(-2px);
 
   box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(217, 173, 69, 0.12) inset,
-    0 0 44px rgba(20, 93, 168, 0.22);
+    0 18px 44px var(--a-black-45),
+    0 0 0 1px var(--a-accent-12) inset,
+    0 0 44px var(--a-primary-22);
 }
 
 
-/* Brand Title */
+/* ==================== BRAND TITLE ==================== */
 
 .login-brand h1 {
-  font-family: "Cinzel", "Playfair Display", Georgia, serif;
+  font-family:
+    "Cinzel",
+    "Playfair Display",
+    Georgia,
+    serif;
 
   font-size: clamp(30px, 3.1vw, 50px);
 
@@ -289,25 +390,35 @@ body {
 
   letter-spacing: 1px;
 
-  color: #ffffff;
+  color: var(--c-white);
 
   white-space: nowrap;
 }
 
 .login-brand h1 span {
-  background: linear-gradient(135deg, #f0cd7a, #d9ad45 55%, #b8862c);
+  background: linear-gradient(
+    135deg,
+    var(--c-accent-light),
+    var(--c-accent) 55%,
+    var(--c-accent-dark)
+  );
+
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 
-/* Brand Description */
+/* ==================== BRAND DESCRIPTION ==================== */
 
 .brand-description {
   margin-top: 22px;
 
-  font-family: "Playfair Display", Georgia, serif;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+
   font-style: italic;
 
   font-size: clamp(15px, 1.25vw, 19px);
@@ -316,11 +427,11 @@ body {
 
   line-height: 1.65;
 
-  color: #a7bad4;
+  color: var(--c-text-muted);
 }
 
 
-/* Gold Line */
+/* ==================== GOLD LINE ==================== */
 
 .brand-line {
   width: 65px;
@@ -331,13 +442,17 @@ body {
 
   border-radius: 50px;
 
-  background: linear-gradient(90deg, #d9ad45, rgba(217, 173, 69, 0.15));
+  background: linear-gradient(
+    90deg,
+    var(--c-accent),
+    var(--a-accent-15)
+  );
 
-  box-shadow: 0 0 16px rgba(217, 173, 69, 0.35);
+  box-shadow: 0 0 16px var(--a-accent-35);
 }
 
 
-/* Brand Tagline */
+/* ==================== BRAND TAGLINE ==================== */
 
 .brand-tagline {
   font-family: "Cinzel", serif;
@@ -352,11 +467,11 @@ body {
 
   line-height: 1.9;
 
-  color: #7288a7;
+  color: var(--c-text-dim);
 }
 
 
-/* Brand Bottom */
+/* ==================== BRAND BOTTOM ==================== */
 
 .brand-bottom {
   position: absolute;
@@ -366,7 +481,7 @@ body {
 
   z-index: 2;
 
-  color: #465e7f;
+  color: var(--c-text-faint);
 
   font-size: 11px;
 
@@ -374,7 +489,7 @@ body {
 }
 
 
-/* Right Login Section */
+/* ==================== RIGHT LOGIN SECTION ==================== */
 
 .login-form-section {
   width: 100%;
@@ -392,19 +507,19 @@ body {
   background:
     radial-gradient(
       circle at 90% 10%,
-      rgba(25, 101, 186, 0.08),
+      var(--a-primary-08),
       transparent 38%
     ),
     radial-gradient(
       circle at 10% 95%,
-      rgba(217, 173, 69, 0.03),
+      var(--a-accent-03),
       transparent 30%
     ),
-    #081329;
+    var(--c-surface);
 }
 
 
-/* Login Form Container */
+/* ==================== LOGIN FORM CONTAINER ==================== */
 
 .login-form-container {
   width: 100%;
@@ -421,6 +536,7 @@ body {
     opacity: 0;
     transform: translateY(14px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -432,10 +548,10 @@ body {
   .login-form-container {
     animation: none;
   }
-}
+} 
 
 
-/* Form Header */
+/* ==================== FORM HEADER ==================== */
 
 .form-header {
   margin-bottom: 38px;
@@ -448,9 +564,9 @@ body {
 
   font-family: "Cinzel", serif;
 
-  color: #d9ad45;
+  color: var(--c-accent);
 
-  font-size: 12px;
+  font-size: 18px;
 
   font-weight: 600;
 
@@ -460,7 +576,10 @@ body {
 }
 
 .form-header h2 {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
   font-size: clamp(30px, 3.1vw, 44px);
 
@@ -470,13 +589,13 @@ body {
 
   letter-spacing: -0.3px;
 
-  color: #ffffff;
+  color: var(--c-white);
 }
 
 .form-description {
   margin-top: 12px;
 
-  color: #7086a6;
+  color: var(--c-text-secondary);
 
   font-size: 14px;
 
@@ -486,7 +605,7 @@ body {
 }
 
 
-/* Input Group */
+/* ==================== INPUT GROUP ==================== */
 
 .input-group {
   margin-bottom: 23px;
@@ -497,7 +616,7 @@ body {
 
   margin-bottom: 9px;
 
-  color: #c4d2e5;
+  color: var(--c-label);
 
   font-size: 13px;
 
@@ -507,7 +626,7 @@ body {
 }
 
 
-/* Input Wrapper */
+/* ==================== INPUT WRAPPER ==================== */
 
 .input-wrapper {
   position: relative;
@@ -516,7 +635,7 @@ body {
 }
 
 
-/* Input */
+/* ==================== INPUT ==================== */
 
 .input-wrapper input {
   width: 100%;
@@ -525,15 +644,15 @@ body {
 
   padding: 0 50px;
 
-  border: 1px solid #1b385e;
+  border: 1px solid var(--c-input-border);
 
   border-radius: 10px;
 
   outline: none;
 
-  background: #060f20;
+  background: var(--c-input-bg);
 
-  color: #ffffff;
+  color: var(--c-white);
 
   font-size: 14px;
 
@@ -545,29 +664,29 @@ body {
 }
 
 .input-wrapper input::placeholder {
-  color: #4d6382;
+  color: var(--c-placeholder);
 }
 
 .input-wrapper input:hover {
-  border-color: #27517f;
+  border-color: var(--c-input-hover);
 }
 
 .input-wrapper input:focus {
-  border-color: #2477c7;
+  border-color: var(--c-focus-blue);
 
-  background: #071226;
+  background: var(--c-input-focus-bg);
 
   box-shadow:
-    0 0 0 4px rgba(36, 119, 199, 0.14),
-    0 4px 18px rgba(0, 0, 0, 0.25);
+    0 0 0 4px var(--a-focus-blue-14),
+    0 4px 18px var(--a-black-25);
 }
 
 .input-wrapper input:focus-visible {
-  border-color: #d9ad45;
+  border-color: var(--c-accent);
 
   box-shadow:
-    0 0 0 4px rgba(217, 173, 69, 0.16),
-    0 4px 18px rgba(0, 0, 0, 0.25);
+    0 0 0 4px var(--a-accent-16),
+    0 4px 18px var(--a-black-25);
 }
 
 .input-wrapper input:disabled {
@@ -576,17 +695,21 @@ body {
   cursor: not-allowed;
 }
 
-/* Optional validation states — apply .is-error / .is-success on .input-wrapper */
-.input-wrapper.is-error input {
-  border-color: #d9534f;
 
-  box-shadow: 0 0 0 4px rgba(217, 83, 79, 0.12);
+/* ==================== VALIDATION STATES ==================== */
+
+.input-wrapper.is-error input {
+  border-color: var(--c-error);
+
+  box-shadow:
+    0 0 0 4px var(--a-error-12);
 }
 
 .input-wrapper.is-success input {
-  border-color: #3fb27f;
+  border-color: var(--c-success);
 
-  box-shadow: 0 0 0 4px rgba(63, 178, 127, 0.12);
+  box-shadow:
+    0 0 0 4px var(--a-success-12);
 }
 
 .input-hint {
@@ -596,15 +719,15 @@ body {
 
   line-height: 1.5;
 
-  color: #6c84a4;
+  color: var(--c-hint);
 }
 
 .input-hint.is-error {
-  color: #e07975;
+  color: var(--c-error-soft);
 }
 
 
-/* Input Icon */
+/* ==================== INPUT ICON ==================== */
 
 .input-icon {
   position: absolute;
@@ -614,7 +737,7 @@ body {
 
   transform: translateY(-50%);
 
-  color: #52749e;
+  color: var(--c-icon);
 
   font-size: 15px;
 
@@ -624,11 +747,11 @@ body {
 }
 
 .input-wrapper input:focus ~ .input-icon {
-  color: #d9ad45;
+  color: var(--c-accent);
 }
 
 
-/* Password Toggle */
+/* ==================== PASSWORD TOGGLE ==================== */
 
 .password-toggle {
   position: absolute;
@@ -649,7 +772,7 @@ body {
 
   background: transparent;
 
-  color: #52749e;
+  color: var(--c-icon);
 
   cursor: pointer;
 
@@ -662,9 +785,9 @@ body {
 }
 
 .password-toggle:hover {
-  color: #d9ad45;
+  color: var(--c-accent);
 
-  background: rgba(217, 173, 69, 0.08);
+  background: var(--a-accent-08);
 }
 
 .password-toggle:active {
@@ -672,12 +795,12 @@ body {
 }
 
 .password-toggle:focus-visible {
-  outline: 2px solid #d9ad45;
+  outline: 2px solid var(--c-accent);
   outline-offset: 2px;
 }
 
 
-/* Form Options */
+/* ==================== FORM OPTIONS ==================== */
 
 .form-options {
   display: flex;
@@ -692,7 +815,7 @@ body {
 }
 
 
-/* Remember Me */
+/* ==================== REMEMBER ME ==================== */
 
 .remember-me {
   display: flex;
@@ -701,7 +824,7 @@ body {
 
   gap: 8px;
 
-  color: #7d92af;
+  color: var(--c-text-subtle);
 
   font-size: 13px;
 
@@ -711,27 +834,27 @@ body {
 }
 
 .remember-me:hover {
-  color: #a7bad4;
+  color: var(--c-text-muted);
 }
 
 .remember-me input {
   width: 15px;
   height: 15px;
 
-  accent-color: #d9ad45;
+  accent-color: var(--c-accent);
 
   cursor: pointer;
 }
 
 
-/* Forgot Password */
+/* ==================== FORGOT PASSWORD ==================== */
 
 .forgot-password {
   border: none;
 
   background: transparent;
 
-  color: #4e92d2;
+  color: var(--c-link);
 
   font-size: 13px;
 
@@ -741,7 +864,7 @@ body {
 }
 
 .forgot-password:hover {
-  color: #d9ad45;
+  color: var(--c-accent);
 
   text-decoration: underline;
 
@@ -749,13 +872,15 @@ body {
 }
 
 .forgot-password:focus-visible {
-  outline: 2px solid #d9ad45;
+  outline: 2px solid var(--c-accent);
+
   outline-offset: 2px;
+
   border-radius: 3px;
 }
 
 
-/* Login Button */
+/* ==================== LOGIN BUTTON ==================== */
 
 .login-button {
   position: relative;
@@ -764,17 +889,17 @@ body {
 
   height: 56px;
 
-  border: 1px solid #2876bd;
+  border: 1px solid var(--c-button-border);
 
   border-radius: 10px;
 
   background: linear-gradient(
     135deg,
-    #145da8,
-    #176fc1
+    var(--c-primary),
+    var(--c-primary-light)
   );
 
-  color: #ffffff;
+  color: var(--c-white);
 
   font-size: 15px;
 
@@ -792,7 +917,9 @@ body {
     background 0.2s ease;
 }
 
-/* Subtle diagonal sheen on hover */
+
+/* ==================== BUTTON SHEEN ==================== */
+
 .login-button::before {
   content: "";
 
@@ -807,7 +934,7 @@ body {
   background: linear-gradient(
     120deg,
     transparent,
-    rgba(255, 255, 255, 0.16),
+    var(--a-white-16),
     transparent
   );
 
@@ -820,18 +947,21 @@ body {
   left: 130%;
 }
 
+
+/* ==================== BUTTON HOVER ==================== */
+
 .login-button:hover {
   background: linear-gradient(
     135deg,
-    #176fc1,
-    #1c7bd0
+    var(--c-primary-light),
+    var(--c-primary-hover)
   );
 
   transform: translateY(-1px);
 
   box-shadow:
-    0 12px 30px rgba(20, 93, 168, 0.3),
-    0 0 0 1px rgba(217, 173, 69, 0.08);
+    0 12px 30px var(--a-primary-30),
+    0 0 0 1px var(--a-accent-08);
 }
 
 .login-button:active {
@@ -842,8 +972,8 @@ body {
   outline: none;
 
   box-shadow:
-    0 0 0 3px #081329,
-    0 0 0 5px #d9ad45;
+    0 0 0 3px var(--c-surface),
+    0 0 0 5px var(--c-accent);
 }
 
 .login-button:disabled {
@@ -858,7 +988,9 @@ body {
   display: none;
 }
 
-/* Optional loading state — add .is-loading to .login-button and wrap label in a span */
+
+/* ==================== LOADING STATE ==================== */
+
 .login-button.is-loading {
   color: transparent;
 }
@@ -876,8 +1008,9 @@ body {
 
   margin: -9px 0 0 -9px;
 
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #ffffff;
+  border: 2px solid var(--a-white-35);
+
+  border-top-color: var(--c-white);
 
   border-radius: 50%;
 
@@ -891,7 +1024,8 @@ body {
 }
 
 
-/* Footer */
+
+/* ==================== FOOTER ==================== */
 
 .login-footer {
   width: 100%;
@@ -900,10 +1034,14 @@ body {
 
   text-align: center;
 
-  font-family: "Playfair Display", Georgia, serif;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+
   font-style: italic;
 
-  color: #3f5675;
+  color: var(--c-footer);
 
   font-size: 13px;
 
@@ -911,7 +1049,7 @@ body {
 }
 
 .login-footer a {
-  color: #6c84a4;
+  color: var(--c-hint);
 
   font-weight: 600;
 
@@ -921,7 +1059,7 @@ body {
 }
 
 .login-footer a:hover {
-  color: #d9ad45;
+  color: var(--c-accent);
 
   text-decoration: underline;
 
@@ -929,14 +1067,14 @@ body {
 }
 
 
-/* Mobile Logo */
+/* ==================== MOBILE LOGO ==================== */
 
 .mobile-logo {
   display: none;
 }
 
 
-/* Large Desktop */
+/* ==================== LARGE DESKTOP ==================== */
 
 @media (min-width: 1400px) {
   .login-container {
@@ -949,7 +1087,7 @@ body {
 }
 
 
-/* Tablet */
+/* ==================== TABLET ==================== */
 
 @media (max-width: 900px) {
   .login-container {
@@ -984,9 +1122,13 @@ body {
 
     margin-bottom: 45px;
 
-    font-family: "Cinzel", "Playfair Display", Georgia, serif;
+    font-family:
+      "Cinzel",
+      "Playfair Display",
+      Georgia,
+      serif;
 
-    color: #ffffff;
+    color: var(--c-white);
 
     font-size: 22px;
 
@@ -996,9 +1138,17 @@ body {
   }
 
   .mobile-logo > span > span {
-    background: linear-gradient(135deg, #f0cd7a, #d9ad45 55%, #b8862c);
+    background: linear-gradient(
+      135deg,
+      var(--c-accent-light),
+      var(--c-accent) 55%,
+      var(--c-accent-dark)
+    );
+
     -webkit-background-clip: text;
+
     background-clip: text;
+
     color: transparent;
   }
 
@@ -1007,25 +1157,32 @@ body {
     height: 42px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     border-radius: 11px;
 
-    background: linear-gradient(145deg, #0d3970, #0a2852);
+    background: linear-gradient(
+      145deg,
+      var(--c-primary-dark),
+      var(--c-primary-deeper)
+    );
 
-    border: 1px solid #1d5fa6;
+    border: 1px solid var(--c-primary-strong);
 
-    color: #d9ad45;
+    color: var(--c-accent);
 
     font-size: 17px;
 
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+    box-shadow:
+      0 10px 26px var(--a-black-35);
   }
 }
 
 
-/* Mobile */
+/* ==================== MOBILE ==================== */
 
 @media (max-width: 500px) {
   .login-form-section {
@@ -1062,7 +1219,7 @@ body {
 }
 
 
-/* Very Small Mobile */
+/* ==================== VERY SMALL MOBILE ==================== */
 
 @media (max-width: 360px) {
   .login-form-section {
@@ -1078,82 +1235,4 @@ body {
   .forgot-password {
     padding: 0;
   }
-}
-
-
-/* Authentication Message */
-
-.auth-message {
-  margin-top: -8px;
-  margin-bottom: 18px;
-
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.auth-message.error {
-  color: #ff5c5c;
-}
-
-.auth-message.success {
-  color: #55c98a;
-}
-
-
-/* Disabled Button */
-
-.login-button:disabled {
-  opacity: 0.65;
-
-  cursor: not-allowed;
-
-  transform: none;
-
-  box-shadow: none;
-}
-
-
-/* Back To Login */
-
-.back-login {
-  display: block;
-
-  width: 100%;
-
-  margin-top: 18px;
-
-  border: none;
-
-  background: transparent;
-
-  color: #4e92d2;
-
-  font-size: 13px;
-
-  cursor: pointer;
-
-  transition: color 0.2s ease;
-}
-
-.back-login:hover {
-  color: #d9ad45;
-}
-
-
-/* OTP Input */
-
-.otp-input {
-  text-align: center;
-
-  letter-spacing: 8px;
-
-  font-size: 20px !important;
-
-  font-weight: 600;
-}
-
-.otp-input::placeholder {
-  letter-spacing: 0;
-  font-size: 14px;
-  font-weight: 400;
 }
