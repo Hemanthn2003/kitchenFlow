@@ -7,6 +7,13 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
+import managerRoutes from "./routes/managerRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import menuRoutes from "./routes/menuRoutes.js";
+
+/* =========================================================
+   PATH SETUP
+   ========================================================= */
 
 const __filename =
   fileURLToPath(import.meta.url);
@@ -14,8 +21,9 @@ const __filename =
 const __dirname =
   path.dirname(__filename);
 
-
-/* Load Environment Variables */
+/* =========================================================
+   LOAD ENVIRONMENT VARIABLES
+   ========================================================= */
 
 dotenv.config({
   path: path.join(
@@ -24,93 +32,175 @@ dotenv.config({
   ),
 });
 
-
-/* App */
+/* =========================================================
+   APP
+   ========================================================= */
 
 const app = express();
 
 const PORT =
   process.env.PORT || 5000;
 
-
-/* Middleware */
+/* =========================================================
+   MIDDLEWARE
+   ========================================================= */
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin:
+      "http://localhost:5173",
     credentials: true,
   })
 );
 
-app.use(express.json());
+app.use(
+  express.json()
+);
 
-app.use(cookieParser());
+app.use(
+  cookieParser()
+);
 
+/* =========================================================
+   BASIC ROUTE
+   ========================================================= */
 
-/* Routes */
+app.get(
+  "/",
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+      message:
+        "KitchenFlow API is running",
+    });
+  }
+);
 
-app.get("/", (req, res) => {
-  res.json({
-    message:
-      "KitchenFlow API is running",
-  });
-});
+/* =========================================================
+   AUTH ROUTES
+   ========================================================= */
 
 app.use(
   "/api/auth",
   authRoutes
 );
 
+/* =========================================================
+   MANAGER ROUTES
+   ========================================================= */
 
-/* MongoDB */
+app.use(
+  "/api/manager",
+  managerRoutes
+);
 
-const connectDB = async () => {
-  try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error(
-        "MONGODB_URI is not defined"
-      );
-    }
+/* =========================================================
+   ORDER ROUTES
+   ========================================================= */
 
-    await mongoose.connect(
-      process.env.MONGODB_URI
-    );
+app.use(
+  "/api/orders",
+  orderRoutes
+);
 
-    console.log(
-      "MongoDB connected successfully"
-    );
+/* =========================================================
+   MENU ROUTES
+   ========================================================= */
 
-    console.log(
-      `Database: ${mongoose.connection.name}`
-    );
+app.use(
+  "/api/menu",
+  menuRoutes
+);
 
-  } catch (error) {
-    console.error(
-      "MongoDB connection failed"
-    );
+/* =========================================================
+   API 404 HANDLER
+   ========================================================= */
 
-    console.error(
-      error.message
-    );
-
-    process.exit(1);
+app.use(
+  "/api",
+  (req, res) => {
+    res.status(404).json({
+      success: false,
+      message:
+        `API route not found: ${req.method} ${req.originalUrl}`,
+    });
   }
-};
+);
 
+/* =========================================================
+   ERROR HANDLER
+   ========================================================= */
 
-/* Start Server */
+app.use(
+  (error, req, res, next) => {
+    console.error(
+      "Unhandled server error:",
+      error
+    );
 
-const startServer = async () => {
-  await connectDB();
+    res.status(500).json({
+      success: false,
+      message:
+        "Internal server error",
+    });
+  }
+);
 
-  app.listen(
-    PORT,
-    () => {
-      console.log(
-        `KitchenFlow server running on port ${PORT}`
+/* =========================================================
+   MONGODB
+   ========================================================= */
+
+const connectDB =
+  async () => {
+    try {
+      if (
+        !process.env.MONGODB_URI
+      ) {
+        throw new Error(
+          "MONGODB_URI is not defined"
+        );
+      }
+
+      await mongoose.connect(
+        process.env.MONGODB_URI
       );
+
+      console.log(
+        "MongoDB connected successfully"
+      );
+
+      console.log(
+        `Database: ${mongoose.connection.name}`
+      );
+    } catch (error) {
+      console.error(
+        "MongoDB connection failed"
+      );
+
+      console.error(
+        error.message
+      );
+
+      process.exit(1);
     }
-  );
-};
+  };
+
+/* =========================================================
+   START SERVER
+   ========================================================= */
+
+const startServer =
+  async () => {
+    await connectDB();
+
+    app.listen(
+      PORT,
+      () => {
+        console.log(
+          `KitchenFlow server running on port ${PORT}`
+        );
+      }
+    );
+  };
 
 startServer();
