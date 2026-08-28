@@ -246,7 +246,7 @@ router.patch(
           },
 
           {
-            new: true,
+           returnDocument: "after",
             runValidators: true,
           }
         ).lean();

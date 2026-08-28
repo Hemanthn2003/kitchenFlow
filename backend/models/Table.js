@@ -10,9 +10,30 @@ const tableSchema = new mongoose.Schema(
 
     status: {
       type: String,
+      enum: [
+        "AVAILABLE",
+        "OCCUPIED",
+        "BILL_REQUESTED",
+      ],
       default: "AVAILABLE",
       trim: true,
       uppercase: true,
+    },
+
+    waiterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    assignedAt: {
+      type: Date,
+      default: null,
+    },
+
+    billRequestedAt: {
+      type: Date,
+      default: null,
     },
   },
   {

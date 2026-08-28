@@ -4910,3 +4910,517 @@
   }
 
 }
+
+/* =========================================================
+   MENU ADD / EDIT MODAL - FINAL STYLING
+   ========================================================= */
+
+.dish-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+
+  z-index: 9999 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 24px !important;
+
+  background: rgba(2, 10, 22, 0.78) !important;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  overflow-y: auto !important;
+}
+
+
+.dish-modal {
+  width: min(100%, 620px) !important;
+
+  max-height: calc(100vh - 48px) !important;
+
+  overflow-y: auto !important;
+
+  padding: 28px !important;
+
+  border-radius: 20px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(21, 47, 82, 0.98),
+      rgba(7, 20, 38, 0.99)
+    ) !important;
+
+  border: 1px solid
+    rgba(74, 143, 214, 0.45) !important;
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(31, 93, 160, 0.15) !important;
+
+  color: var(--text-primary, #ffffff) !important;
+}
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.dish-modal-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+
+  gap: 20px !important;
+
+  padding-bottom: 20px !important;
+
+  margin-bottom: 24px !important;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+
+.dish-modal-header h3 {
+  margin: 8px 0 0 !important;
+
+  color: var(--text-primary, #ffffff) !important;
+
+  font-size: 30px !important;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif !important;
+
+  letter-spacing: 0.2px !important;
+}
+
+
+.dish-modal-header .page-kicker {
+  color: #d9ad45 !important;
+
+  font-size: 11px !important;
+
+  font-weight: 800 !important;
+
+  letter-spacing: 2px !important;
+}
+
+
+.modal-close-button {
+  width: 42px !important;
+  height: 42px !important;
+
+  flex-shrink: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 12px !important;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.1) !important;
+
+  background:
+    rgba(255, 255, 255, 0.05) !important;
+
+  color: #ffffff !important;
+
+  font-size: 25px !important;
+
+  cursor: pointer !important;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease !important;
+}
+
+
+.modal-close-button:hover {
+  transform: translateY(-2px) !important;
+
+  background:
+    rgba(217, 173, 69, 0.15) !important;
+
+  color: #f0c967 !important;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.dish-modal form {
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  gap: 18px !important;
+}
+
+
+.dish-modal form > label {
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  gap: 9px !important;
+
+  color:
+    var(--text-primary, #e8eef7) !important;
+
+  font-size: 12px !important;
+
+  font-weight: 800 !important;
+
+  letter-spacing: 1px !important;
+
+  text-transform: uppercase !important;
+}
+
+
+/* =========================================================
+   INPUTS AND SELECT
+   ========================================================= */
+
+.dish-modal input[type="text"],
+.dish-modal input[type="number"],
+.dish-modal select {
+  width: 100% !important;
+
+  min-height: 50px !important;
+
+  padding: 0 15px !important;
+
+  box-sizing: border-box !important;
+
+  border-radius: 10px !important;
+
+  border:
+    1px solid rgba(83, 143, 206, 0.35) !important;
+
+  outline: none !important;
+
+  background:
+    rgba(3, 14, 29, 0.82) !important;
+
+  color:
+    var(--text-primary, #ffffff) !important;
+
+  font-size: 15px !important;
+
+  font-weight: 600 !important;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+
+.dish-modal input[type="text"]::placeholder,
+.dish-modal input[type="number"]::placeholder {
+  color:
+    rgba(180, 195, 215, 0.55) !important;
+}
+
+
+.dish-modal input[type="text"]:focus,
+.dish-modal input[type="number"]:focus,
+.dish-modal select:focus {
+  border-color:
+    #d9ad45 !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(217, 173, 69, 0.12) !important;
+}
+
+
+/* =========================================================
+   CATEGORY SELECT
+   ========================================================= */
+
+.dish-modal select {
+  cursor: pointer !important;
+
+  appearance: auto !important;
+
+  -webkit-appearance: auto !important;
+}
+
+
+.dish-modal select option {
+  background: #10233d !important;
+
+  color: #ffffff !important;
+}
+
+
+/* =========================================================
+   FILE INPUT
+   ========================================================= */
+
+.dish-modal input[type="file"] {
+  width: 100% !important;
+
+  padding: 10px !important;
+
+  box-sizing: border-box !important;
+
+  border-radius: 10px !important;
+
+  border:
+    1px dashed rgba(217, 173, 69, 0.55) !important;
+
+  background:
+    rgba(4, 17, 33, 0.75) !important;
+
+  color: #b8c5d8 !important;
+
+  cursor: pointer !important;
+}
+
+
+.dish-modal input[type="file"]::file-selector-button {
+  margin-right: 12px !important;
+
+  padding: 9px 15px !important;
+
+  border: none !important;
+
+  border-radius: 8px !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d9ad45,
+      #f0c967
+    ) !important;
+
+  color: #081425 !important;
+
+  font-weight: 800 !important;
+
+  cursor: pointer !important;
+}
+
+
+.dish-modal small {
+  color:
+    var(--text-muted, #91a2bb) !important;
+
+  font-size: 12px !important;
+
+  line-height: 1.5 !important;
+
+  text-transform: none !important;
+
+  letter-spacing: 0 !important;
+}
+
+
+/* =========================================================
+   IMAGE PREVIEW
+   ========================================================= */
+
+.dish-modal .dish-image-preview {
+  width: 100% !important;
+
+  min-height: 220px !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+
+  justify-content: center !important;
+
+  overflow: hidden !important;
+
+  box-sizing: border-box !important;
+
+  border-radius: 14px !important;
+
+  border:
+    1px solid rgba(75, 143, 211, 0.3) !important;
+
+  background:
+    rgba(3, 16, 31, 0.7) !important;
+}
+
+
+.dish-modal .dish-image-preview img {
+  width: 100% !important;
+
+  height: 220px !important;
+
+  min-height: 220px !important;
+
+  display: block !important;
+
+  object-fit: cover !important;
+
+  border-radius: 13px !important;
+}
+
+
+/* =========================================================
+   AVAILABILITY
+   ========================================================= */
+
+.dish-modal .availability-checkbox-label {
+  flex-direction: row !important;
+
+  align-items: center !important;
+
+  min-height: 52px !important;
+
+  padding: 0 16px !important;
+
+  border-radius: 12px !important;
+
+  border:
+    1px solid rgba(83, 143, 206, 0.25) !important;
+
+  background:
+    rgba(255, 255, 255, 0.035) !important;
+
+  text-transform: none !important;
+
+  letter-spacing: 0 !important;
+
+  font-size: 14px !important;
+}
+
+
+.dish-modal
+.availability-checkbox-label
+input[type="checkbox"] {
+  width: 18px !important;
+
+  height: 18px !important;
+
+  accent-color: #d9ad45 !important;
+
+  cursor: pointer !important;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.dish-modal-actions {
+  display: grid !important;
+
+  grid-template-columns:
+    1fr
+    1fr !important;
+
+  gap: 12px !important;
+
+  margin-top: 6px !important;
+
+  padding-top: 18px !important;
+
+  border-top:
+    1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+
+.modal-cancel-button,
+.modal-submit-button {
+  min-height: 48px !important;
+
+  border-radius: 11px !important;
+
+  font-weight: 800 !important;
+
+  cursor: pointer !important;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease !important;
+}
+
+
+.modal-cancel-button {
+  border:
+    1px solid rgba(98, 139, 186, 0.35) !important;
+
+  background:
+    rgba(16, 38, 65, 0.75) !important;
+
+  color:
+    #dce6f5 !important;
+}
+
+
+.modal-submit-button {
+  border: none !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d9ad45,
+      #f0c967
+    ) !important;
+
+  color:
+    #071322 !important;
+}
+
+
+.modal-cancel-button:hover,
+.modal-submit-button:hover {
+  transform:
+    translateY(-2px) !important;
+}
+
+
+.modal-submit-button:disabled,
+.modal-cancel-button:disabled {
+  opacity: 0.55 !important;
+
+  cursor: not-allowed !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .dish-modal-backdrop {
+    padding: 12px !important;
+  }
+
+  .dish-modal {
+    padding: 20px !important;
+
+    max-height:
+      calc(100vh - 24px) !important;
+  }
+
+  .dish-modal-header h3 {
+    font-size: 25px !important;
+  }
+
+  .dish-modal-actions {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  .dish-modal .dish-image-preview img {
+    height: 180px !important;
+
+    min-height: 180px !important;
+  }
+}

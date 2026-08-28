@@ -10,7 +10,7 @@ import authRoutes from "./routes/authRoutes.js";
 import managerRoutes from "./routes/managerRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import menuRoutes from "./routes/menuRoutes.js";
-
+import waiterRoutes from "./routes/waiterRoutes.js";
 /* =========================================================
    PATH SETUP
    ========================================================= */
@@ -146,6 +146,13 @@ app.use(
   }
 );
 
+/* =========================================================
+   WAITER
+   ========================================================= */
+app.use(
+  "/api/waiter",
+  waiterRoutes
+);
 /* =========================================================
    MONGODB
    ========================================================= */

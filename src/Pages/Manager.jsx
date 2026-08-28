@@ -1,7 +1,22 @@
 import React, {
   useEffect,
+  useRef,
   useState,
 } from "react";
+
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
+import {
+  fetchActiveUsers,
+  fetchOrders,
+  fetchMenuItems,
+  addMenuItem,
+  updateMenuAvailabilityLocal,
+  updateOrder,
+} from "../store/kitchenStore.js";
 
 import "./Manager.css";
 
@@ -13,17 +28,8 @@ import "./Manager.css";
 const API_URL =
   "http://localhost:5000";
 
-
-/* =========================================================
-   CLOUDINARY
-   ========================================================= */
-
-const CLOUDINARY_CLOUD_NAME =
-  "g0silssv";
-
-const CLOUDINARY_UPLOAD_PRESET =
-  "pizzaDemo";
-
+const CLOUDINARY_CLOUD_NAME = "g0silssv";
+const CLOUDINARY_UPLOAD_PRESET = "pizzaDemo";
 const CLOUDINARY_UPLOAD_URL =
   `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
@@ -200,9 +206,7 @@ const Icon = ({
   if (name === "activity") {
     return (
       <svg {...common}>
-        <polyline
-          points="3 12 7 12 10 5 14 19 17 12 21 12"
-        />
+        <polyline points="3 12 7 12 10 5 14 19 17 12 21 12" />
       </svg>
     );
   }
@@ -213,29 +217,6 @@ const Icon = ({
       <svg {...common}>
         <circle cx="12" cy="12" r="9" />
         <path d="M8 12l2.5 2.5L16 9" />
-      </svg>
-    );
-  }
-
-
-  if (name === "edit") {
-    return (
-      <svg {...common}>
-        <path d="M12 20h9" />
-        <path
-          d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4z"
-        />
-      </svg>
-    );
-  }
-
-
-  if (name === "upload") {
-    return (
-      <svg {...common}>
-        <path d="M12 16V4" />
-        <path d="M7 9l5-5 5 5" />
-        <path d="M5 20h14" />
       </svg>
     );
   }
@@ -257,9 +238,7 @@ const formatTime = (date) => {
 
   try {
 
-    return new Date(
-      date
-    ).toLocaleTimeString(
+    return new Date(date).toLocaleTimeString(
       [],
       {
         hour: "2-digit",
@@ -276,47 +255,13 @@ const formatTime = (date) => {
 
 
 /* =========================================================
-   FORMAT DATE
-   ========================================================= */
-
-const formatDateTime = (date) => {
-
-  if (!date) {
-    return "--";
-  }
-
-  try {
-
-    return new Date(
-      date
-    ).toLocaleString(
-      [],
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }
-    );
-
-  } catch {
-
-    return "--";
-
-  }
-};
-
-
-/* =========================================================
-   MANAGER
+   MANAGER PAGE
    ========================================================= */
 
 const Manager = () => {
 
-
   /* =======================================================
-     GENERAL STATE
+     STATE
      ======================================================= */
 
   const [menuOpen, setMenuOpen] =
@@ -325,68 +270,81 @@ const Manager = () => {
   const [activePage, setActivePage] =
     useState("home");
 
-  const [manager, setManager] =
-    useState(null);
+  const dispatch = useDispatch();
 
-  const [waiters, setWaiters] =
-    useState([]);
+  const {
+    users,
+    orders,
+    menuItems,
+    loading: reduxLoading,
+    errors,
+    lastFetched,
+  } = useSelector((state) => state.kitchen);
 
-  const [kitchenStaff, setKitchenStaff] =
-    useState([]);
+  /* =======================================================
+     ACTIVE MANAGER / PROFILE IMAGE
+     ======================================================= */
 
-  const [loading, setLoading] =
-    useState(true);
+  const activeManager = Array.isArray(users?.manager)
+    ? users.manager[0]
+    : users?.manager;
+
+  let loggedInUser = null;
+
+  try {
+    loggedInUser = JSON.parse(
+      localStorage.getItem("user") || "null"
+    );
+  } catch {
+    loggedInUser = null;
+  }
+
+  const managerImage =
+    activeManager?.imageUrl ||
+    activeManager?.profileImage ||
+    loggedInUser?.imageUrl ||
+    loggedInUser?.profileImage ||
+    "";
+
+  const managerName =
+    activeManager?.name ||
+    loggedInUser?.name ||
+    "Manager";
+
+  const manager = activeManager;
+  const waiters = Array.isArray(users?.waiters)
+    ? users.waiters
+    : [];
+  const kitchenStaff = Array.isArray(users?.kitchenStaff)
+    ? users.kitchenStaff
+    : [];
+
+  const loading = reduxLoading.users;
+  const ordersLoading = reduxLoading.orders;
+  const menuLoading = reduxLoading.menuItems;
 
   const [refreshing, setRefreshing] =
     useState(false);
 
-  const [error, setError] =
+  const [localError, setLocalError] =
     useState("");
+
+  const error =
+    localError ||
+    errors.users ||
+    "";
 
   const [lastUpdated, setLastUpdated] =
     useState(null);
 
-
-  /* =======================================================
-     ORDERS
-     ======================================================= */
-
-  const [orders, setOrders] =
-    useState([]);
-
-  const [ordersLoading, setOrdersLoading] =
-    useState(false);
-
   const [ordersError, setOrdersError] =
     useState("");
-
-  const [orderFilter, setOrderFilter] =
-    useState("ALL");
-
-  const [updatingOrderId, setUpdatingOrderId] =
-    useState(null);
-
-
-  /* =======================================================
-     MENU
-     ======================================================= */
-
-  const [menuItems, setMenuItems] =
-    useState([]);
-
-  const [menuLoading, setMenuLoading] =
-    useState(false);
 
   const [menuError, setMenuError] =
     useState("");
 
-  const [updatingMenuId, setUpdatingMenuId] =
-    useState(null);
-
-
-  /* =======================================================
-     ADD DISH
-     ======================================================= */
+  const [orderFilter, setOrderFilter] =
+    useState("ALL");
 
   const [showAddDish, setShowAddDish] =
     useState(false);
@@ -394,1419 +352,813 @@ const Manager = () => {
   const [addingDish, setAddingDish] =
     useState(false);
 
-  const [uploadingImage, setUploadingImage] =
-    useState(false);
+  const [updatingMenuId, setUpdatingMenuId] =
+    useState(null);
 
-  const [imageUploadError, setImageUploadError] =
-    useState("");
+  const [updatingOrderId, setUpdatingOrderId] =
+    useState(null);
 
   const [dishForm, setDishForm] =
     useState({
-
       name: "",
-
       category: "",
-
       price: "",
-
       imageUrl: "",
-
       isAvailable: true,
-
     });
 
 
+  const [editingDish, setEditingDish] = useState(null);
+  const [editDishForm, setEditDishForm] = useState({
+    name: "", category: "", price: "", imageUrl: "", isAvailable: true,
+  });
+  const [savingDish, setSavingDish] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingEditImage, setUploadingEditImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState("");
+  const initialUsersLoadRef = useRef(false);
+
+  const menuCategories = Array.from(
+    new Set(
+      (Array.isArray(menuItems) ? menuItems : [])
+        .map((item) => String(item.category || "").trim())
+        .filter(Boolean)
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
   /* =======================================================
-     PRICE EDITING
+     REDUX DATA LOADERS
      ======================================================= */
 
-  const [editingPriceId, setEditingPriceId] =
-    useState(null);
-
-  const [editingPrice, setEditingPrice] =
-    useState("");
-
-  const [savingPriceId, setSavingPriceId] =
-    useState(null);
-
-
-  /* =======================================================
-     FETCH ACTIVE USERS
-     ======================================================= */
-
-  const fetchActiveUsers = async () => {
-
+  const loadActiveUsers = async (force = false) => {
     try {
-
       setRefreshing(true);
+      setLocalError("");
 
-      setError("");
+      await dispatch(
+        fetchActiveUsers({ force })
+      ).unwrap();
 
-
-      const response =
-        await fetch(
-          `${API_URL}/api/manager/active-users?_=${Date.now()}`,
-          {
-            method: "GET",
-
-            credentials: "include",
-
-            cache: "no-store",
-
-            headers: {
-              "Cache-Control":
-                "no-cache",
-
-              "Pragma":
-                "no-cache",
-            },
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.message ||
-          "Unable to load active users"
-        );
-
-      }
-
-
-      let managerData = null;
-
-
-      if (
-        Array.isArray(
-          data.manager
-        )
-      ) {
-
-        managerData =
-          data.manager[0] ||
-          null;
-
-      } else {
-
-        managerData =
-          data.manager ||
-          null;
-
-      }
-
-
-      const waiterData =
-        Array.isArray(
-          data.waiters
-        )
-          ? data.waiters.map(
-              (waiter) => ({
-                ...waiter,
-
-                currentTable:
-                  waiter.currentTable === null ||
-                  waiter.currentTable === undefined ||
-                  waiter.currentTable === ""
-                    ? null
-                    : waiter.currentTable,
-              })
-            )
-          : [];
-
-
-      let kitchenData = [];
-
-
-      if (
-        Array.isArray(
-          data.kitchen
-        )
-      ) {
-
-        kitchenData =
-          data.kitchen;
-
-      } else if (
-        Array.isArray(
-          data.kitchenStaff
-        )
-      ) {
-
-        kitchenData =
-          data.kitchenStaff;
-
-      }
-
-
-      setManager(
-        managerData
-      );
-
-      setWaiters(
-        waiterData
-      );
-
-      setKitchenStaff(
-        kitchenData
-      );
-
-      setLastUpdated(
-        new Date()
-      );
-
-
+      setLastUpdated(new Date());
     } catch (err) {
-
-      console.error(
-        "Manager dashboard error:",
-        err
-      );
-
-      setError(
-        err.message ||
-        "Unable to load dashboard"
-      );
-
-
+      // Redux Toolkit can intentionally reject a duplicate request when
+      // StrictMode mounts effects twice. That is not a real dashboard error.
+      if (err?.name !== "ConditionError") {
+        console.error("Manager dashboard error:", err);
+        setLocalError(err?.message || err || "Unable to load dashboard");
+      }
     } finally {
-
-      setLoading(false);
-
       setRefreshing(false);
-
     }
-
   };
 
-
-  /* =======================================================
-     FETCH ORDERS
-     ======================================================= */
-
-  const fetchOrders = async () => {
-
+  const loadOrders = async (force = false) => {
     try {
-
-      setOrdersLoading(true);
-
       setOrdersError("");
-
-
-      const response =
-        await fetch(
-          `${API_URL}/api/manager/orders?_=${Date.now()}`,
-          {
-            method: "GET",
-
-            credentials: "include",
-
-            cache: "no-store",
-
-            headers: {
-              "Cache-Control":
-                "no-cache",
-
-              "Pragma":
-                "no-cache",
-            },
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.message ||
-          "Unable to load orders"
-        );
-
-      }
-
-
-      setOrders(
-        Array.isArray(
-          data.orders
-        )
-          ? data.orders
-          : []
-      );
-
-
+      await dispatch(
+        fetchOrders({ force })
+      ).unwrap();
     } catch (err) {
-
-      console.error(
-        "Orders page error:",
-        err
-      );
-
+      console.error("Orders page error:", err);
       setOrdersError(
-        err.message ||
+        err?.message ||
+        err ||
         "Unable to load orders"
       );
-
-
-    } finally {
-
-      setOrdersLoading(false);
-
     }
-
   };
 
-
-  /* =======================================================
-     FETCH MENU ITEMS
-     ======================================================= */
-
-  const fetchMenuItems = async () => {
-
+  const loadMenuItems = async (force = false) => {
     try {
-
-      setMenuLoading(true);
-
       setMenuError("");
-
-
-      const response =
-        await fetch(
-          `${API_URL}/api/manager/menu-items?_=${Date.now()}`,
-          {
-            method: "GET",
-
-            credentials: "include",
-
-            cache: "no-store",
-
-            headers: {
-              "Cache-Control":
-                "no-cache",
-
-              "Pragma":
-                "no-cache",
-            },
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.message ||
-          "Unable to load menu items"
-        );
-
-      }
-
-
-      setMenuItems(
-        Array.isArray(
-          data.menuItems
-        )
-          ? data.menuItems
-          : Array.isArray(data.items)
-          ? data.items
-          : []
-      );
-
-
+      await dispatch(
+        fetchMenuItems({ force })
+      ).unwrap();
     } catch (err) {
-
-      console.error(
-        "Menu page error:",
-        err
-      );
-
+      console.error("Menu page error:", err);
       setMenuError(
-        err.message ||
+        err?.message ||
+        err ||
         "Unable to load menu items"
       );
-
-
-    } finally {
-
-      setMenuLoading(false);
-
     }
-
   };
 
 
   /* =======================================================
-     INITIAL LOAD
+     FIRST LOAD
      ======================================================= */
 
   useEffect(() => {
-
-    fetchActiveUsers();
-
-  }, []);
-
+    if (initialUsersLoadRef.current || lastFetched.users) return;
+    initialUsersLoadRef.current = true;
+    loadActiveUsers(false);
+  }, [lastFetched.users]);
 
   /* =======================================================
-     AUTO REFRESH
+     LOAD PAGE DATA
      ======================================================= */
 
   useEffect(() => {
-
-    const interval =
-      setInterval(
-        () => {
-
-          fetchActiveUsers();
-
-        },
-        30000
-      );
-
-
-    return () => {
-
-      clearInterval(
-        interval
-      );
-
-    };
-
-  }, []);
-
-
-  /* =======================================================
-     PAGE DATA
-     ======================================================= */
-
-  useEffect(() => {
-
-    if (
-      activePage ===
-      "orders"
-    ) {
-
-      fetchOrders();
-
+    if (activePage === "orders" && !lastFetched.orders) {
+      loadOrders(false);
     }
 
-
-    if (
-      activePage ===
-      "menu"
-    ) {
-
-      fetchMenuItems();
-
+    if (activePage === "menu" && !lastFetched.menuItems) {
+      loadMenuItems(false);
     }
-
-  }, [activePage]);
+  }, [activePage, lastFetched.orders, lastFetched.menuItems]);
 
 
   /* =======================================================
      ORDER STATUS UPDATE
      ======================================================= */
 
-  const updateOrderStatus =
-    async (
-      orderId,
-      status
-    ) => {
+  const updateOrderStatus = async (
+    orderId,
+    status
+  ) => {
+    try {
+      setUpdatingOrderId(orderId);
+      setOrdersError("");
 
-      try {
-
-        setUpdatingOrderId(
-          orderId
-        );
-
-        setOrdersError("");
-
-
-        const response =
-          await fetch(
-            `${API_URL}/api/manager/orders/${orderId}/status`,
-            {
-              method: "PATCH",
-
-              credentials: "include",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-
-              body:
-                JSON.stringify({
-                  status,
-                }),
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.message ||
-            "Unable to update order status"
-          );
-
+      const response = await fetch(
+        `${API_URL}/api/orders/${orderId}/status`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
         }
+      );
 
+      const data = await response.json();
 
-        await fetchOrders();
-
-
-      } catch (err) {
-
-        console.error(
-          "Order status update error:",
-          err
-        );
-
-        setOrdersError(
-          err.message ||
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
           "Unable to update order status"
         );
-
-
-      } finally {
-
-        setUpdatingOrderId(
-          null
-        );
-
       }
 
-    };
+      if (data.order) {
+        dispatch(updateOrder(data.order));
+      } else {
+        await dispatch(
+          fetchOrders({ force: true })
+        ).unwrap();
+      }
+    } catch (err) {
+      console.error("Order status update error:", err);
+      setOrdersError(
+        err.message ||
+        "Unable to update order status"
+      );
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
 
 
   /* =======================================================
      MENU AVAILABILITY UPDATE
      ======================================================= */
 
-  const updateMenuAvailability =
-    async (
-      itemId,
-      isAvailable
-    ) => {
-
-      try {
-
-        setUpdatingMenuId(
-          itemId
-        );
-
-        setMenuError("");
-
-
-        const response =
-          await fetch(
-            `${API_URL}/api/manager/menu-items/${itemId}/availability`,
-            {
-              method: "PATCH",
-
-              credentials: "include",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-
-              body:
-                JSON.stringify({
-                  isAvailable,
-                }),
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.message ||
-            "Unable to update availability"
-          );
-
-        }
-
-
-        setMenuItems(
-          (current) =>
-            current.map(
-              (item) =>
-                String(
-                  item._id
-                ) ===
-                String(
-                  itemId
-                )
-                  ? {
-                      ...item,
-
-                      isAvailable:
-                        data.menuItem
-                          ?.isAvailable ??
-                        isAvailable,
-                    }
-                  : item
-            )
-        );
-
-
-      } catch (err) {
-
-        console.error(
-          "Menu availability error:",
-          err
-        );
-
-        setMenuError(
-          err.message ||
-          "Unable to update availability"
-        );
-
-
-      } finally {
-
-        setUpdatingMenuId(
-          null
-        );
-
-      }
-
-    };
-
-
-  /* =======================================================
-     START PRICE EDIT
-     ======================================================= */
-
-  const startPriceEdit =
-    (item) => {
-
+  const updateMenuAvailability = async (
+    itemId,
+    isAvailable
+  ) => {
+    try {
+      setUpdatingMenuId(itemId);
       setMenuError("");
 
-      setEditingPriceId(
-        item._id
-      );
-
-      setEditingPrice(
-        String(
-          Number(
-            item.price || 0
-          )
-        )
-      );
-
-    };
-
-
-  /* =======================================================
-     CANCEL PRICE EDIT
-     ======================================================= */
-
-  const cancelPriceEdit =
-    () => {
-
-      setEditingPriceId(
-        null
-      );
-
-      setEditingPrice("");
-
-      setSavingPriceId(
-        null
-      );
-
-    };
-
-
-  /* =======================================================
-     SAVE PRICE
-     ======================================================= */
-
-  const updateMenuPrice =
-    async (
-      itemId
-    ) => {
-
-      const value =
-        String(
-          editingPrice
-        ).trim();
-
-
-      if (
-        value === ""
-      ) {
-
-        setMenuError(
-          "Enter a valid price"
-        );
-
-        return;
-
-      }
-
-
-      const price =
-        Number(value);
-
-
-      if (
-        !Number.isFinite(
-          price
-        ) ||
-        price < 0
-      ) {
-
-        setMenuError(
-          "Enter a valid price"
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        setSavingPriceId(
-          itemId
-        );
-
-        setMenuError("");
-
-
-        const response =
-          await fetch(
-            `${API_URL}/api/manager/menu-items/${itemId}`,
-            {
-              method: "PATCH",
-
-              credentials: "include",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-
-              body:
-                JSON.stringify({
-                  price,
-                }),
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.message ||
-            "Unable to update price"
-          );
-
+      const response = await fetch(
+        `${API_URL}/api/menu/${itemId}/availability`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isAvailable }),
         }
+      );
 
+      const data = await response.json();
 
-        const savedItem =
-          data.menuItem ||
-          data.item;
-
-
-        setMenuItems(
-          (current) =>
-            current.map(
-              (item) =>
-                String(
-                  item._id
-                ) ===
-                String(
-                  itemId
-                )
-                  ? {
-                      ...item,
-
-                      price:
-                        savedItem
-                          ?.price ??
-                        price,
-                    }
-                  : item
-            )
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+          "Unable to update availability"
         );
-
-
-        setEditingPriceId(
-          null
-        );
-
-        setEditingPrice("");
-
-
-      } catch (err) {
-
-        console.error(
-          "Price update error:",
-          err
-        );
-
-        setMenuError(
-          err.message ||
-          "Unable to update price"
-        );
-
-
-      } finally {
-
-        setSavingPriceId(
-          null
-        );
-
       }
 
-    };
+      dispatch(
+        updateMenuAvailabilityLocal({
+          itemId,
+          isAvailable:
+            data.menuItem?.isAvailable ??
+            isAvailable,
+        })
+      );
+    } catch (err) {
+      console.error("Menu availability error:", err);
+      setMenuError(
+        err.message ||
+        "Unable to update availability"
+      );
+    } finally {
+      setUpdatingMenuId(null);
+    }
+  };
 
 
   /* =======================================================
      CLOUDINARY IMAGE UPLOAD
      ======================================================= */
 
-  const uploadDishImage =
-    async (
-      event
-    ) => {
+  const uploadImageToCloudinary = async (file) => {
+    if (!file) return "";
+    if (!file.type?.startsWith("image/")) {
+      throw new Error("Please select a valid image file.");
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error("Image must be smaller than 5 MB.");
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    formData.append("folder", "kitchenflow/menu");
 
-      const file =
-        event.target.files?.[0];
+    const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+      method: "POST",
+      body: formData,
+    });
+    const data = await response.json();
+    if (!response.ok || !data.secure_url) {
+      throw new Error(data?.error?.message || "Cloudinary image upload failed.");
+    }
+    return data.secure_url;
+  };
 
-
-      if (!file) {
-
-        return;
-
+  const uploadDishImage = async (event, mode = "add") => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setImageUploadError("");
+    try {
+      mode === "edit" ? setUploadingEditImage(true) : setUploadingImage(true);
+      const imageUrl = await uploadImageToCloudinary(file);
+      if (mode === "edit") {
+        setEditDishForm((current) => ({ ...current, imageUrl }));
+      } else {
+        setDishForm((current) => ({ ...current, imageUrl }));
       }
+    } catch (err) {
+      setImageUploadError(err.message || "Unable to upload image.");
+    } finally {
+      mode === "edit" ? setUploadingEditImage(false) : setUploadingImage(false);
+      event.target.value = "";
+    }
+  };
 
+  const openEditDish = (item) => {
+    setMenuError("");
+    setImageUploadError("");
+    setEditingDish(item);
+    setEditDishForm({
+      name: item.name || "",
+      category: item.category || "",
+      price: String(item.price ?? ""),
+      imageUrl: item.imageUrl || "",
+      isAvailable: Boolean(item.isAvailable),
+    });
+  };
 
-      setImageUploadError("");
+  const closeEditDish = () => {
+    if (savingDish) return;
+    setEditingDish(null);
+    setImageUploadError("");
+  };
 
+ const saveDishEdit = async (event) => {
+  event.preventDefault();
 
-      /* -----------------------------------------------------
-         ONLY IMAGE FILES
-         ----------------------------------------------------- */
+  if (!editingDish?._id) {
+    setMenuError("No menu item selected for editing.");
+    return;
+  }
 
-      if (
-        !file.type.startsWith(
-          "image/"
-        )
-      ) {
+  const name =
+    String(editDishForm.name || "").trim();
 
-        setImageUploadError(
-          "Please select an image file."
-        );
+  const category =
+    String(editDishForm.category || "").trim();
 
-        event.target.value =
-          "";
+  const imageUrl =
+    String(editDishForm.imageUrl || "").trim();
 
-        return;
+  const price =
+    Number(editDishForm.price);
 
-      }
+  if (!name) {
+    setMenuError(
+      "Please enter a dish name."
+    );
+    return;
+  }
 
+  if (!category) {
+    setMenuError(
+      "Please select a category."
+    );
+    return;
+  }
 
-      /* -----------------------------------------------------
-         FILE SIZE LIMIT
-         ----------------------------------------------------- */
+  if (
+    editDishForm.price === "" ||
+    !Number.isFinite(price) ||
+    price < 0
+  ) {
+    setMenuError(
+      "Please enter a valid price."
+    );
+    return;
+  }
 
-      const maxSize =
-        5 * 1024 * 1024;
+  if (uploadingEditImage) {
+    setMenuError(
+      "Please wait until the image upload is completed."
+    );
+    return;
+  }
 
+  try {
+    setSavingDish(true);
 
-      if (
-        file.size >
-        maxSize
-      ) {
+    setMenuError("");
 
-        setImageUploadError(
-          "Image must be smaller than 5 MB."
-        );
-
-        event.target.value =
-          "";
-
-        return;
-
-      }
-
-
-      try {
-
-        setUploadingImage(
-          true
-        );
-
-
-        /* ---------------------------------------------------
-           FORM DATA FOR CLOUDINARY
-           --------------------------------------------------- */
-
-        const formData =
-          new FormData();
-
-
-        formData.append(
-          "file",
-          file
-        );
-
-
-        formData.append(
-          "upload_preset",
-          CLOUDINARY_UPLOAD_PRESET
-        );
-
-
-        /* ---------------------------------------------------
-           OPTIONAL FOLDER
-           --------------------------------------------------- */
-
-        formData.append(
-          "folder",
-          "kitchenflow/menu"
-        );
-
-
-        /* ---------------------------------------------------
-           SEND TO CLOUDINARY
-           --------------------------------------------------- */
-
-        const response =
-          await fetch(
-            CLOUDINARY_UPLOAD_URL,
-            {
-              method: "POST",
-
-              body:
-                formData,
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.error?.message ||
-            "Cloudinary image upload failed."
-          );
-
-        }
-
-
-        /* ---------------------------------------------------
-           CLOUDINARY RETURNS secure_url
-           --------------------------------------------------- */
-
-        if (
-          !data.secure_url
-        ) {
-
-          throw new Error(
-            "Cloudinary did not return an image URL."
-          );
-
-        }
-
-
-        /* ---------------------------------------------------
-           SAVE URL IN FORM STATE
-           --------------------------------------------------- */
-
-        setDishForm(
-          (current) => ({
-            ...current,
-
-            imageUrl:
-              data.secure_url,
-          })
-        );
-
-
-      } catch (err) {
-
-        console.error(
-          "Cloudinary upload error:",
-          err
-        );
-
-        setImageUploadError(
-          err.message ||
-          "Unable to upload image."
-        );
-
-
-      } finally {
-
-        setUploadingImage(
-          false
-        );
-
-        event.target.value =
-          "";
-
-      }
-
+    const updatePayload = {
+      name,
+      category,
+      price,
+      imageUrl,
+      isAvailable:
+        Boolean(
+          editDishForm.isAvailable
+        ),
     };
 
 
+    console.log(
+      "Updating menu item:",
+      editingDish._id
+    );
+
+    console.log(
+      "Update payload:",
+      updatePayload
+    );
+
+
+    const response =
+      await fetch(
+        `${API_URL}/api/manager/menu-items/${editingDish._id}`,
+        {
+          method: "PATCH",
+
+          credentials: "include",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body:
+            JSON.stringify(
+              updatePayload
+            ),
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "Menu update response:",
+      data
+    );
+
+
+    if (!response.ok) {
+      throw new Error(
+        data?.message ||
+          "Unable to update menu item"
+      );
+    }
+
+
+    const updatedMenuItem =
+      data?.menuItem ||
+      data?.item;
+
+
+    if (!updatedMenuItem?._id) {
+      throw new Error(
+        "Menu item was updated, but the server did not return the updated item."
+      );
+    }
+
+
+    /*
+      IMPORTANT:
+
+      Update Redux immediately.
+
+      Do not call fetchMenuItems again here.
+      We already have the updated MongoDB document.
+    */
+
+  await dispatch(
+  fetchMenuItems({
+    force: true,
+  })
+).unwrap();
+
+
+    setEditingDish(
+      null
+    );
+
+    setImageUploadError(
+      ""
+    );
+
+
+  } catch (err) {
+
+    console.error(
+      "Menu item update error:",
+      err
+    );
+
+    setMenuError(
+      err?.message ||
+        "Unable to update menu item"
+    );
+
+
+  } finally {
+
+    setSavingDish(
+      false
+    );
+
+  }
+};
   /* =======================================================
-     ADD NEW DISH
+     ADD MENU ITEM
      ======================================================= */
 
-  const addDish =
-    async (
-      event
-    ) => {
+  const addDish = async (event) => {
+    event.preventDefault();
 
-      event.preventDefault();
+    if (!dishForm.name.trim()) {
+      setMenuError("Enter dish name");
+      return;
+    }
 
+    if (!dishForm.category.trim()) {
+      setMenuError("Enter dish category");
+      return;
+    }
 
-      /* ---------------------------------------------------
-         VALIDATE NAME
-         --------------------------------------------------- */
+    if (
+      dishForm.price === "" ||
+      Number.isNaN(Number(dishForm.price)) ||
+      Number(dishForm.price) < 0
+    ) {
+      setMenuError("Enter a valid price");
+      return;
+    }
 
-      if (
-        !dishForm.name.trim()
-      ) {
+    if (uploadingImage) {
+      setMenuError("Please wait until the image upload finishes.");
+      return;
+    }
 
-        setMenuError(
-          "Enter dish name"
-        );
+    try {
+      setAddingDish(true);
+      setMenuError("");
 
-        return;
+      const response = await fetch(
+        `${API_URL}/api/menu`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            name: dishForm.name.trim(),
+            category: dishForm.category.trim(),
+            price: Number(dishForm.price),
+            imageUrl: dishForm.imageUrl.trim(),
+            isAvailable:
+              dishForm.isAvailable,
+          }),
+        }
+      );
 
-      }
+      const data = await response.json();
 
-
-      /* ---------------------------------------------------
-         VALIDATE CATEGORY
-         --------------------------------------------------- */
-
-      if (
-        !dishForm.category.trim()
-      ) {
-
-        setMenuError(
-          "Enter dish category"
-        );
-
-        return;
-
-      }
-
-
-      /* ---------------------------------------------------
-         VALIDATE PRICE
-         --------------------------------------------------- */
-
-      const price =
-        Number(
-          dishForm.price
-        );
-
-
-      if (
-        dishForm.price === "" ||
-        !Number.isFinite(price) ||
-        price < 0
-      ) {
-
-        setMenuError(
-          "Enter a valid price"
-        );
-
-        return;
-
-      }
-
-
-      /* ---------------------------------------------------
-         DON'T ADD WHILE IMAGE IS UPLOADING
-         --------------------------------------------------- */
-
-      if (
-        uploadingImage
-      ) {
-
-        setMenuError(
-          "Please wait until the image finishes uploading."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        setAddingDish(
-          true
-        );
-
-        setMenuError("");
-
-
-        /* -------------------------------------------------
-           SEND MENU ITEM TO OUR BACKEND
-           ------------------------------------------------- */
-
-        const response =
-          await fetch(
-            `${API_URL}/api/manager/menu-items`,
-            {
-              method: "POST",
-
-              credentials: "include",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-
-              body:
-                JSON.stringify({
-
-                  name:
-                    dishForm.name.trim(),
-
-                  category:
-                    dishForm.category.trim(),
-
-                  price,
-
-                  imageUrl:
-                    dishForm.imageUrl.trim(),
-
-                  isAvailable:
-                    Boolean(
-                      dishForm.isAvailable
-                    ),
-
-                }),
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.message ||
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
             "Unable to add menu item"
-          );
-
-        }
-
-
-        /* -------------------------------------------------
-           ADD NEW ITEM TO UI
-           ------------------------------------------------- */
-
-        if (
-          data.menuItem
-        ) {
-
-          setMenuItems(
-            (current) => [
-              data.menuItem,
-              ...current,
-            ]
-          );
-
-        }
-
-
-        /* -------------------------------------------------
-           RESET FORM
-           ------------------------------------------------- */
-
-        setDishForm({
-
-          name: "",
-
-          category: "",
-
-          price: "",
-
-          imageUrl: "",
-
-          isAvailable: true,
-
-        });
-
-
-        setImageUploadError("");
-
-
-        setShowAddDish(
-          false
         );
-
-
-      } catch (err) {
-
-        console.error(
-          "Add dish error:",
-          err
-        );
-
-        setMenuError(
-          err.message ||
-          "Unable to add menu item"
-        );
-
-
-      } finally {
-
-        setAddingDish(
-          false
-        );
-
       }
 
-    };
+      if (data.menuItem) {
+        dispatch(
+          addMenuItem(data.menuItem)
+        );
+      }
+
+      setDishForm({
+        name: "",
+        category: "",
+        price: "",
+        imageUrl: "",
+        isAvailable: true,
+      });
+
+      setShowAddDish(false);
+
+    } catch (err) {
+      console.error(
+        "Add dish error:",
+        err
+      );
+      setMenuError(
+        err.message ||
+          "Unable to add menu item"
+      );
+    } finally {
+      setAddingDish(false);
+    }
+  };
 
 
   /* =======================================================
      NAVIGATION
      ======================================================= */
 
-  const changePage =
-    (page) => {
+  const changePage = (page) => {
 
-      setActivePage(
-        page
-      );
+    setActivePage(page);
 
-      setMenuOpen(
-        false
-      );
+    setMenuOpen(false);
 
-    };
+  };
 
 
   /* =======================================================
      LOGOUT
      ======================================================= */
 
-  const handleLogout =
-    async () => {
+  const handleLogout = async () => {
 
-      try {
+    try {
 
-        await fetch(
-          `${API_URL}/api/auth/logout`,
-          {
-            method: "POST",
+      await fetch(
+        `${API_URL}/api/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
-            credentials:
-              "include",
-          }
-        );
+    } catch (error) {
 
-      } catch (error) {
+      console.error(
+        "Logout error:",
+        error
+      );
 
-        console.error(
-          "Logout error:",
-          error
-        );
+    } finally {
 
-      } finally {
+      window.location.href =
+        "/";
 
-        window.location.href =
-          "/";
+    }
 
-      }
-
-    };
+  };
 
 
   /* =======================================================
      EMPLOYEE CARD
      ======================================================= */
 
-  const EmployeeCard =
-    ({
-      employee,
-      type,
-    }) => {
+  const EmployeeCard = ({
+    employee,
+    type,
+  }) => {
 
-      const isWaiter =
-        type === "waiter";
-
-
-      const currentTable =
-        employee.currentTable !==
-          null &&
-        employee.currentTable !==
-          undefined &&
-        employee.currentTable !==
-          ""
-          ? employee.currentTable
-          : null;
+    const isWaiter =
+      type === "waiter";
 
 
-      const employeeImage =
-        employee.imageUrl ||
-        employee.profileImage ||
-        "";
+    /*
+      Use the value returned by the latest API response.
+      Only null, undefined and "" mean FREE.
+    */
+    const currentTable =
+      employee.currentTable !== null &&
+      employee.currentTable !== undefined &&
+      employee.currentTable !== ""
+        ? employee.currentTable
+        : null;
 
 
-      return (
+    return (
 
-        <div className="employee-card">
+      <div
+        className="
+          employee-card
+        "
+      >
 
-          <div className="employee-card-top">
+        {/* CARD TOP */}
 
-            <div className="employee-avatar">
+        <div
+          className="
+            employee-card-top
+          "
+        >
 
-              {employeeImage ? (
+          <div
+            className="
+              employee-avatar
+            "
+          >
 
-                <img
-                  src={
-                    employeeImage
-                  }
-                  alt={
-                    employee.name
-                  }
-                />
+            {employee.imageUrl || employee.profileImage ? (
 
-              ) : (
+              <img
+                src={
+                  employee.imageUrl || employee.profileImage
+                }
+                alt={
+                  employee.name
+                }
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
 
-                <Icon
-                  name={
-                    isWaiter
-                      ? "user"
-                      : "chef"
-                  }
-                  size={29}
-                />
+            ) : (
 
-              )}
+              <Icon
+                name={
+                  isWaiter
+                    ? "user"
+                    : "chef"
+                }
+                size={29}
+              />
 
-            </div>
-
-
-            <div className="employee-main">
-
-              <div className="employee-name-row">
-
-                <h3>
-                  {employee.name}
-                </h3>
-
-
-                <span className="verified-icon">
-
-                  <Icon
-                    name="check"
-                    size={14}
-                  />
-
-                </span>
-
-              </div>
-
-
-              <p className="employee-role">
-
-                {isWaiter
-                  ? "WAITER"
-                  : "KITCHEN STAFF"}
-
-              </p>
-
-
-              <p className="employee-email">
-
-                {employee.email}
-
-              </p>
-
-            </div>
-
-
-            <div className="active-badge">
-
-              <span className="active-dot" />
-
-              ACTIVE
-
-            </div>
+            )}
 
           </div>
 
 
-          <div className="employee-footer">
+          <div
+            className="
+              employee-main
+            "
+          >
 
-            <div className="status-information">
+            <div
+              className="
+                employee-name-row
+              "
+            >
 
-              <div className="status-label">
+              <h3>
+                {employee.name}
+              </h3>
 
+
+              <span
+                className="
+                  verified-icon
+                "
+              >
                 <Icon
-                  name={
-                    isWaiter
-                      ? "table"
-                      : "activity"
-                  }
+                  name="check"
                   size={14}
                 />
+              </span>
 
-                <span>
-
-                  {isWaiter
-                    ? "Serving Status"
-                    : "Work Status"}
-
-                </span>
-
-              </div>
+            </div>
 
 
-              <p
-                className={
-                  currentTable
-                    ? "table-status busy"
-                    : "table-status free"
+            <p
+              className="
+                employee-role
+              "
+            >
+              {isWaiter
+                ? "WAITER"
+                : "KITCHEN STAFF"}
+            </p>
+
+
+            <p
+              className="
+                employee-email
+              "
+            >
+              {employee.email}
+            </p>
+
+          </div>
+
+
+          <div
+            className="
+              active-badge
+            "
+          >
+
+            <span
+              className="
+                active-dot
+              "
+            />
+
+            ACTIVE
+
+          </div>
+
+        </div>
+
+
+        {/* CARD BOTTOM */}
+
+        <div
+          className="
+            employee-footer
+          "
+        >
+
+          <div
+            className="
+              status-information
+            "
+          >
+
+            <div
+              className="
+                status-label
+              "
+            >
+
+              <Icon
+                name={
+                  isWaiter
+                    ? "table"
+                    : "activity"
                 }
-              >
+                size={14}
+              />
 
+              <span>
                 {isWaiter
+                  ? "Serving Status"
+                  : "Work Status"}
+              </span>
+
+            </div>
+
+
+            <p
+              className={
+                currentTable
+                  ? "table-status busy"
+                  : "table-status free"
+              }
+            >
+
+              {isWaiter
                   ? currentTable !== null
                     ? `TABLE ${String(
                         currentTable
@@ -1817,91 +1169,113 @@ const Manager = () => {
                     : "FREE"
                   : "ON DUTY"}
 
-              </p>
-
-            </div>
-
-
-            <div className="last-active">
-
-              <Icon
-                name="clock"
-                size={12}
-              />
-
-              <span>
-
-                Last active{" "}
-
-                {formatTime(
-                  employee.lastActiveAt
-                )}
-
-              </span>
-
-            </div>
+            </p>
 
           </div>
 
-        </div>
 
-      );
-
-    };
-
-
-  /* =======================================================
-     STAT CARD
-     ======================================================= */
-
-  const StatCard =
-    ({
-      icon,
-      title,
-      value,
-      subtitle,
-    }) => (
-
-      <div className="stat-card">
-
-        <div className="stat-top">
-
-          <div className="stat-icon">
+          <div
+            className="
+              last-active
+            "
+          >
 
             <Icon
-              name={icon}
-              size={22}
+              name="clock"
+              size={12}
             />
 
+            <span>
+              Last active{" "}
+              {formatTime(
+                employee.lastActiveAt
+              )}
+            </span>
+
           </div>
-
-
-          <span className="stat-live">
-            LIVE
-          </span>
-
-        </div>
-
-
-        <div className="stat-content">
-
-          <strong>
-            {value}
-          </strong>
-
-          <h3>
-            {title}
-          </h3>
-
-          <p>
-            {subtitle}
-          </p>
 
         </div>
 
       </div>
 
     );
+
+  };
+
+
+  /* =======================================================
+     STAT CARD
+     ======================================================= */
+
+  const StatCard = ({
+    icon,
+    title,
+    value,
+    subtitle,
+  }) => (
+
+    <div
+      className="
+        stat-card
+      "
+    >
+
+      <div
+        className="
+          stat-top
+        "
+      >
+
+        <div
+          className="
+            stat-icon
+          "
+        >
+
+          <Icon
+            name={icon}
+            size={22}
+          />
+
+        </div>
+
+
+        <span
+          className="
+            stat-live
+          "
+        >
+          LIVE
+        </span>
+
+      </div>
+
+
+      <div
+        className="
+          stat-content
+        "
+      >
+
+        <strong>
+          {value}
+        </strong>
+
+
+        <h3>
+          {title}
+        </h3>
+
+
+        <p>
+          {subtitle}
+        </p>
+
+      </div>
+
+    </div>
+
+  );
 
 
   /* =======================================================
@@ -1912,9 +1286,17 @@ const Manager = () => {
 
     return (
 
-      <div className="manager-loading">
+      <div
+        className="
+          manager-loading
+        "
+      >
 
-        <div className="loading-logo">
+        <div
+          className="
+            loading-logo
+          "
+        >
 
           <Icon
             name="chef"
@@ -1925,13 +1307,10 @@ const Manager = () => {
 
 
         <h2>
-
           Kitchen
-
           <span>
             Flow
           </span>
-
         </h2>
 
 
@@ -1952,8 +1331,11 @@ const Manager = () => {
 
   return (
 
-    <div className="manager-page">
-
+    <div
+      className="
+        manager-page
+      "
+    >
 
       {/* ===================================================
           MOBILE OVERLAY
@@ -1962,11 +1344,11 @@ const Manager = () => {
       {menuOpen && (
 
         <div
-          className="sidebar-overlay"
+          className="
+            sidebar-overlay
+          "
           onClick={() =>
-            setMenuOpen(
-              false
-            )
+            setMenuOpen(false)
           }
         />
 
@@ -1980,17 +1362,25 @@ const Manager = () => {
       <aside
         className={`
           manager-sidebar
-          ${
-            menuOpen
-              ? "sidebar-open"
-              : ""
-          }
+          ${menuOpen
+            ? "sidebar-open"
+            : ""}
         `}
       >
 
-        <div className="sidebar-brand">
+        {/* BRAND */}
 
-          <div className="brand-icon">
+        <div
+          className="
+            sidebar-brand
+          "
+        >
+
+          <div
+            className="
+              brand-icon
+            "
+          >
 
             <Icon
               name="chef"
@@ -2000,15 +1390,17 @@ const Manager = () => {
           </div>
 
 
-          <div className="brand-text">
+          <div
+            className="
+              brand-text
+            "
+          >
 
             <h2>
-
               KITCHEN
               <span>
                 FLOW
               </span>
-
             </h2>
 
 
@@ -2020,11 +1412,11 @@ const Manager = () => {
 
 
           <button
-            className="mobile-close"
+            className="
+              mobile-close
+            "
             onClick={() =>
-              setMenuOpen(
-                false
-              )
+              setMenuOpen(false)
             }
           >
 
@@ -2040,9 +1432,17 @@ const Manager = () => {
 
         {/* NAVIGATION */}
 
-        <div className="sidebar-section">
+        <div
+          className="
+            sidebar-section
+          "
+        >
 
-          <p className="sidebar-title">
+          <p
+            className="
+              sidebar-title
+            "
+          >
             WORKSPACE
           </p>
 
@@ -2051,16 +1451,13 @@ const Manager = () => {
             className={`
               sidebar-link
               ${
-                activePage ===
-                "home"
+                activePage === "home"
                   ? "active"
                   : ""
               }
             `}
             onClick={() =>
-              changePage(
-                "home"
-              )
+              changePage("home")
             }
           >
 
@@ -2080,16 +1477,13 @@ const Manager = () => {
             className={`
               sidebar-link
               ${
-                activePage ===
-                "orders"
+                activePage === "orders"
                   ? "active"
                   : ""
               }
             `}
             onClick={() =>
-              changePage(
-                "orders"
-              )
+              changePage("orders")
             }
           >
 
@@ -2113,16 +1507,13 @@ const Manager = () => {
             className={`
               sidebar-link
               ${
-                activePage ===
-                "menu"
+                activePage === "menu"
                   ? "active"
                   : ""
               }
             `}
             onClick={() =>
-              changePage(
-                "menu"
-              )
+              changePage("menu")
             }
           >
 
@@ -2146,33 +1537,30 @@ const Manager = () => {
 
         {/* SIDEBAR BOTTOM */}
 
-        <div className="sidebar-bottom">
+        <div
+          className="
+            sidebar-bottom
+          "
+        >
 
           {manager && (
 
-            <div className="sidebar-user">
+            <div
+              className="
+                sidebar-user
+              "
+            >
 
-              <div className="sidebar-user-icon">
+              <div
+                className="
+                  sidebar-user-icon
+                "
+              >
 
-                {manager.imageUrl ? (
-
-                  <img
-                    src={
-                      manager.imageUrl
-                    }
-                    alt={
-                      manager.name
-                    }
-                  />
-
-                ) : (
-
-                  <Icon
-                    name="user"
-                    size={17}
-                  />
-
-                )}
+                <Icon
+                  name="user"
+                  size={17}
+                />
 
               </div>
 
@@ -2195,7 +1583,9 @@ const Manager = () => {
 
 
           <button
-            className="logout-button"
+            className="
+              logout-button
+            "
             onClick={
               handleLogout
             }
@@ -2216,22 +1606,35 @@ const Manager = () => {
 
 
       {/* ===================================================
-          MAIN
+          MAIN AREA
           =================================================== */}
 
-      <div className="manager-main">
-
+      <div
+        className="
+          manager-main
+        "
+      >
 
         {/* =================================================
-            HEADER
+            TOP HEADER
             ================================================= */}
 
-        <header className="manager-header">
+        <header
+          className="
+            manager-header
+          "
+        >
 
-          <div className="header-left">
+          <div
+            className="
+              header-left
+            "
+          >
 
             <button
-              className="menu-button"
+              className="
+                menu-button
+              "
               onClick={() =>
                 setMenuOpen(
                   !menuOpen
@@ -2247,7 +1650,11 @@ const Manager = () => {
             </button>
 
 
-            <div className="header-heading">
+            <div
+              className="
+                header-heading
+              "
+            >
 
               <span>
                 MANAGER DASHBOARD
@@ -2256,8 +1663,7 @@ const Manager = () => {
 
               <h1>
 
-                {activePage ===
-                "home"
+                {activePage === "home"
                   ? "Overview"
                   : activePage ===
                     "orders"
@@ -2271,37 +1677,31 @@ const Manager = () => {
           </div>
 
 
-          <div className="header-right">
+          <div
+            className="
+              header-right
+            "
+          >
 
             <button
               type="button"
-              className="refresh-button"
-              onClick={() => {
+              className="
+                refresh-button
+              "
+              onClick={async () => {
+                await loadActiveUsers(true);
 
-                fetchActiveUsers();
-
-                if (
-                  activePage ===
-                  "orders"
-                ) {
-
-                  fetchOrders();
-
+                if (activePage === "orders") {
+                  await loadOrders(true);
                 }
 
-                if (
-                  activePage ===
-                  "menu"
-                ) {
-
-                  fetchMenuItems();
-
+                if (activePage === "menu") {
+                  await loadMenuItems(true);
                 }
-
               }}
-              disabled={
-                refreshing
-              }
+              disabled={refreshing}
+              aria-label="Refresh active users"
+              title="Refresh active users"
             >
 
               <span
@@ -2311,24 +1711,29 @@ const Manager = () => {
                     : ""
                 }
               >
-
                 <Icon
                   name="refresh"
                   size={17}
                 />
-
               </span>
 
             </button>
 
 
-            <div className="header-user">
+            <div
+              className="
+                header-user
+              "
+            >
 
-              <div className="header-user-text">
+              <div
+                className="
+                  header-user-text
+                "
+              >
 
                 <strong>
-                  {manager?.name ||
-                    "Manager"}
+                  {managerName}
                 </strong>
 
                 <span>
@@ -2338,26 +1743,31 @@ const Manager = () => {
               </div>
 
 
-              <div className="header-user-avatar">
+              <div
+                className="
+                  header-user-avatar
+                "
+              >
 
-                {manager?.imageUrl ? (
-
+                {managerImage ? (
                   <img
-                    src={
-                      manager.imageUrl
-                    }
-                    alt={
-                      manager.name
-                    }
+                    src={managerImage}
+                    alt={managerName}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                    onError={(event) => {
+                      event.currentTarget.style.display = "none";
+                    }}
                   />
-
                 ) : (
-
                   <Icon
                     name="user"
                     size={18}
                   />
-
                 )}
 
               </div>
@@ -2373,13 +1783,24 @@ const Manager = () => {
             CONTENT
             ================================================= */}
 
-        <main className="manager-content">
+        <main
+          className="
+            manager-content
+          "
+        >
 
+          {/* ERROR */}
 
           {error && (
 
-            <div className="error-message">
+            <div
+              className="
+                error-message
+              "
+            >
+
               {error}
+
             </div>
 
           )}
@@ -2389,19 +1810,36 @@ const Manager = () => {
               HOME
               ================================================= */}
 
-          {activePage ===
-            "home" && (
+          {activePage === "home" && (
 
             <>
 
-              <section className="dashboard-hero">
+              {/* HERO */}
 
-                <div className="hero-glow" />
+              <section
+                className="
+                  dashboard-hero
+                "
+              >
+
+                <div
+                  className="
+                    hero-glow
+                  "
+                />
 
 
-                <div className="hero-content">
+                <div
+                  className="
+                    hero-content
+                  "
+                >
 
-                  <div className="hero-label">
+                  <div
+                    className="
+                      hero-label
+                    "
+                  >
 
                     <span />
 
@@ -2423,19 +1861,25 @@ const Manager = () => {
 
 
                   <p>
-
                     Monitor your active team
                     and keep track of restaurant
                     floor activity from one place.
-
                   </p>
 
                 </div>
 
 
-                <div className="restaurant-status">
+                <div
+                  className="
+                    restaurant-status
+                  "
+                >
 
-                  <span className="live-pulse" />
+                  <span
+                    className="
+                      live-pulse
+                    "
+                  />
 
                   <div>
 
@@ -2456,7 +1900,11 @@ const Manager = () => {
 
               {/* STATS */}
 
-              <section className="stats-grid">
+              <section
+                className="
+                  stats-grid
+                "
+              >
 
                 <StatCard
                   icon="user"
@@ -2517,9 +1965,17 @@ const Manager = () => {
 
               {/* MANAGER */}
 
-              <section className="dashboard-section">
+              <section
+                className="
+                  dashboard-section
+                "
+              >
 
-                <div className="section-heading">
+                <div
+                  className="
+                    section-heading
+                  "
+                >
 
                   <div>
 
@@ -2528,13 +1984,10 @@ const Manager = () => {
                     </span>
 
                     <h2>
-
                       Active{" "}
-
                       <strong>
                         Manager
                       </strong>
-
                     </h2>
 
                   </div>
@@ -2549,54 +2002,76 @@ const Manager = () => {
 
                 {manager ? (
 
-                  <div className="manager-card">
+                  <div
+                    className="
+                      manager-card
+                    "
+                  >
 
-                    <div className="manager-card-avatar">
+                    <div
+                      className="
+                        manager-card-avatar
+                      "
+                    >
 
-                      {manager.imageUrl ? (
-
+                      {managerImage ? (
                         <img
-                          src={
-                            manager.imageUrl
-                          }
-                          alt={
-                            manager.name
-                          }
+                          src={managerImage}
+                          alt={managerName}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            display: "block",
+                          }}
+                          onError={(event) => {
+                            event.currentTarget.style.display = "none";
+                          }}
                         />
-
                       ) : (
-
                         <Icon
                           name="user"
                           size={36}
                         />
-
                       )}
 
                     </div>
 
 
-                    <div className="manager-card-info">
+                    <div
+                      className="
+                        manager-card-info
+                      "
+                    >
 
-                      <div className="manager-name-line">
+                      <div
+                        className="
+                          manager-name-line
+                        "
+                      >
 
                         <h3>
                           {manager.name}
                         </h3>
 
 
-                        <span className="online-pill">
-
+                        <span
+                          className="
+                            online-pill
+                          "
+                        >
                           <i />
-
                           ONLINE
-
                         </span>
 
                       </div>
 
 
-                      <span className="gold-role">
+                      <span
+                        className="
+                          gold-role
+                        "
+                      >
                         MANAGER
                       </span>
 
@@ -2608,7 +2083,11 @@ const Manager = () => {
                     </div>
 
 
-                    <div className="manager-activity">
+                    <div
+                      className="
+                        manager-activity
+                      "
+                    >
 
                       <Icon
                         name="clock"
@@ -2635,7 +2114,11 @@ const Manager = () => {
 
                 ) : (
 
-                  <div className="empty-state">
+                  <div
+                    className="
+                      empty-state
+                    "
+                  >
                     No active manager
                   </div>
 
@@ -2646,9 +2129,17 @@ const Manager = () => {
 
               {/* WAITERS */}
 
-              <section className="dashboard-section">
+              <section
+                className="
+                  dashboard-section
+                "
+              >
 
-                <div className="section-heading">
+                <div
+                  className="
+                    section-heading
+                  "
+                >
 
                   <div>
 
@@ -2657,19 +2148,20 @@ const Manager = () => {
                     </span>
 
                     <h2>
-
                       Active{" "}
-
                       <strong>
                         Waiters
                       </strong>
-
                     </h2>
 
                   </div>
 
 
-                  <div className="section-count">
+                  <div
+                    className="
+                      section-count
+                    "
+                  >
 
                     <i />
 
@@ -2682,15 +2174,16 @@ const Manager = () => {
                 </div>
 
 
-                {waiters.length >
-                0 ? (
+                {waiters.length > 0 ? (
 
-                  <div className="employee-grid">
+                  <div
+                    className="
+                      employee-grid
+                    "
+                  >
 
                     {waiters.map(
-                      (
-                        waiter
-                      ) => (
+                      (waiter) => (
 
                         <EmployeeCard
                           key={
@@ -2709,7 +2202,11 @@ const Manager = () => {
 
                 ) : (
 
-                  <div className="empty-state">
+                  <div
+                    className="
+                      empty-state
+                    "
+                  >
                     No active waiters
                   </div>
 
@@ -2720,9 +2217,17 @@ const Manager = () => {
 
               {/* KITCHEN */}
 
-              <section className="dashboard-section">
+              <section
+                className="
+                  dashboard-section
+                "
+              >
 
-                <div className="section-heading">
+                <div
+                  className="
+                    section-heading
+                  "
+                >
 
                   <div>
 
@@ -2731,19 +2236,20 @@ const Manager = () => {
                     </span>
 
                     <h2>
-
                       Active{" "}
-
                       <strong>
                         Kitchen Staff
                       </strong>
-
                     </h2>
 
                   </div>
 
 
-                  <div className="section-count">
+                  <div
+                    className="
+                      section-count
+                    "
+                  >
 
                     <i />
 
@@ -2756,15 +2262,16 @@ const Manager = () => {
                 </div>
 
 
-                {kitchenStaff.length >
-                0 ? (
+                {kitchenStaff.length > 0 ? (
 
-                  <div className="employee-grid">
+                  <div
+                    className="
+                      employee-grid
+                    "
+                  >
 
                     {kitchenStaff.map(
-                      (
-                        cook
-                      ) => (
+                      (cook) => (
 
                         <EmployeeCard
                           key={
@@ -2783,7 +2290,11 @@ const Manager = () => {
 
                 ) : (
 
-                  <div className="empty-state">
+                  <div
+                    className="
+                      empty-state
+                    "
+                  >
                     No active kitchen staff
                   </div>
 
@@ -2792,7 +2303,13 @@ const Manager = () => {
               </section>
 
 
-              <footer className="dashboard-footer">
+              {/* FOOTER */}
+
+              <footer
+                className="
+                  dashboard-footer
+                "
+              >
 
                 <Icon
                   name="refresh"
@@ -2800,7 +2317,6 @@ const Manager = () => {
                 />
 
                 Last updated{" "}
-
                 {formatTime(
                   lastUpdated
                 )}
@@ -2816,524 +2332,286 @@ const Manager = () => {
               ORDERS
               ================================================= */}
 
-          {activePage ===
-            "orders" && (
-
+          {activePage === "orders" && (
             <section className="manager-page-section">
 
               <div className="page-toolbar">
-
                 <div>
-
                   <span className="page-kicker">
                     ORDER MANAGEMENT
                   </span>
-
                   <h2 className="page-title">
                     Restaurant Orders
                   </h2>
-
                   <p className="page-description">
-
-                    Monitor every order, table,
-                    item, instruction and current
-                    status.
-
+                    Monitor every order, table, item,
+                    instruction and current status.
                   </p>
-
                 </div>
-
 
                 <button
                   type="button"
                   className="page-refresh-button"
-                  onClick={
-                    fetchOrders
-                  }
-                  disabled={
-                    ordersLoading
-                  }
+                  onClick={() => loadOrders(true)}
+                  disabled={ordersLoading}
                 >
-
                   <Icon
                     name="refresh"
                     size={16}
                   />
-
                   {ordersLoading
                     ? "Refreshing..."
                     : "Refresh"}
-
                 </button>
-
               </div>
 
-
               <div className="order-filter-row">
-
                 {[
                   "ALL",
                   "ORDERED",
                   "PROCESSING",
                   "COOKED",
                   "SERVED",
-                ].map(
-                  (
-                    status
-                  ) => (
-
-                    <button
-                      key={
-                        status
-                      }
-                      type="button"
-                      className={
-                        orderFilter ===
-                        status
-                          ? "order-filter active"
-                          : "order-filter"
-                      }
-                      onClick={() =>
-                        setOrderFilter(
-                          status
-                        )
-                      }
-                    >
-
-                      {status}
-
-                    </button>
-
-                  )
-                )}
-
+                ].map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    className={
+                      orderFilter === status
+                        ? "order-filter active"
+                        : "order-filter"
+                    }
+                    onClick={() =>
+                      setOrderFilter(status)
+                    }
+                  >
+                    {status}
+                  </button>
+                ))}
               </div>
 
-
               {ordersError && (
-
                 <div className="error-message">
                   {ordersError}
                 </div>
-
               )}
 
-
-              {ordersLoading &&
-              orders.length ===
-                0 ? (
-
+              {ordersLoading && orders.length === 0 ? (
                 <div className="page-loading-state">
-
                   <Icon
                     name="refresh"
                     size={28}
                   />
-
-                  <p>
-                    Loading orders...
-                  </p>
-
+                  <p>Loading orders...</p>
                 </div>
+              ) : (() => {
+                const filteredOrders =
+                  orders.filter((order) => {
+                    if (orderFilter === "ALL") {
+                      return true;
+                    }
 
-              ) : (
+                    const status = String(
+                      order.displayStatus ||
+                        order.status ||
+                        "NEW"
+                    ).toUpperCase();
 
-                (() => {
+                    return status === orderFilter;
+                  });
 
-                  const filteredOrders =
-                    orders.filter(
-                      (
-                        order
-                      ) => {
-
-                        if (
-                          orderFilter ===
-                          "ALL"
-                        ) {
-
-                          return true;
-
-                        }
-
-
-                        const status =
-                          String(
-                            order.displayStatus ||
-                            order.status ||
-                            "ORDERED"
-                          ).toUpperCase();
-
-
-                        return (
-                          status ===
-                          orderFilter
-                        );
-
-                      }
-                    );
-
-
-                  if (
-                    filteredOrders.length ===
-                    0
-                  ) {
-
-                    return (
-
-                      <div className="empty-state">
-                        No orders found.
-                      </div>
-
-                    );
-
-                  }
-
-
+                if (filteredOrders.length === 0) {
                   return (
-
-                    <div className="orders-grid">
-
-                      {filteredOrders.map(
-                        (
-                          order
-                        ) => {
-
-                          const status =
-                            String(
-                              order.displayStatus ||
-                              order.status ||
-                              "ORDERED"
-                            ).toUpperCase();
-
-
-                          const total =
-                            Number(
-                              order.total
-                            ) ||
-                            (
-                              Array.isArray(
-                                order.items
-                              )
-                                ? order.items.reduce(
-                                    (
-                                      sum,
-                                      item
-                                    ) =>
-                                      sum +
-                                      (
-                                        Number(
-                                          item.unitPrice
-                                        ) ||
-                                        0
-                                      ) *
-                                      (
-                                        Number(
-                                          item.quantity
-                                        ) ||
-                                        1
-                                      ),
-                                    0
-                                  )
-                                : 0
-                            );
-
-
-                          return (
-
-                            <article
-                              key={
-                                order._id
-                              }
-                              className="order-card"
-                            >
-
-                              <div className="order-card-header">
-
-                                <div>
-
-                                  <span className="order-table-label">
-                                    TABLE
-                                  </span>
-
-                                  <h3>
-
-                                    {order.tableNumber !==
-                                      null &&
-                                    order.tableNumber !==
-                                      undefined
-                                      ? `TABLE ${String(
-                                          order.tableNumber
-                                        ).padStart(
-                                          2,
-                                          "0"
-                                        )}`
-                                      : "TABLE --"}
-
-                                  </h3>
-
-                                  <p>
-
-                                    Order #
-
-                                    {String(
-                                      order._id
-                                    ).slice(
-                                      -4
-                                    )}
-
-                                  </p>
-
-                                </div>
-
-
-                                <span
-                                  className={`order-status status-${status.toLowerCase()}`}
-                                >
-
-                                  {status ===
-                                  "READY"
-                                    ? "COOKED"
-                                    : status}
-
-                                </span>
-
-                              </div>
-
-
-                              <div className="order-meta-row">
-
-                                <span>
-                                  {formatDateTime(
-                                    order.createdAt
-                                  )}
-                                </span>
-
-
-                                {order.createdByUser?.name && (
-
-                                  <span>
-                                    By{" "}
-                                    {
-                                      order.createdByUser.name
-                                    }
-                                  </span>
-
-                                )}
-
-                              </div>
-
-
-                              <div className="order-items-list">
-
-                                {Array.isArray(
-                                  order.items
-                                ) &&
-                                  order.items.map(
-                                    (
-                                      item,
-                                      index
-                                    ) => (
-
-                                      <div
-                                        className="order-item-row"
-                                        key={`${order._id}-${index}`}
-                                      >
-
-                                        <div className="order-item-image">
-
-                                          {item.imageUrl ? (
-
-                                            <img
-                                              src={
-                                                item.imageUrl
-                                              }
-                                              alt={
-                                                item.name ||
-                                                "Dish"
-                                              }
-                                            />
-
-                                          ) : (
-
-                                            <Icon
-                                              name="menuItems"
-                                              size={24}
-                                            />
-
-                                          )}
-
-                                        </div>
-
-
-                                        <div className="order-item-info">
-
-                                          <h4>
-                                            {item.name ||
-                                              "Unknown Dish"}
-                                          </h4>
-
-
-                                          <div className="order-item-details">
-
-                                            <span>
-                                              Qty{" "}
-                                              {item.quantity ||
-                                                1}
-                                            </span>
-
-                                            <span>
-                                              ₹
-                                              {Number(
-                                                item.unitPrice ||
-                                                  0
-                                              ).toFixed(
-                                                0
-                                              )}
-                                            </span>
-
-                                          </div>
-
-
-                                          {item.instruction && (
-
-                                            <p className="order-instruction">
-
-                                              <strong>
-                                                Note:
-                                              </strong>{" "}
-
-                                              {
-                                                item.instruction
-                                              }
-
-                                            </p>
-
-                                          )}
-
-                                        </div>
-
-
-                                        <strong className="order-item-total">
-
-                                          ₹
-                                          {(
-                                            (
-                                              Number(
-                                                item.unitPrice
-                                              ) ||
-                                              0
-                                            ) *
-                                            (
-                                              Number(
-                                                item.quantity
-                                              ) ||
-                                              1
-                                            )
-                                          ).toFixed(
-                                            0
-                                          )}
-
-                                        </strong>
-
-                                      </div>
-
-                                    )
-                                  )}
-
-                              </div>
-
-
-                              <div className="order-total-row">
-
-                                <span>
-                                  Total
-                                </span>
-
-                                <strong>
-                                  ₹
-                                  {total.toFixed(
-                                    0
-                                  )}
-                                </strong>
-
-                              </div>
-
-
-                              <div className="order-status-controls">
-
-                                {[
-                                  "ORDERED",
-                                  "PROCESSING",
-                                  "COOKED",
-                                  "SERVED",
-                                ].map(
-                                  (
-                                    nextStatus
-                                  ) => (
-
-                                    <button
-                                      key={
-                                        nextStatus
-                                      }
-                                      type="button"
-                                      className={
-                                        status ===
-                                          nextStatus ||
-                                        (
-                                          nextStatus ===
-                                            "COOKED" &&
-                                          status ===
-                                            "READY"
-                                        )
-                                          ? "selected"
-                                          : ""
-                                      }
-                                      disabled={
-                                        updatingOrderId ===
-                                          order._id ||
-                                        status ===
-                                          nextStatus ||
-                                        (
-                                          nextStatus ===
-                                            "COOKED" &&
-                                          status ===
-                                            "READY"
-                                        )
-                                      }
-                                      onClick={() =>
-                                        updateOrderStatus(
-                                          order._id,
-                                          nextStatus
-                                        )
-                                      }
-                                    >
-
-                                      {nextStatus}
-
-                                    </button>
-
-                                  )
-                                )}
-
-                              </div>
-
-                            </article>
-
-                          );
-
-                        }
-                      )}
-
+                    <div className="empty-state">
+                      No orders found.
                     </div>
-
                   );
+                }
 
-                })()
+                return (
+                  <div className="orders-grid">
+                    {filteredOrders.map((order) => {
+                      const status = String(
+                        order.displayStatus ||
+                          order.status ||
+                          "NEW"
+                      ).toUpperCase();
 
-              )}
+                      const total =
+                        Number(order.total) ||
+                        (Array.isArray(order.items)
+                          ? order.items.reduce(
+                              (sum, item) =>
+                                sum +
+                                (Number(item.unitPrice) || 0) *
+                                  (Number(item.quantity) || 1),
+                              0
+                            )
+                          : 0);
 
+                      return (
+                        <article
+                          key={order._id}
+                          className="order-card"
+                        >
+                          <div className="order-card-header">
+                            <div>
+                              <span className="order-table-label">
+                                TABLE
+                              </span>
+                              <h3>
+                                {order.tableNumber !== null &&
+                                order.tableNumber !== undefined
+                                  ? `TABLE ${String(
+                                      order.tableNumber
+                                    ).padStart(2, "0")}`
+                                  : "TABLE --"}
+                              </h3>
+                              <p>
+                                Order #{String(order._id).slice(-4)}
+                              </p>
+                            </div>
+
+                            <span
+                              className={`order-status status-${status.toLowerCase()}`}
+                            >
+                              {status === "READY"
+                                ? "COOKED"
+                                : status}
+                            </span>
+                          </div>
+
+                          <div className="order-meta-row">
+                            <span>
+                              {order.createdAt
+                                ? new Date(
+                                    order.createdAt
+                                  ).toLocaleString([], {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : "--"}
+                            </span>
+
+                            {order.createdByUser?.name && (
+                              <span>
+                                By {order.createdByUser.name}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="order-items-list">
+                            {Array.isArray(order.items) &&
+                              order.items.map((item, index) => (
+                                <div
+                                  className="order-item-row"
+                                  key={`${order._id}-${index}`}
+                                >
+                                  <div className="order-item-image">
+                                    {item.imageUrl ? (
+                                      <img
+                                        src={item.imageUrl}
+                                        alt={item.name || "Dish"}
+                                      />
+                                    ) : (
+                                      <Icon
+                                        name="menuItems"
+                                        size={24}
+                                      />
+                                    )}
+                                  </div>
+
+                                  <div className="order-item-info">
+                                    <h4>
+                                      {item.name ||
+                                        "Unknown Dish"}
+                                    </h4>
+
+                                    <div className="order-item-details">
+                                      <span>
+                                        Qty {item.quantity || 1}
+                                      </span>
+                                      <span>
+                                        ₹{Number(
+                                          item.unitPrice || 0
+                                        ).toFixed(0)}
+                                      </span>
+                                    </div>
+
+                                    {item.instruction && (
+                                      <p className="order-instruction">
+                                        <strong>Note:</strong>{" "}
+                                        {item.instruction}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  <strong className="order-item-total">
+                                    ₹{(
+                                      (Number(
+                                        item.unitPrice
+                                      ) || 0) *
+                                      (Number(
+                                        item.quantity
+                                      ) || 1)
+                                    ).toFixed(0)}
+                                  </strong>
+                                </div>
+                              ))}
+                          </div>
+
+                          <div className="order-total-row">
+                            <span>Total</span>
+                            <strong>
+                              ₹{total.toFixed(0)}
+                            </strong>
+                          </div>
+
+                          <div className="order-status-controls">
+                            {[
+                              "ORDERED",
+                              "PROCESSING",
+                              "COOKED",
+                              "SERVED",
+                            ].map((nextStatus) => (
+                              <button
+                                key={nextStatus}
+                                type="button"
+                                className={
+                                  status === nextStatus ||
+                                  (nextStatus === "COOKED" &&
+                                    status === "READY")
+                                    ? "selected"
+                                    : ""
+                                }
+                                disabled={
+                                  updatingOrderId ===
+                                    order._id ||
+                                  status === nextStatus ||
+                                  (nextStatus === "COOKED" &&
+                                    status === "READY")
+                                }
+                                onClick={() =>
+                                  updateOrderStatus(
+                                    order._id,
+                                    nextStatus
+                                  )
+                                }
+                              >
+                                {nextStatus}
+                              </button>
+                            ))}
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </section>
-
           )}
 
 
@@ -3341,860 +2619,406 @@ const Manager = () => {
               MENU
               ================================================= */}
 
-          {activePage ===
-            "menu" && (
-
+          {activePage === "menu" && (
             <section className="manager-page-section">
 
-
-              {/* =================================================
-                  MENU HEADER
-                  ================================================= */}
-
               <div className="page-toolbar">
-
                 <div>
-
                   <span className="page-kicker">
                     RESTAURANT MENU
                   </span>
-
                   <h2 className="page-title">
                     Menu Items
                   </h2>
-
                   <p className="page-description">
-
-                    Manage dishes, categories,
-                    prices, images and availability.
-
+                    Manage dishes, categories, prices,
+                    images and availability.
                   </p>
-
                 </div>
-
 
                 <button
                   type="button"
                   className="add-dish-button"
                   onClick={() => {
-
                     setMenuError("");
-
-                    setImageUploadError("");
-
-                    setShowAddDish(
-                      true
-                    );
-
+                    setShowAddDish(true);
                   }}
                 >
-
                   + Add New Dish
-
                 </button>
-
               </div>
 
-
               {menuError && (
-
                 <div className="error-message">
                   {menuError}
                 </div>
-
               )}
 
-
-              {/* =================================================
-                  ADD DISH MODAL
-                  ================================================= */}
-
               {showAddDish && (
-
                 <div className="dish-modal-backdrop">
-
                   <div className="dish-modal">
-
-
                     <div className="dish-modal-header">
-
                       <div>
-
                         <span className="page-kicker">
                           MENU MANAGEMENT
                         </span>
-
-                        <h3>
-                          Add New Dish
-                        </h3>
-
+                        <h3>Add New Dish</h3>
                       </div>
-
 
                       <button
                         type="button"
                         className="modal-close-button"
-                        onClick={() => {
-
-                          if (
-                            !addingDish &&
-                            !uploadingImage
-                          ) {
-
-                            setShowAddDish(
-                              false
-                            );
-
-                            setImageUploadError("");
-
-                          }
-
-                        }}
+                        onClick={() =>
+                          setShowAddDish(false)
+                        }
                       >
-
                         ×
-
                       </button>
-
                     </div>
 
-
-                    <form
-                      onSubmit={
-                        addDish
-                      }
-                    >
-
-
-                      {/* DISH NAME */}
-
+                    <form onSubmit={addDish}>
                       <label>
-
                         Dish Name
-
                         <input
                           type="text"
-                          value={
-                            dishForm.name
+                          value={dishForm.name}
+                          onChange={(event) =>
+                            setDishForm((current) => ({
+                              ...current,
+                              name: event.target.value,
+                            }))
                           }
-                          onChange={(
-                            event
-                          ) =>
-                            setDishForm(
-                              (
-                                current
-                              ) => ({
-                                ...current,
-
-                                name:
-                                  event.target.value,
-                              })
-                            )
-                          }
-                          placeholder="e.g. Chicken Biryani"
+                          placeholder="e.g. Veg Biryani"
                         />
-
                       </label>
 
-
-                      {/* CATEGORY */}
-
                       <label>
-
                         Category
-
-                        <input
-                          type="text"
-                          value={
-                            dishForm.category
-                          }
-                          onChange={(
-                            event
-                          ) =>
-                            setDishForm(
-                              (
-                                current
-                              ) => ({
-                                ...current,
-
-                                category:
-                                  event.target.value,
-                              })
-                            )
-                          }
-                          placeholder="e.g. Main Course"
-                        />
-
+                        <select
+                          value={dishForm.category}
+                          onChange={(event) => setDishForm((current) => ({ ...current, category: event.target.value }))}
+                        >
+                          <option value="">Select existing category</option>
+                          {menuCategories.map((category) => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
                       </label>
 
-
-                      {/* PRICE */}
-
                       <label>
-
                         Price
-
                         <input
                           type="number"
                           min="0"
                           step="1"
-                          value={
-                            dishForm.price
-                          }
-                          onChange={(
-                            event
-                          ) =>
-                            setDishForm(
-                              (
-                                current
-                              ) => ({
-                                ...current,
-
-                                price:
-                                  event.target.value,
-                              })
-                            )
+                          value={dishForm.price}
+                          onChange={(event) =>
+                            setDishForm((current) => ({
+                              ...current,
+                              price: event.target.value,
+                            }))
                           }
                           placeholder="220"
                         />
-
                       </label>
-
-
-                      {/* =================================================
-                          CLOUDINARY IMAGE
-                          ================================================= */}
 
                       <label>
-
                         Dish Image
-
-                        <div className="cloudinary-upload-box">
-
-                          <input
-                            id="dish-image-upload"
-                            type="file"
-                            accept="image/png,image/jpeg,image/jpg,image/webp"
-                            onChange={
-                              uploadDishImage
-                            }
-                            disabled={
-                              uploadingImage ||
-                              addingDish
-                            }
-                          />
-
-
-                          <label
-                            htmlFor="dish-image-upload"
-                            className="cloudinary-upload-button"
-                          >
-
-                            <Icon
-                              name="upload"
-                              size={20}
-                            />
-
-                            {uploadingImage
-                              ? "Uploading Image..."
-                              : "Choose Food Image"}
-
-                          </label>
-
-
-                          <span className="cloudinary-upload-help">
-
-                            JPG, PNG or WEBP
-                            {" "}
-                            •
-                            {" "}
-                            Max 5 MB
-
-                          </span>
-
-                        </div>
-
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp"
+                          onChange={(event) => uploadDishImage(event, "add")}
+                          disabled={uploadingImage || addingDish}
+                        />
+                        <small>Choose an image to upload directly to Cloudinary (max 5 MB).</small>
                       </label>
-
-
-                      {/* IMAGE UPLOAD ERROR */}
 
                       {imageUploadError && (
-
-                        <div className="error-message">
-
-                          {imageUploadError}
-
-                        </div>
-
+                        <div className="error-message">{imageUploadError}</div>
                       )}
-
-
-                      {/* IMAGE PREVIEW */}
 
                       {dishForm.imageUrl && (
-
                         <div className="dish-image-preview">
-
                           <img
-                            src={
-                              dishForm.imageUrl
-                            }
+                            src={dishForm.imageUrl}
                             alt="Dish preview"
+                            onError={(event) => {
+                              event.currentTarget.style.display =
+                                "none";
+                            }}
                           />
-
-
-                          <div>
-
-                            <strong>
-                              Image uploaded
-                            </strong>
-
-                            <span>
-                              Cloudinary image ready
-                            </span>
-
-                          </div>
-
                         </div>
-
                       )}
 
-
-                      {/* AVAILABLE */}
-
                       <label className="availability-checkbox-label">
-
                         <input
                           type="checkbox"
-                          checked={
-                            dishForm.isAvailable
-                          }
-                          onChange={(
-                            event
-                          ) =>
-                            setDishForm(
-                              (
-                                current
-                              ) => ({
-                                ...current,
-
-                                isAvailable:
-                                  event.target.checked,
-                              })
-                            )
+                          checked={dishForm.isAvailable}
+                          onChange={(event) =>
+                            setDishForm((current) => ({
+                              ...current,
+                              isAvailable:
+                                event.target.checked,
+                            }))
                           }
                         />
-
                         Available immediately
-
                       </label>
 
-
-                      {/* ACTIONS */}
-
                       <div className="dish-modal-actions">
-
                         <button
                           type="button"
                           className="modal-cancel-button"
-                          onClick={() => {
-
-                            if (
-                              !addingDish &&
-                              !uploadingImage
-                            ) {
-
-                              setShowAddDish(
-                                false
-                              );
-
-                              setImageUploadError("");
-
-                            }
-
-                          }}
+                          onClick={() =>
+                            setShowAddDish(false)
+                          }
                         >
-
                           Cancel
-
                         </button>
-
 
                         <button
                           type="submit"
                           className="modal-submit-button"
-                          disabled={
-                            addingDish ||
-                            uploadingImage
-                          }
+                          disabled={addingDish || uploadingImage}
                         >
-
-                          {uploadingImage
-                            ? "Uploading..."
-                            : addingDish
+                          {addingDish
                             ? "Adding..."
+                            : uploadingImage
+                            ? "Uploading Image..."
                             : "Add Dish"}
-
                         </button>
-
                       </div>
-
-
                     </form>
-
                   </div>
-
                 </div>
-
               )}
 
+              {editingDish && (
+                <div className="dish-modal-backdrop">
+                  <div className="dish-modal">
+                    <div className="dish-modal-header">
+                      <div>
+                        <span className="page-kicker">MENU MANAGEMENT</span>
+                        <h3>Edit Menu Item</h3>
+                      </div>
+                      <button type="button" className="modal-close-button" onClick={closeEditDish}>×</button>
+                    </div>
 
-              {/* =================================================
-                  TOOLBAR
-                  ================================================= */}
+                    <form onSubmit={saveDishEdit}>
+                      <label>Dish Name
+                        <input type="text" value={editDishForm.name}
+                          onChange={(event) => setEditDishForm((current) => ({ ...current, name: event.target.value }))} />
+                      </label>
+
+                      <label>Category
+                        <select value={editDishForm.category}
+                          onChange={(event) => setEditDishForm((current) => ({ ...current, category: event.target.value }))}>
+                          <option value="">Select category</option>
+                          {menuCategories.map((category) => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label>Price
+                        <input type="number" min="0" step="0.01" value={editDishForm.price}
+                          onChange={(event) => setEditDishForm((current) => ({ ...current, price: event.target.value }))} />
+                      </label>
+
+                      <label>Replace Dish Image
+                        <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
+                          onChange={(event) => uploadDishImage(event, "edit")}
+                          disabled={uploadingEditImage || savingDish} />
+                        <small>Browse a new image and it will replace the current Cloudinary image after saving.</small>
+                      </label>
+
+                      {editDishForm.imageUrl && (
+                        <div className="dish-image-preview">
+                          <img src={editDishForm.imageUrl} alt="Dish preview"
+                            onError={(event) => { event.currentTarget.style.display = "none"; }} />
+                        </div>
+                      )}
+
+                      <label className="availability-checkbox-label">
+                        <input type="checkbox" checked={editDishForm.isAvailable}
+                          onChange={(event) => setEditDishForm((current) => ({ ...current, isAvailable: event.target.checked }))} />
+                        Available for ordering
+                      </label>
+
+                      {imageUploadError && <div className="error-message">{imageUploadError}</div>}
+
+                      <div className="dish-modal-actions">
+                        <button type="button" className="modal-cancel-button" onClick={closeEditDish} disabled={savingDish}>Cancel</button>
+                        <button type="submit" className="modal-submit-button" disabled={savingDish || uploadingEditImage}>
+                          {savingDish ? "Saving..." : uploadingEditImage ? "Uploading Image..." : "Save Changes"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
 
               <div className="menu-toolbar-row">
-
                 <span>
-
-                  {menuItems.length}
-                  {" "}
-                  menu items
-
+                  {menuItems.length} menu items
                 </span>
-
 
                 <button
                   type="button"
                   className="page-refresh-button"
-                  onClick={
-                    fetchMenuItems
-                  }
-                  disabled={
-                    menuLoading
-                  }
+                  onClick={() => loadMenuItems(true)}
+                  disabled={menuLoading}
                 >
-
                   <Icon
                     name="refresh"
                     size={16}
                   />
-
                   {menuLoading
                     ? "Refreshing..."
                     : "Refresh"}
-
                 </button>
-
               </div>
 
-
-              {/* =================================================
-                  MENU LOADING
-                  ================================================= */}
-
-              {menuLoading &&
-              menuItems.length ===
-                0 ? (
-
+              {menuLoading && menuItems.length === 0 ? (
                 <div className="page-loading-state">
-
                   <Icon
                     name="refresh"
                     size={28}
                   />
-
-                  <p>
-                    Loading menu...
-                  </p>
-
+                  <p>Loading menu...</p>
                 </div>
-
-              ) : menuItems.length ===
-                0 ? (
-
+              ) : menuItems.length === 0 ? (
                 <div className="empty-state">
                   No menu items found.
                 </div>
-
               ) : (
-
                 <div className="menu-category-list">
-
                   {Object.entries(
                     menuItems.reduce(
-                      (
-                        groups,
-                        item
-                      ) => {
-
+                      (groups, item) => {
                         const category =
                           item.category ||
                           "Other";
 
-
-                        if (
-                          !groups[
-                            category
-                          ]
-                        ) {
-
-                          groups[
-                            category
-                          ] = [];
-
+                        if (!groups[category]) {
+                          groups[category] = [];
                         }
 
-
-                        groups[
-                          category
-                        ].push(
-                          item
-                        );
-
+                        groups[category].push(item);
 
                         return groups;
-
                       },
                       {}
                     )
                   )
-                    .sort(
-                      (
-                        [a],
-                        [b]
-                      ) =>
-                        a.localeCompare(
-                          b
-                        )
+                    .sort(([a], [b]) =>
+                      a.localeCompare(b)
                     )
-                    .map(
-                      (
-                        [
-                          category,
-                          items,
-                        ]
-                      ) => (
-
-                        <section
-                          key={
-                            category
-                          }
-                          className="menu-category-section"
-                        >
-
-                          <div className="menu-category-heading">
-
-                            <div>
-
-                              <span>
-                                CATEGORY
-                              </span>
-
-                              <h3>
-                                {category}
-                              </h3>
-
-                            </div>
-
-
-                            <strong>
-                              {items.length}
-                            </strong>
-
+                    .map(([category, items]) => (
+                      <section
+                        key={category}
+                        className="menu-category-section"
+                      >
+                        <div className="menu-category-heading">
+                          <div>
+                            <span>
+                              CATEGORY
+                            </span>
+                            <h3>{category}</h3>
                           </div>
+                          <strong>
+                            {items.length}
+                          </strong>
+                        </div>
 
+                        <div className="menu-items-grid">
+                          {items.map((item) => (
+                            <article
+                              key={item._id}
+                              className={
+                                item.isAvailable
+                                  ? "menu-item-card"
+                                  : "menu-item-card unavailable"
+                              }
+                            >
+                              <div className="menu-item-image">
+                                {item.imageUrl ? (
+                                  <img
+                                    src={item.imageUrl}
+                                    alt={item.name}
+                                    onError={(event) => {
+                                      event.currentTarget.style.display =
+                                        "none";
+                                    }}
+                                  />
+                                ) : (
+                                  <Icon
+                                    name="menuItems"
+                                    size={30}
+                                  />
+                                )}
+                              </div>
 
-                          <div className="menu-items-grid">
+                              <div className="menu-item-content">
+                                <div className="menu-item-title-row">
+                                  <div>
+                                    <h4>
+                                      {item.name}
+                                    </h4>
+                                    <span>
+                                      {item.category}
+                                    </span>
+                                  </div>
 
-                            {items.map(
-                              (
-                                item
-                              ) => (
+                                  <strong>
+                                    ₹{Number(
+                                      item.price || 0
+                                    ).toFixed(0)}
+                                  </strong>
+                                </div>
 
-                                <article
-                                  key={
-                                    item._id
-                                  }
-                                  className={
-                                    item.isAvailable
-                                      ? "menu-item-card"
-                                      : "menu-item-card unavailable"
-                                  }
+                                <button
+                                  type="button"
+                                  className="page-refresh-button"
+                                  onClick={() => openEditDish(item)}
                                 >
+                                  <Icon name="edit" size={16} />
+                                  Edit Item
+                                </button>
 
-
-                                  {/* IMAGE */}
-
-                                  <div className="menu-item-image">
-
-                                    {item.imageUrl ? (
-
-                                      <img
-                                        src={
-                                          item.imageUrl
-                                        }
-                                        alt={
-                                          item.name
-                                        }
-                                        onError={(
-                                          event
-                                        ) => {
-
-                                          event.currentTarget.style.display =
-                                            "none";
-
-                                        }}
-                                      />
-
-                                    ) : (
-
-                                      <Icon
-                                        name="menuItems"
-                                        size={30}
-                                      />
-
+                                <label className="availability-toggle">
+                                  <input
+                                    type="checkbox"
+                                    checked={Boolean(
+                                      item.isAvailable
                                     )}
-
-                                  </div>
-
-
-                                  {/* CONTENT */}
-
-                                  <div className="menu-item-content">
-
-                                    <div className="menu-item-title-row">
-
-                                      <div>
-
-                                        <h4>
-                                          {item.name}
-                                        </h4>
-
-                                        <span>
-                                          {item.category}
-                                        </span>
-
-                                      </div>
-
-
-                                      {/* =================================================
-                                          PRICE EDITOR
-                                          ================================================= */}
-
-                                      {editingPriceId ===
-                                      item._id ? (
-
-                                        <div className="price-edit-mode">
-
-                                          <div className="price-input-wrapper">
-
-                                            <span>
-                                              ₹
-                                            </span>
-
-                                            <input
-                                              type="number"
-                                              min="0"
-                                              step="1"
-                                              value={
-                                                editingPrice
-                                              }
-                                              autoFocus
-                                              disabled={
-                                                savingPriceId ===
-                                                item._id
-                                              }
-                                              onChange={(
-                                                event
-                                              ) =>
-                                                setEditingPrice(
-                                                  event
-                                                    .target
-                                                    .value
-                                                )
-                                              }
-                                              onKeyDown={(
-                                                event
-                                              ) => {
-
-                                                if (
-                                                  event.key ===
-                                                  "Enter"
-                                                ) {
-
-                                                  event.preventDefault();
-
-                                                  updateMenuPrice(
-                                                    item._id
-                                                  );
-
-                                                }
-
-
-                                                if (
-                                                  event.key ===
-                                                  "Escape"
-                                                ) {
-
-                                                  event.preventDefault();
-
-                                                  cancelPriceEdit();
-
-                                                }
-
-                                              }}
-                                            />
-
-                                          </div>
-
-
-                                          {/* RED X */}
-
-                                          <button
-                                            type="button"
-                                            className="price-cancel-button"
-                                            onClick={
-                                              cancelPriceEdit
-                                            }
-                                            disabled={
-                                              savingPriceId ===
-                                              item._id
-                                            }
-                                            title="Cancel"
-                                          >
-
-                                            ×
-
-                                          </button>
-
-
-                                          {/* GOLDEN CHECK */}
-
-                                          <button
-                                            type="button"
-                                            className="price-save-button"
-                                            onClick={() =>
-                                              updateMenuPrice(
-                                                item._id
-                                              )
-                                            }
-                                            disabled={
-                                              savingPriceId ===
-                                              item._id
-                                            }
-                                            title="Save"
-                                          >
-
-                                            {savingPriceId ===
-                                            item._id
-                                              ? "..."
-                                              : "✓"}
-
-                                          </button>
-
-                                        </div>
-
-                                      ) : (
-
-                                        <div className="price-display-mode">
-
-                                          <strong>
-
-                                            ₹
-                                            {Number(
-                                              item.price ||
-                                                0
-                                            ).toFixed(
-                                              0
-                                            )}
-
-                                          </strong>
-
-
-                                          <button
-                                            type="button"
-                                            className="price-edit-button"
-                                            onClick={() =>
-                                              startPriceEdit(
-                                                item
-                                              )
-                                            }
-                                            title="Edit price"
-                                          >
-
-                                            <Icon
-                                              name="edit"
-                                              size={16}
-                                            />
-
-                                          </button>
-
-                                        </div>
-
-                                      )}
-
-                                    </div>
-
-
-                                    {/* AVAILABILITY */}
-
-                                    <label className="availability-toggle">
-
-                                      <input
-                                        type="checkbox"
-                                        checked={Boolean(
-                                          item.isAvailable
-                                        )}
-                                        disabled={
-                                          updatingMenuId ===
-                                          item._id
-                                        }
-                                        onChange={(
-                                          event
-                                        ) =>
-                                          updateMenuAvailability(
-                                            item._id,
-                                            event.target.checked
-                                          )
-                                        }
-                                      />
-
-
-                                      <span className="availability-switch" />
-
-
-                                      <span>
-
-                                        {item.isAvailable
-                                          ? "Available"
-                                          : "Unavailable"}
-
-                                      </span>
-
-                                    </label>
-
-                                  </div>
-
-                                </article>
-
-                              )
-                            )}
-
-                          </div>
-
-                        </section>
-
-                      )
-                    )}
-
+                                    disabled={
+                                      updatingMenuId ===
+                                      item._id
+                                    }
+                                    onChange={(event) =>
+                                      updateMenuAvailability(
+                                        item._id,
+                                        event.target.checked
+                                      )
+                                    }
+                                  />
+                                  <span className="availability-switch" />
+                                  <span>
+                                    {item.isAvailable
+                                      ? "Available"
+                                      : "Unavailable"}
+                                  </span>
+                                </label>
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      </section>
+                    ))}
                 </div>
-
               )}
-
             </section>
-
           )}
 
         </main>

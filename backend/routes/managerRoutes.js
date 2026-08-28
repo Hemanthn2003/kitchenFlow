@@ -47,7 +47,7 @@ router.get(
         isActive: true,
       })
         .select(
-          "_id name email role isActive currentTable lastActiveAt"
+          "_id name email role isActive currentTable lastActiveAt imageUrl profileImage"
         )
         .sort({
           role: 1,
@@ -95,8 +95,6 @@ router.get(
     }
   }
 );
-
-
 /* =========================================================
    ORDER ENRICHMENT HELPER
    ========================================================= */
@@ -298,6 +296,105 @@ const getEnrichedOrders = async () => {
   });
 };
 
+/* =========================================================
+   GET ALL TABLES
+   =========================================================
+
+   GET /api/manager/tables
+
+   Returns every table and the waiter who picked it.
+   ========================================================= */
+
+router.get(
+  "/tables",
+
+  authenticate,
+
+  authorizeRoles("MANAGER"),
+
+  async (req, res) => {
+    try {
+      const tables =
+        await Table.find({})
+          .sort({
+            tableNumber: 1,
+          })
+          .populate({
+            path: "waiterId",
+            select:
+              "_id name email role isActive",
+          })
+          .lean();
+
+
+      const enrichedTables =
+        tables.map((table) => ({
+          ...table,
+
+          waiter:
+            table.waiterId
+              ? {
+                  _id:
+                    table.waiterId._id,
+
+                  name:
+                    table.waiterId.name,
+
+                  email:
+                    table.waiterId.email,
+
+                  role:
+                    table.waiterId.role,
+
+                  isActive:
+                    table.waiterId.isActive,
+                }
+              : null,
+        }));
+
+
+      return res.status(200).json({
+        success: true,
+
+        tables:
+          enrichedTables,
+
+        counts: {
+          total:
+            enrichedTables.length,
+
+          free:
+            enrichedTables.filter(
+              (table) =>
+                !table.waiterId
+            ).length,
+
+          occupied:
+            enrichedTables.filter(
+              (table) =>
+                Boolean(
+                  table.waiterId
+                )
+            ).length,
+        },
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Manager tables error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+
+        message:
+          "Unable to fetch tables",
+      });
+    }
+  }
+);
 
 /* =========================================================
    GET ALL ORDERS
@@ -481,7 +578,7 @@ const updateOrderStatus = async (
         },
 
         {
-          new: true,
+         returnDocument: "after",
           runValidators: true,
         }
       ).lean();
@@ -696,7 +793,7 @@ const updateMenuAvailability =
           },
 
           {
-            new: true,
+           returnDocument: "after",
             runValidators: true,
           }
         ).lean();
@@ -752,31 +849,18 @@ router.patch(
   updateMenuAvailability
 );
 
-
 /* =========================================================
    UPDATE MENU ITEM
-   =========================================================
-
-   THIS IS THE IMPORTANT PART FOR PRICE EDITING.
 
    PATCH:
-
    /api/manager/menu-items/:id
 
-   PRICE:
-
-   {
-     "price": 550
-   }
-
-   AVAILABILITY:
-
-   {
-     "isAvailable": true
-   }
-
-   The same route supports both.
-
+   Supports updating:
+   - name
+   - category
+   - price
+   - imageUrl
+   - isAvailable
    ========================================================= */
 
 router.patch(
@@ -792,7 +876,7 @@ router.patch(
 
 
       /* -----------------------------------------------------
-         VALIDATE ID
+         VALIDATE MENU ITEM ID
          ----------------------------------------------------- */
 
       if (
@@ -802,6 +886,7 @@ router.patch(
       ) {
         return res.status(400).json({
           success: false,
+
           message:
             "Invalid menu item ID",
         });
@@ -809,135 +894,263 @@ router.patch(
 
 
       /* -----------------------------------------------------
-         CHECK WHICH FIELD IS BEING UPDATED
+         GET REQUEST DATA
          ----------------------------------------------------- */
 
-      const hasPrice =
-        Object.prototype.hasOwnProperty.call(
-          req.body || {},
-          "price"
-        );
+      const {
+        name,
+        category,
+        price,
+        imageUrl,
+        isAvailable,
+      } = req.body || {};
 
 
-      const hasAvailability =
-        Object.prototype.hasOwnProperty.call(
-          req.body || {},
-          "isAvailable"
-        );
+      /* -----------------------------------------------------
+         BUILD UPDATE OBJECT
+
+         Only fields sent from frontend
+         will be updated.
+         ----------------------------------------------------- */
+
+      const updateData = {};
 
 
       /* =====================================================
-         PRICE UPDATE
+         UPDATE NAME
          ===================================================== */
 
-      if (hasPrice) {
-        const price =
-          Number(
-            req.body?.price
-          );
-
-
-        /* ---------------------------------------------------
-           VALIDATE PRICE
-           --------------------------------------------------- */
-
+      if (
+        name !== undefined
+      ) {
         if (
-          !Number.isFinite(price) ||
-          price < 0
+          typeof name !==
+          "string"
         ) {
           return res.status(400).json({
             success: false,
+
             message:
-              "Valid price is required",
+              "Menu item name must be text",
           });
         }
 
 
-        /* ---------------------------------------------------
-           UPDATE PRICE IN MONGODB
-           --------------------------------------------------- */
-
-        const updatedMenuItem =
-          await MenuItem.findByIdAndUpdate(
-
-            menuItemId,
-
-            {
-              $set: {
-                price: price,
-              },
-            },
-
-            {
-              new: true,
-              runValidators: true,
-            }
-
-          ).lean();
+        const trimmedName =
+          name.trim();
 
 
-        /* ---------------------------------------------------
-           ITEM NOT FOUND
-           --------------------------------------------------- */
-
-        if (!updatedMenuItem) {
-          return res.status(404).json({
+        if (!trimmedName) {
+          return res.status(400).json({
             success: false,
+
             message:
-              "Menu item not found",
+              "Menu item name cannot be empty",
           });
         }
 
 
-        /* ---------------------------------------------------
-           SUCCESS
-           --------------------------------------------------- */
-
-        return res.status(200).json({
-          success: true,
-
-          message:
-            "Menu price updated successfully",
-
-          menuItem:
-            updatedMenuItem,
-        });
+        updateData.name =
+          trimmedName;
       }
 
 
       /* =====================================================
-         AVAILABILITY UPDATE
+         UPDATE CATEGORY
          ===================================================== */
 
-      if (hasAvailability) {
+      if (
+        category !== undefined
+      ) {
+        if (
+          typeof category !==
+          "string"
+        ) {
+          return res.status(400).json({
+            success: false,
+
+            message:
+              "Category must be text",
+          });
+        }
+
+
+        const trimmedCategory =
+          category.trim();
+
 
         if (
-          typeof req.body?.isAvailable !==
+          !trimmedCategory
+        ) {
+          return res.status(400).json({
+            success: false,
+
+            message:
+              "Category cannot be empty",
+          });
+        }
+
+
+        updateData.category =
+          trimmedCategory;
+      }
+
+
+      /* =====================================================
+         UPDATE PRICE
+         ===================================================== */
+
+      if (
+        price !== undefined
+      ) {
+        const numericPrice =
+          Number(price);
+
+
+        if (
+          !Number.isFinite(
+            numericPrice
+          ) ||
+          numericPrice < 0
+        ) {
+          return res.status(400).json({
+            success: false,
+
+            message:
+              "Enter a valid price",
+          });
+        }
+
+
+        updateData.price =
+          numericPrice;
+      }
+
+
+      /* =====================================================
+         UPDATE IMAGE URL
+         ===================================================== */
+
+      if (
+        imageUrl !== undefined
+      ) {
+        if (
+          imageUrl !== null &&
+          typeof imageUrl !==
+          "string"
+        ) {
+          return res.status(400).json({
+            success: false,
+
+            message:
+              "Invalid image URL",
+          });
+        }
+
+
+        updateData.imageUrl =
+          String(
+            imageUrl || ""
+          ).trim();
+      }
+
+
+      /* =====================================================
+         UPDATE AVAILABILITY
+         ===================================================== */
+
+      if (
+        isAvailable !== undefined
+      ) {
+        if (
+          typeof isAvailable !==
           "boolean"
         ) {
           return res.status(400).json({
             success: false,
+
             message:
               "isAvailable must be true or false",
           });
         }
 
 
-        return updateMenuAvailability(
-          req,
-          res
-        );
+        updateData.isAvailable =
+          isAvailable;
       }
 
 
       /* =====================================================
-         NOTHING TO UPDATE
+         CHECK IF ANY FIELD EXISTS
          ===================================================== */
 
-      return res.status(400).json({
-        success: false,
+      if (
+        Object.keys(
+          updateData
+        ).length === 0
+      ) {
+        return res.status(400).json({
+          success: false,
+
+          message:
+            "No valid fields were provided for update",
+        });
+      }
+
+
+      /* =====================================================
+         UPDATE MONGODB
+         ===================================================== */
+
+      const updatedMenuItem =
+        await MenuItem.findByIdAndUpdate(
+
+          menuItemId,
+
+          {
+            $set:
+              updateData,
+          },
+
+          {
+            returnDocument: "after",
+            runValidators:true
+          }
+
+        ).lean();
+
+
+      /* =====================================================
+         ITEM NOT FOUND
+         ===================================================== */
+
+      if (
+        !updatedMenuItem
+      ) {
+        return res.status(404).json({
+          success: false,
+
+          message:
+            "Menu item not found",
+        });
+      }
+
+
+      /* =====================================================
+         SUCCESS RESPONSE
+         ===================================================== */
+
+      return res.status(200).json({
+        success: true,
+
         message:
-          "Provide price or isAvailable",
+          "Menu item updated successfully",
+
+        menuItem:
+          updatedMenuItem,
+
+        item:
+          updatedMenuItem,
       });
 
 
@@ -947,15 +1160,19 @@ router.patch(
         error
       );
 
+
       return res.status(500).json({
         success: false,
+
         message:
           "Unable to update menu item",
+
+        error:
+          error.message,
       });
     }
   }
 );
-
 
 /* =========================================================
    ADD NEW MENU ITEM
@@ -1163,7 +1380,186 @@ router.delete(
   }
 );
 
+/* =========================================================
+   UPDATE COMPLETE MENU ITEM
+   =========================================================
 
+   PATCH /api/manager/menu-items/:id
+
+   Updates:
+   - name
+   - category
+   - price
+   - imageUrl
+   - isAvailable
+
+   ========================================================= */
+
+router.patch(
+  "/menu-items/:id",
+
+  authenticate,
+
+  authorizeRoles("MANAGER"),
+
+  async (req, res) => {
+    try {
+      const menuItemId = req.params.id;
+
+      if (!isValidObjectId(menuItemId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid menu item ID",
+        });
+      }
+
+      const {
+        name,
+        category,
+        price,
+        imageUrl,
+        isAvailable,
+      } = req.body;
+
+
+      /* =============================================
+         VALIDATION
+      ============================================= */
+
+      if (
+        !name ||
+        typeof name !== "string" ||
+        !name.trim()
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Menu item name is required",
+        });
+      }
+
+
+      if (
+        !category ||
+        typeof category !== "string" ||
+        !category.trim()
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Menu item category is required",
+        });
+      }
+
+
+      if (
+        price === undefined ||
+        price === null ||
+        Number.isNaN(Number(price)) ||
+        Number(price) < 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Enter a valid menu item price",
+        });
+      }
+
+
+      if (
+        isAvailable !== undefined &&
+        typeof isAvailable !== "boolean"
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "isAvailable must be true or false",
+        });
+      }
+
+
+      /* =============================================
+         UPDATE
+      ============================================= */
+
+      const updateData = {
+        name: name.trim(),
+
+        category: category.trim(),
+
+        price: Number(price),
+
+        imageUrl:
+          typeof imageUrl === "string"
+            ? imageUrl.trim()
+            : "",
+      };
+
+
+      if (
+        typeof isAvailable === "boolean"
+      ) {
+        updateData.isAvailable =
+          isAvailable;
+      }
+
+
+      const updatedMenuItem =
+        await MenuItem.findByIdAndUpdate(
+          menuItemId,
+
+          {
+            $set: updateData,
+          },
+
+          {
+            returnDocument: "after",
+
+            runValidators: true,
+          }
+        );
+
+
+      /* =============================================
+         NOT FOUND
+      ============================================= */
+
+      if (!updatedMenuItem) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Menu item not found",
+        });
+      }
+
+
+      /* =============================================
+         SUCCESS
+      ============================================= */
+
+      return res.status(200).json({
+        success: true,
+
+        message:
+          "Menu item updated successfully",
+
+        menuItem:
+          updatedMenuItem,
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Complete menu item update error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+
+        message:
+          "Unable to update menu item",
+      });
+    }
+  }
+);
 /* =========================================================
    EXPORT ROUTER
    ========================================================= */
