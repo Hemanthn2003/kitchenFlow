@@ -5,6 +5,8 @@ import Order from "../models/Order.js";
 import MenuItem from "../models/MenuItem.js";
 import Table from "../models/Table.js";
 import User from "../models/Users.js";
+import Bill from "../models/Bill.js";
+
 
 import {
   authenticate,
@@ -623,6 +625,172 @@ const updateOrderStatus = async (
   }
 };
 
+
+/* =========================================================
+   GET ALL TABLES FOR MANAGER
+
+   GET /api/manager/tables
+   ========================================================= */
+
+router.get(
+  "/tables",
+
+  authenticate,
+
+  authorizeRoles("MANAGER"),
+
+  async (req, res) => {
+    try {
+
+      const tables =
+        await Table.find({})
+          .sort({
+            tableNumber: 1,
+          })
+          .lean();
+
+
+      /* ===================================================
+         GET WAITERS
+         =================================================== */
+
+      const waiterIds =
+        tables
+          .filter(
+            (table) =>
+              table.waiterId
+          )
+          .map(
+            (table) =>
+              String(
+                table.waiterId
+              )
+          );
+
+
+      const uniqueWaiterIds =
+        [
+          ...new Set(
+            waiterIds
+          ),
+        ];
+
+
+      const waiters =
+        uniqueWaiterIds.length > 0
+          ? await User.find({
+              _id: {
+                $in:
+                  uniqueWaiterIds,
+              },
+            })
+              .select(
+                "_id name email role imageUrl"
+              )
+              .lean()
+          : [];
+
+
+      /* ===================================================
+         WAITER MAP
+         =================================================== */
+
+      const waiterMap =
+        new Map();
+
+
+      waiters.forEach(
+        (waiter) => {
+
+          waiterMap.set(
+            String(
+              waiter._id
+            ),
+
+            waiter
+          );
+
+        }
+      );
+
+
+      /* ===================================================
+         ENRICH TABLES
+         =================================================== */
+
+      const enrichedTables =
+        tables.map(
+          (table) => {
+
+            const waiter =
+              table.waiterId
+                ? waiterMap.get(
+                    String(
+                      table.waiterId
+                    )
+                  )
+                : null;
+
+
+            return {
+
+              ...table,
+
+              waiter:
+                waiter
+                  ? {
+                      _id:
+                        waiter._id,
+
+                      name:
+                        waiter.name,
+
+                      email:
+                        waiter.email,
+
+                      imageUrl:
+                        waiter.imageUrl ||
+                        "",
+                    }
+                  : null,
+
+            };
+
+          }
+        );
+
+
+      return res.status(200).json({
+
+        success:
+          true,
+
+        tables:
+          enrichedTables,
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Manager tables error:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        success:
+          false,
+
+        message:
+          "Unable to fetch tables",
+
+      });
+
+    }
+  }
+);
 
 /* =========================================================
    ORDER STATUS ROUTES
@@ -1560,6 +1728,1082 @@ router.patch(
     }
   }
 );
+
+
+/* =========================================================
+   MANAGER BILL APIs
+   ========================================================= */
+
+
+/* =========================================================
+   BILL POPULATION HELPER
+   ========================================================= */
+
+const getPopulatedBill = async (
+  billId
+) => {
+  return await Bill.findById(
+    billId
+  )
+    .populate({
+      path: "tableId",
+      select:
+        "_id tableNumber status waiterId assignedAt billRequestedAt",
+    })
+    .populate({
+      path: "waiterId",
+      select:
+        "_id name email role imageUrl profileImage",
+    })
+    .populate({
+      path: "managerId",
+      select:
+        "_id name email role imageUrl profileImage",
+    })
+    .lean();
+};
+
+
+/* =========================================================
+   GET ALL BILLS
+
+   GET /api/manager/bills
+
+   Optional query:
+
+   ?status=CHECKOUT
+   ?paymentStatus=UNPAID
+   ?tableNumber=5
+   ========================================================= */
+
+router.get(
+  "/bills",
+
+  authenticate,
+
+  authorizeRoles("MANAGER"),
+
+  async (
+    req,
+    res
+  ) => {
+    try {
+
+      const {
+        status,
+        paymentStatus,
+        tableNumber,
+      } =
+        req.query;
+
+
+      /* -----------------------------------------------
+         BUILD QUERY
+         ----------------------------------------------- */
+
+      const query =
+        {};
+
+
+      /* -----------------------------------------------
+         BILL STATUS FILTER
+         ----------------------------------------------- */
+
+      if (
+        status &&
+        String(status).trim()
+      ) {
+
+        query.status =
+          String(status)
+            .trim()
+            .toUpperCase();
+
+      }
+
+
+      /* -----------------------------------------------
+         PAYMENT STATUS FILTER
+         ----------------------------------------------- */
+
+      if (
+        paymentStatus &&
+        String(paymentStatus).trim()
+      ) {
+
+        query.paymentStatus =
+          String(paymentStatus)
+            .trim()
+            .toUpperCase();
+
+      }
+
+
+      /* -----------------------------------------------
+         TABLE NUMBER FILTER
+         ----------------------------------------------- */
+
+      if (
+        tableNumber !==
+          undefined &&
+        tableNumber !== ""
+      ) {
+
+        const parsedTableNumber =
+          Number(tableNumber);
+
+        if (
+          Number.isNaN(
+            parsedTableNumber
+          )
+        ) {
+
+          return res
+            .status(400)
+            .json({
+              success:
+                false,
+
+              message:
+                "Invalid table number",
+            });
+
+        }
+
+
+        query.tableNumber =
+          parsedTableNumber;
+
+      }
+
+
+      /* -----------------------------------------------
+         FETCH BILLS
+         ----------------------------------------------- */
+
+      const bills =
+        await Bill.find(
+          query
+        )
+          .sort({
+            createdAt:
+              -1,
+          })
+          .populate({
+            path:
+              "tableId",
+
+            select:
+              "_id tableNumber status waiterId assignedAt billRequestedAt",
+          })
+          .populate({
+            path:
+              "waiterId",
+
+            select:
+              "_id name email role imageUrl profileImage",
+          })
+          .populate({
+            path:
+              "managerId",
+
+            select:
+              "_id name email role imageUrl profileImage",
+          })
+          .lean();
+
+
+      /* -----------------------------------------------
+         COUNTS
+         ----------------------------------------------- */
+
+      const counts = {
+
+        total:
+          bills.length,
+
+        checkout:
+          bills.filter(
+            (
+              bill
+            ) =>
+              bill.status ===
+              "CHECKOUT"
+          ).length,
+
+        generated:
+          bills.filter(
+            (
+              bill
+            ) =>
+              bill.status ===
+              "GENERATED"
+          ).length,
+
+        paid:
+          bills.filter(
+            (
+              bill
+            ) =>
+              bill.status ===
+              "PAID"
+          ).length,
+
+        unpaid:
+          bills.filter(
+            (
+              bill
+            ) =>
+              bill.paymentStatus ===
+              "UNPAID"
+          ).length,
+
+      };
+
+
+      return res
+        .status(200)
+        .json({
+
+          success:
+            true,
+
+          bills,
+
+          counts,
+
+        });
+
+
+    } catch (
+      error
+    ) {
+
+      console.error(
+        "Manager bills error:",
+        error
+      );
+
+
+      return res
+        .status(500)
+        .json({
+
+          success:
+            false,
+
+          message:
+            "Unable to fetch bills",
+
+        });
+
+    }
+  }
+);
+
+
+/* =========================================================
+   GET SINGLE BILL
+
+   GET /api/manager/bills/:id
+   ========================================================= */
+
+router.get(
+  "/bills/:id",
+
+  authenticate,
+
+  authorizeRoles("MANAGER"),
+
+  async (
+    req,
+    res
+  ) => {
+    try {
+
+      const billId =
+        req.params.id;
+
+
+      /* -----------------------------------------------
+         VALIDATE BILL ID
+         ----------------------------------------------- */
+
+      if (
+        !isValidObjectId(
+          billId
+        )
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Invalid bill ID",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         FETCH BILL
+         ----------------------------------------------- */
+
+      const bill =
+        await getPopulatedBill(
+          billId
+        );
+
+
+      if (
+        !bill
+      ) {
+
+        return res
+          .status(404)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Bill not found",
+
+          });
+
+      }
+
+
+      return res
+        .status(200)
+        .json({
+
+          success:
+            true,
+
+          bill,
+
+        });
+
+
+    } catch (
+      error
+    ) {
+
+      console.error(
+        "Manager bill details error:",
+        error
+      );
+
+
+      return res
+        .status(500)
+        .json({
+
+          success:
+            false,
+
+          message:
+            "Unable to fetch bill details",
+
+        });
+
+    }
+  }
+);
+
+
+/* =========================================================
+   GENERATE BILL
+
+   PATCH /api/manager/bills/:id/generate
+
+   FLOW:
+
+   CHECKOUT
+      ↓
+   GENERATED
+
+   ========================================================= */
+
+router.patch(
+  "/bills/:id/generate",
+
+  authenticate,
+
+  authorizeRoles("MANAGER"),
+
+  async (
+    req,
+    res
+  ) => {
+    try {
+
+      const billId =
+        req.params.id;
+
+
+      /* -----------------------------------------------
+         VALIDATE ID
+         ----------------------------------------------- */
+
+      if (
+        !isValidObjectId(
+          billId
+        )
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Invalid bill ID",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         FIND BILL
+         ----------------------------------------------- */
+
+      const bill =
+        await Bill.findById(
+          billId
+        );
+
+
+      if (
+        !bill
+      ) {
+
+        return res
+          .status(404)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Bill not found",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         ALREADY PAID
+         ----------------------------------------------- */
+
+      if (
+        bill.status ===
+        "PAID"
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Paid bills cannot be generated again",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         ALREADY GENERATED
+
+         Return existing data instead of failing.
+         ----------------------------------------------- */
+
+      if (
+        bill.status ===
+        "GENERATED"
+      ) {
+
+        const existingBill =
+          await getPopulatedBill(
+            bill._id
+          );
+
+
+        return res
+          .status(200)
+          .json({
+
+            success:
+              true,
+
+            message:
+              "Bill was already generated",
+
+            bill:
+              existingBill,
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         VALIDATE CURRENT STATUS
+         ----------------------------------------------- */
+
+      if (
+        bill.status !==
+        "CHECKOUT"
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              `Bill cannot be generated from status ${bill.status}`,
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         UPDATE BILL
+         ----------------------------------------------- */
+
+      const updatedBill =
+        await Bill.findByIdAndUpdate(
+
+          billId,
+
+          {
+            $set: {
+
+              status:
+                "GENERATED",
+
+              managerId:
+                req.user.id,
+
+              generatedAt:
+                new Date(),
+
+            },
+          },
+
+          {
+            returnDocument:
+              "after",
+
+            runValidators:
+              true,
+          }
+
+        );
+
+
+      const populatedBill =
+        await getPopulatedBill(
+          updatedBill._id
+        );
+
+
+      return res
+        .status(200)
+        .json({
+
+          success:
+            true,
+
+          message:
+            "Bill generated successfully",
+
+          bill:
+            populatedBill,
+
+        });
+
+
+    } catch (
+      error
+    ) {
+
+      console.error(
+        "Generate bill error:",
+        error
+      );
+
+
+      return res
+        .status(500)
+        .json({
+
+          success:
+            false,
+
+          message:
+            "Unable to generate bill",
+
+        });
+
+    }
+  }
+);
+
+
+/* =========================================================
+   MARK BILL AS PAID
+
+   PATCH /api/manager/bills/:id/pay
+
+   BODY:
+
+   {
+     "paymentMethod": "CASH"
+   }
+
+   Allowed:
+
+   CASH
+   CARD
+   UPI
+
+
+   AFTER PAYMENT:
+
+   Bill:
+   GENERATED → PAID
+
+   Table:
+   BILL_REQUESTED → AVAILABLE
+
+   Table waiter assignment:
+   Cleared
+
+   ========================================================= */
+
+router.patch(
+  "/bills/:id/pay",
+
+  authenticate,
+
+  authorizeRoles("MANAGER"),
+
+  async (
+    req,
+    res
+  ) => {
+    try {
+
+      const billId =
+        req.params.id;
+
+
+      const paymentMethod =
+        String(
+          req.body
+            ?.paymentMethod ||
+          ""
+        )
+          .trim()
+          .toUpperCase();
+
+
+      /* -----------------------------------------------
+         VALIDATE BILL ID
+         ----------------------------------------------- */
+
+      if (
+        !isValidObjectId(
+          billId
+        )
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Invalid bill ID",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         VALIDATE PAYMENT METHOD
+         ----------------------------------------------- */
+
+      const allowedPaymentMethods = [
+        "CASH",
+        "CARD",
+        "UPI",
+      ];
+
+
+      if (
+        !allowedPaymentMethods.includes(
+          paymentMethod
+        )
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Payment method must be CASH, CARD, or UPI",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         FIND BILL
+         ----------------------------------------------- */
+
+      const bill =
+        await Bill.findById(
+          billId
+        );
+
+
+      if (
+        !bill
+      ) {
+
+        return res
+          .status(404)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Bill not found",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         ALREADY PAID
+         ----------------------------------------------- */
+
+      if (
+        bill.paymentStatus ===
+          "PAID" ||
+        bill.status ===
+          "PAID"
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "This bill is already paid",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         REQUIRE BILL GENERATION FIRST
+         ----------------------------------------------- */
+
+      if (
+        bill.status !==
+        "GENERATED"
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Generate the bill before completing payment",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         FIND TABLE
+         ----------------------------------------------- */
+
+      const table =
+        await Table.findById(
+          bill.tableId
+        );
+
+
+      if (
+        !table
+      ) {
+
+        return res
+          .status(404)
+          .json({
+
+            success:
+              false,
+
+            message:
+              "Table associated with this bill was not found",
+
+          });
+
+      }
+
+
+      /* -----------------------------------------------
+         UPDATE BILL
+         ----------------------------------------------- */
+
+      const updatedBill =
+        await Bill.findByIdAndUpdate(
+
+          billId,
+
+          {
+            $set: {
+
+              status:
+                "PAID",
+
+              paymentStatus:
+                "PAID",
+
+              paymentMethod:
+                paymentMethod,
+
+              paidAt:
+                new Date(),
+
+              managerId:
+                req.user.id,
+
+            },
+          },
+
+          {
+            returnDocument:
+              "after",
+
+            runValidators:
+              true,
+          }
+
+        );
+
+
+      /* -----------------------------------------------
+         RELEASE TABLE
+
+         IMPORTANT:
+
+         The table becomes AVAILABLE again.
+         The waiter assignment is removed.
+         ----------------------------------------------- */
+
+      const releasedTable =
+        await Table.findByIdAndUpdate(
+
+          bill.tableId,
+
+          {
+            $set: {
+
+              status:
+                "AVAILABLE",
+
+              waiterId:
+                null,
+
+              assignedAt:
+                null,
+
+              billRequestedAt:
+                null,
+
+            },
+          },
+
+          {
+            returnDocument:
+              "after",
+
+            runValidators:
+              true,
+          }
+
+        ).lean();
+
+
+      /* -----------------------------------------------
+         CLEAR WAITER CURRENT TABLE
+
+         Only clear it when it points to
+         this table.
+         ----------------------------------------------- */
+
+      if (
+        bill.waiterId
+      ) {
+
+        const waiter =
+          await User.findById(
+            bill.waiterId
+          );
+
+
+        if (
+          waiter
+        ) {
+
+          const currentTable =
+            waiter.currentTable;
+
+
+          const currentTableMatches =
+            String(
+              currentTable ?? ""
+            ) ===
+              String(
+                releasedTable._id
+              ) ||
+
+            String(
+              currentTable ?? ""
+            ) ===
+              String(
+                releasedTable.tableNumber
+              );
+
+
+          if (
+            currentTableMatches
+          ) {
+
+            await User.findByIdAndUpdate(
+
+              bill.waiterId,
+
+              {
+                $set: {
+
+                  currentTable:
+                    null,
+
+                },
+              },
+
+              {
+                returnDocument:
+                  "after",
+                }
+
+            );
+
+          }
+
+        }
+
+      }
+
+
+      /* -----------------------------------------------
+         RETURN UPDATED BILL
+         ----------------------------------------------- */
+
+      const populatedBill =
+        await getPopulatedBill(
+          updatedBill._id
+        );
+
+
+      return res
+        .status(200)
+        .json({
+
+          success:
+            true,
+
+          message:
+            "Payment completed and table released",
+
+          bill:
+            populatedBill,
+
+          table:
+            releasedTable,
+
+        });
+
+
+    } catch (
+      error
+    ) {
+
+      console.error(
+        "Bill payment error:",
+        error
+      );
+
+
+      return res
+        .status(500)
+        .json({
+
+          success:
+            false,
+
+          message:
+            "Unable to complete payment",
+
+        });
+
+    }
+  }
+);
+
+
 /* =========================================================
    EXPORT ROUTER
    ========================================================= */

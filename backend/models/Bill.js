@@ -1,213 +1,294 @@
 import mongoose from "mongoose";
 
+
 /* =========================================================
    BILL ITEM SCHEMA
-
-   We store the item name and price as they were at the
-   moment the bill was generated.
-
-   This means old bills will NOT change if the Manager
-   changes the menu price later.
    ========================================================= */
 
-const billItemSchema = new mongoose.Schema(
-  {
-    menuItemId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "MenuItem",
-      required: true,
+const billItemSchema =
+  new mongoose.Schema(
+    {
+      menuItemId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MenuItem",
+        required: true,
+      },
+
+
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+
+
+      quantity: {
+        type: Number,
+        required: true,
+        min: 1,
+      },
+
+
+      unitPrice: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+
+
+      totalPrice: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+
+
+      instruction: {
+        type: String,
+        default: "",
+        trim: true,
+      },
     },
 
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
-
-    unitPrice: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
-    total: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-  },
-  {
-    _id: false,
-  }
-);
+    {
+      _id: false,
+    }
+  );
 
 
 /* =========================================================
    BILL SCHEMA
    ========================================================= */
 
-const billSchema = new mongoose.Schema(
-  {
-    /* -------------------------------------------------------
-       BILL NUMBER
-       ------------------------------------------------------- */
+const billSchema =
+  new mongoose.Schema(
+    {
+      /* =====================================================
+         BILL NUMBER
+         ===================================================== */
 
-    billNumber: {
-      type: Number,
-      required: true,
-      unique: true,
-    },
-
-
-    /* -------------------------------------------------------
-       TABLE
-       ------------------------------------------------------- */
-
-    tableId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Table",
-      required: true,
-    },
-
-    tableNumber: {
-      type: Number,
-      required: true,
-    },
-
-
-    /* -------------------------------------------------------
-       WAITER
-       ------------------------------------------------------- */
-
-    waiterId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
-    waiterName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-
-    /* -------------------------------------------------------
-       ORDERS INCLUDED IN THIS BILL
-       ------------------------------------------------------- */
-
-    orderIds: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
+      billNumber: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        uppercase: true,
       },
-    ],
 
 
-    /* -------------------------------------------------------
-       BILL ITEMS
-       ------------------------------------------------------- */
+      /* =====================================================
+         TABLE
+         ===================================================== */
 
-    items: {
-      type: [billItemSchema],
-      default: [],
-    },
-
-
-    /* -------------------------------------------------------
-       AMOUNTS
-       ------------------------------------------------------- */
-
-    subtotal: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
-    discount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
-    tax: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
-    totalAmount: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
+      tableId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Table",
+        required: true,
+      },
 
 
-    /* -------------------------------------------------------
-       PAYMENT
-       ------------------------------------------------------- */
+      tableNumber: {
+        type: Number,
+        required: true,
+      },
 
-    paymentMethod: {
-      type: String,
 
-      enum: [
-        "CASH",
-        "CARD",
-        "UPI",
-        "OTHER",
+      /* =====================================================
+         WAITER
+
+         Waiter who handled the customer/table.
+         ===================================================== */
+
+      waiterId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+
+
+      /* =====================================================
+         MANAGER
+
+         Null until a manager generates/finalizes
+         the bill.
+         ===================================================== */
+
+      managerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+
+
+      /* =====================================================
+         ORDERS INCLUDED IN BILL
+         ===================================================== */
+
+      orderIds: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Order",
+        },
       ],
 
-      default: "CASH",
-      uppercase: true,
-      trim: true,
+
+      /* =====================================================
+         BILL ITEMS
+         ===================================================== */
+
+      items: {
+        type: [billItemSchema],
+        default: [],
+      },
+
+
+      /* =====================================================
+         AMOUNTS
+         ===================================================== */
+
+      subtotal: {
+        type: Number,
+        required: true,
+        min: 0,
+        default: 0,
+      },
+
+
+      totalAmount: {
+        type: Number,
+        required: true,
+        min: 0,
+        default: 0,
+      },
+
+
+      /* =====================================================
+         BILL WORKFLOW STATUS
+
+         CHECKOUT
+           → waiter requested billing
+
+         GENERATED
+           → manager generated/reviewed bill
+
+         PAID
+           → payment completed
+         ===================================================== */
+
+      status: {
+        type: String,
+
+        enum: [
+          "CHECKOUT",
+          "GENERATED",
+          "PAID",
+          "CANCELLED",
+        ],
+
+        default: "CHECKOUT",
+
+        uppercase: true,
+
+        trim: true,
+      },
+
+
+      /* =====================================================
+         PAYMENT STATUS
+         ===================================================== */
+
+      paymentStatus: {
+        type: String,
+
+        enum: [
+          "UNPAID",
+          "PAID",
+        ],
+
+        default: "UNPAID",
+
+        uppercase: true,
+
+        trim: true,
+      },
+
+
+      /* =====================================================
+         PAYMENT METHOD
+         ===================================================== */
+
+      paymentMethod: {
+        type: String,
+
+        enum: [
+          "CASH",
+          "CARD",
+          "UPI",
+        ],
+
+        default: null,
+
+        uppercase: true,
+
+        trim: true,
+      },
+
+
+      /* =====================================================
+         TIMESTAMPS FOR BILL WORKFLOW
+         ===================================================== */
+
+      checkoutAt: {
+        type: Date,
+        default: null,
+      },
+
+
+      generatedAt: {
+        type: Date,
+        default: null,
+      },
+
+
+      paidAt: {
+        type: Date,
+        default: null,
+      },
     },
 
-    paymentStatus: {
-      type: String,
 
-      enum: [
-        "PENDING",
-        "PAID",
-        "CANCELLED",
-      ],
+    /* =====================================================
+       MONGOOSE OPTIONS
+       ===================================================== */
 
-      default: "PENDING",
-      uppercase: true,
-      trim: true,
-    },
+    {
+      timestamps: true,
+
+      collection: "bills",
+    }
+  );
 
 
-    /* -------------------------------------------------------
-       WHO GENERATED THE BILL
-       ------------------------------------------------------- */
+/* =========================================================
+   INDEXES
+   ========================================================= */
 
-    generatedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+billSchema.index({
+  waiterId: 1,
+  createdAt: -1,
+});
 
 
-    /* -------------------------------------------------------
-       BILL GENERATION TIME
-       ------------------------------------------------------- */
+billSchema.index({
+  tableId: 1,
+  status: 1,
+});
 
-    generatedAt: {
-      type: Date,
-      default: Date.now,
-    },
-  },
-  {
-    timestamps: true,
-    collection: "bills",
-  }
-);
+
+billSchema.index({
+  paymentStatus: 1,
+  createdAt: -1,
+});
 
 
 /* =========================================================
@@ -216,6 +297,10 @@ const billSchema = new mongoose.Schema(
 
 const Bill =
   mongoose.models.Bill ||
-  mongoose.model("Bill", billSchema);
+  mongoose.model(
+    "Bill",
+    billSchema
+  );
+
 
 export default Bill;

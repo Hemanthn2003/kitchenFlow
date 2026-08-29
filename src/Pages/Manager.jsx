@@ -483,7 +483,7 @@ const Manager = () => {
       setOrdersError("");
 
       const response = await fetch(
-        `${API_URL}/api/orders/${orderId}/status`,
+        `${API_URL}/api/manager/orders/${orderId}/status`,
         {
           method: "PATCH",
           credentials: "include",
@@ -535,7 +535,7 @@ const Manager = () => {
       setMenuError("");
 
       const response = await fetch(
-        `${API_URL}/api/menu/${itemId}/availability`,
+        `${API_URL}/api/manager/menu-items/${itemId}/availability`,
         {
           method: "PATCH",
           credentials: "include",
@@ -855,7 +855,7 @@ const Manager = () => {
       setMenuError("");
 
       const response = await fetch(
-        `${API_URL}/api/menu`,
+        `${API_URL}/api/manager/menu-items`,
         {
           method: "POST",
           credentials: "include",

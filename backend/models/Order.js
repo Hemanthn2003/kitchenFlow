@@ -65,23 +65,24 @@ const orderSchema = new mongoose.Schema(
     },
 
     status: {
-      type: String,
+  type: String,
 
-      enum: [
-        "NEW",
-        "ORDERED",
-        "PROCESSING",
-        "READY",
-        "COOKED",
-        "SERVED",
-      ],
+  enum: [
+    "NEW",
+    "ORDERED",
+    "PROCESSING",
+    "READY",
+    "COOKED",
+    "SERVED",
+    "ORDER_COMPLETED",
+  ],
 
-      default: "NEW",
+  default: "NEW",
 
-      uppercase: true,
+  uppercase: true,
 
-      trim: true,
-    },
+  trim: true,
+},
 
     items: {
       type: [orderItemSchema],
