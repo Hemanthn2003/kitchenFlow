@@ -4,6 +4,7 @@ import Table from "../models/Table.js";
 import MenuItem from "../models/MenuItem.js";
 import Order from "../models/Order.js";
 import Bill from "../models/Bill.js";
+import User from "../models/Users.js";
 
 import {
   authenticate,
@@ -11,6 +12,54 @@ import {
 } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+
+/* =========================================================
+   GET LOGGED-IN WAITER PROFILE
+
+   GET /api/waiter/me
+   ========================================================= */
+
+router.get(
+  "/me",
+
+  authenticate,
+  authorizeRoles("WAITER"),
+
+  async (req, res) => {
+    try {
+      const userId = req.user.id;
+
+      const waiter = await User.findById(userId)
+        .select(
+          "_id name email role imageUrl profileImage isActive currentTable lastActiveAt"
+        )
+        .lean();
+
+      if (!waiter) {
+        return res.status(404).json({
+          success: false,
+          message: "Waiter profile not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        waiter,
+      });
+    } catch (error) {
+      console.error(
+        "Get waiter profile error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to load waiter profile",
+      });
+    }
+  }
+);
 
 
 /* =========================================================

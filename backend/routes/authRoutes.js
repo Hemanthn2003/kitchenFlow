@@ -113,7 +113,7 @@ router.post(
 
       /* -----------------------------------------------
          Normalize role
-         
+
          This protects us if an old database
          record contains "Manager", "Kitchen",
          "Waiter", etc.
@@ -182,7 +182,7 @@ router.post(
       /*
         Mongoose timestamps: true
         automatically updates updatedAt.
-        
+
         DO NOT manually change createdAt.
       */
 
@@ -261,41 +261,41 @@ router.post(
          Return logged-in user
          ----------------------------------------------- */
 
-      return res.status(200).json({
+    return res.status(200).json({
+  message: "Login successful",
 
-        message:
-          "Login successful",
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
 
-        user: {
+    // WAITer PROFILE IMAGE
+    imageUrl:
+      user.imageUrl ||
+      user.profileImage ||
+      "",
 
-          id: user._id,
+    profileImage:
+      user.profileImage ||
+      user.imageUrl ||
+      "",
 
-          name:
-            user.name,
+    isActive: user.isActive,
 
-          email:
-            user.email,
+    currentTable:
+      user.currentTable,
 
-          role:
-            user.role,
+    lastActiveAt:
+      user.lastActiveAt,
 
-          isActive:
-            user.isActive,
+    createdAt:
+      user.createdAt,
 
-          currentTable:
-            user.currentTable,
-
-          lastActiveAt:
-            user.lastActiveAt,
-
-          createdAt:
-            user.createdAt,
-
-          updatedAt:
-            user.updatedAt,
-        },
-
-      });
+    updatedAt:
+      user.updatedAt,
+  },
+});
 
     } catch (error) {
 

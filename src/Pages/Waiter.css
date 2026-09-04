@@ -1,1931 +1,3776 @@
-
 /* =========================================================
-   KITCHENFLOW — WAITER WORKSPACE
-   Full replacement for src/Pages/Waiter.css
+   KITCHENFLOW
+   PREMIUM WAITER DASHBOARD
+   SAME DESIGN SYSTEM AS MANAGER
+   COMPLETE REPLACEMENT
    ========================================================= */
 
-* {
+
+/* =========================================================
+   THEME
+   ========================================================= */
+
+.waiter-page {
+
+  --bg: #030914;
+  --bg-2: #061225;
+
+  --sidebar: #061326;
+
+  --blue: #14549a;
+  --blue-dark: #0c3974;
+  --blue-deep: #092d60;
+
+  --gold: #e7b94c;
+  --gold-light: #f6d477;
+
+  --white: #ffffff;
+  --text: #ffffff;
+  --text-soft: #c2d4e9;
+  --text-muted: #7892b4;
+
+  --green: #38dfa0;
+  --red: #ff7777;
+
+  --border: rgba(76,151,236,0.38);
+
+  --surface: #0b2343;
+  --surface-2: #0e4283;
+  --surface-3: #092c59;
+
+  width: 100%;
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 80% 0%,
+      rgba(18,73,135,0.18),
+      transparent 30%
+    ),
+    #030914;
+
+  color: var(--white);
+
+  font-family:
+    "Inter",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+.waiter-page *,
+.waiter-page *::before,
+.waiter-page *::after {
   box-sizing: border-box;
 }
 
-.waiter-page {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top right, rgba(22, 119, 255, 0.10), transparent 28%),
-    radial-gradient(circle at left 45%, rgba(217, 173, 69, 0.045), transparent 30%),
-    var(--c-bg);
-  color: var(--c-text-primary);
+.waiter-page h1,
+.waiter-page h2,
+.waiter-page h3,
+.waiter-page h4,
+.waiter-page h5,
+.waiter-page p {
+  margin-top: 0;
 }
+
+.waiter-page button,
+.waiter-page input,
+.waiter-page textarea {
+  font-family: inherit;
+}
+
 
 /* =========================================================
-   HEADER
-   ========================================================= */
-
-.waiter-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  min-height: 78px;
-  display: grid;
-  grid-template-columns: 64px 1fr auto;
-  align-items: center;
-  gap: 20px;
-  padding: 10px clamp(14px, 2vw, 32px);
-  border-bottom: 1px solid var(--c-border);
-  background: rgba(7, 17, 34, 0.88);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-
-.waiter-menu-toggle {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 16px;
-  color: var(--c-text-primary);
-  background: linear-gradient(145deg, rgba(30,48,76,.95), rgba(11,25,46,.95));
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-.waiter-menu-toggle:hover {
-  transform: translateY(-1px);
-  border-color: rgba(47,140,255,.55);
-  box-shadow: 0 12px 28px rgba(0,0,0,.22);
-}
-
-.waiter-brand,
-.waiter-sidebar-brand {
-  font-size: clamp(24px, 2vw, 31px);
-  font-weight: 900;
-  letter-spacing: -.04em;
-  text-align: center;
-  color: var(--c-white);
-}
-
-.waiter-brand span,
-.waiter-sidebar-brand span,
-.waiter-page-heading h1 strong {
-  color: var(--c-accent-light);
-  font-weight: 900;
-}
-
-.waiter-user-info {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.waiter-user-text {
-  display: grid;
-  justify-items: end;
-  gap: 4px;
-}
-
-.waiter-user-text strong {
-  font-size: 14px;
-}
-
-.waiter-user-text span,
-.waiter-sidebar-user span {
-  color: var(--c-accent-light);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .12em;
-}
-
-.waiter-avatar {
-  width: 50px;
-  height: 50px;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border: 1px solid rgba(72, 151, 255, .48);
-  border-radius: 50%;
-  color: #72b0ff;
-  background: linear-gradient(145deg, rgba(22,119,255,.30), rgba(9,47,104,.55));
-  box-shadow: 0 10px 28px rgba(22,119,255,.16);
-}
-
-.waiter-avatar img,
-.waiter-small-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
-
-.waiter-sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  background: rgba(0,0,0,.48);
-  backdrop-filter: blur(5px);
-}
-
-.waiter-sidebar {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 1300;
-  width: min(360px, 88vw);
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  border-right: 1px solid rgba(255,255,255,.10);
-  background:
-    linear-gradient(180deg, rgba(14,29,52,.98), rgba(5,11,24,.99));
-  transform: translateX(-105%);
-  transition: transform .28s cubic-bezier(.2,.8,.2,1);
-  box-shadow: 30px 0 80px rgba(0,0,0,.35);
-}
-
-.waiter-sidebar.sidebar-open {
-  transform: translateX(0);
-}
-
-.waiter-sidebar-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 56px;
-  margin-bottom: 26px;
-}
-
-.waiter-sidebar-brand {
-  font-size: 24px;
-  text-align: left;
-}
-
-.waiter-sidebar-top button {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--c-border);
-  border-radius: 13px;
-  color: var(--c-text-primary);
-  background: var(--a-white-05);
-  cursor: pointer;
-}
-
-.waiter-sidebar-nav {
-  display: grid;
-  gap: 10px;
-}
-
-.waiter-sidebar-nav button,
-.waiter-logout-button {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  width: 100%;
-  padding: 0 16px;
-  border: 1px solid transparent;
-  border-radius: 15px;
-  color: var(--c-text-secondary);
-  background: transparent;
-  font: inherit;
-  font-weight: 750;
-  text-align: left;
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-.waiter-sidebar-nav button:hover {
-  color: var(--c-white);
-  background: var(--a-primary-14);
-}
-
-.waiter-sidebar-nav .active-nav {
-  border-color: rgba(47,140,255,.34);
-  color: var(--c-white);
-  background: linear-gradient(135deg, rgba(22,119,255,.24), rgba(22,119,255,.08));
-}
-
-.waiter-sidebar-bottom {
-  margin-top: auto;
-  display: grid;
-  gap: 16px;
-}
-
-.waiter-logout-button:hover {
-  color: #ffb1b1;
-  background: var(--a-error-12);
-}
-
-.waiter-sidebar-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid var(--c-border);
-  border-radius: 16px;
-  background: var(--a-white-05);
-}
-
-.waiter-small-avatar {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border-radius: 50%;
-  color: var(--c-link);
-  background: var(--a-primary-14);
-}
-
-.waiter-sidebar-user div:last-child {
-  display: grid;
-  gap: 4px;
-}
-
-/* =========================================================
-   MAIN LAYOUT
+   MAIN
    ========================================================= */
 
 .waiter-main {
+
   width: 100%;
   min-width: 0;
-}
-
-.waiter-section {
-  width: 100%;
-  max-width: none;
   margin: 0;
-  padding: clamp(18px, 2.5vw, 48px);
 }
 
-.waiter-page-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 24px;
-  padding-bottom: 26px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--c-border);
-}
-
-.waiter-page-heading > div > span {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--c-accent-light);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .16em;
-}
-
-.waiter-page-heading h1 {
-  margin: 0;
-  font-size: clamp(31px, 4vw, 50px);
-  letter-spacing: -.045em;
-}
-
-.waiter-page-heading h1 strong {
-  margin-left: .22em;
-}
-
-.waiter-page-heading p {
-  margin: 12px 0 0;
-  color: var(--c-text-secondary);
-  font-size: 16px;
-}
-
-.waiter-refresh-button {
-  min-width: 150px;
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 20px;
-  border: 1px solid rgba(47,140,255,.38);
-  border-radius: 15px;
-  color: #73b0ff;
-  background: linear-gradient(135deg, rgba(22,119,255,.14), rgba(22,119,255,.05));
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-.waiter-refresh-button:hover {
-  transform: translateY(-1px);
-  border-color: rgba(47,140,255,.65);
-  box-shadow: 0 12px 28px rgba(22,119,255,.10);
-}
 
 /* =========================================================
-   STATS
+   SIDEBAR
+   SAME MANAGER DESIGN
    ========================================================= */
 
-.waiter-stat-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap: 16px;
-  margin-bottom: 28px;
-}
+.waiter-sidebar {
 
-.waiter-stat-row > div {
-  min-height: 106px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 14px;
-  padding: 20px 22px;
-  border: 1px solid var(--c-border);
-  border-radius: 20px;
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 275px;
+  height: 100vh;
+
+  z-index: 3000;
+
+  display: flex;
+  flex-direction: column;
+
   background:
-    linear-gradient(145deg, rgba(24,43,69,.92), rgba(13,28,49,.95));
-  box-shadow: 0 16px 34px rgba(0,0,0,.12);
-}
+    linear-gradient(
+      180deg,
+      #07172f 0%,
+      #051123 100%
+    );
 
-.waiter-stat-row svg {
-  color: var(--c-primary-strong);
-}
+  border-right:
+    1px solid
+    rgba(229,184,75,0.16);
 
-.waiter-stat-row span {
-  color: var(--c-text-secondary);
-  font-weight: 800;
-}
-
-.waiter-stat-row strong {
-  color: var(--c-accent-light);
-  font-size: 30px;
-}
-
-/* =========================================================
-   TABLE GRID
-   ========================================================= */
-
-.waiter-table-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(12px, 1.4vw, 22px);
-  align-items: start;
-}
-
-.waiter-table-card {
-  min-width: 0;
-  padding: 24px;
-  border: 1px solid rgba(91,137,193,.24);
-  border-radius: 22px;
-  background:
-    linear-gradient(145deg, rgba(31,52,80,.96), rgba(17,34,58,.98));
   box-shadow:
-    0 18px 42px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.025);
-  transition: border-color .2s ease, transform .2s ease;
-}
+    20px 0 60px
+    rgba(0,0,0,0.45);
 
-.waiter-table-card:hover {
-  border-color: rgba(80,151,255,.38);
-}
+  transform: translateX(-105%);
 
-.table-expanded-card {
-  grid-column: 1 / -1;
-  width: 100%;
-  padding: clamp(24px, 3vw, 38px);
-  border-color: rgba(47,140,255,.40);
-  box-shadow:
-    0 26px 70px rgba(0,0,0,.22),
-    0 0 0 1px rgba(22,119,255,.05) inset;
-}
-
-.waiter-table-card-top {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.waiter-table-icon {
-  width: 58px;
-  height: 58px;
-  flex: 0 0 58px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(73,148,255,.28);
-  border-radius: 18px;
-  color: #63a8ff;
-  background: linear-gradient(145deg, rgba(22,119,255,.25), rgba(22,119,255,.08));
-}
-
-.waiter-table-number {
-  display: grid;
-  gap: 5px;
-  color: var(--c-text-secondary);
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.waiter-table-number strong {
-  color: var(--c-white);
-  font-size: 29px;
-  line-height: 1;
-}
-
-.waiter-table-status {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  margin-top: 20px;
-  padding: 0 16px;
-  border: 1px solid var(--c-border);
-  border-radius: 15px;
-  background: rgba(255,255,255,.035);
-}
-
-.waiter-table-status span {
-  color: var(--c-text-muted);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
-.waiter-table-status strong {
-  font-size: 12px;
-  letter-spacing: .08em;
-}
-
-.status-available { color: var(--c-success-bright); }
-.status-unavailable { color: #ff9fa6; }
-.status-billing { color: var(--c-accent-light); }
-
-.assigned-waiter,
-.waiter-billing-state {
-  margin-top: 16px;
-  color: var(--c-text-secondary);
-  font-size: 14px;
-}
-
-.assigned-waiter strong {
-  color: var(--c-white);
-  margin-left: 4px;
-}
-
-.waiter-billing-state {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 15px;
-  border: 1px solid var(--a-accent-28);
-  border-radius: 14px;
-  color: var(--c-accent-light);
-  background: var(--a-accent-06);
-}
-
-.picked-table-actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-.waiter-primary-button,
-.waiter-outline-button,
-.waiter-gold-button,
-.waiter-place-order-button {
-  min-height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  width: 100%;
-  padding: 0 18px;
-  border-radius: 14px;
-  font: inherit;
-  font-weight: 850;
-  cursor: pointer;
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-
-.waiter-primary-button {
-  border: 1px solid rgba(65,151,255,.55);
-  color: #fff;
-  background: linear-gradient(135deg, #1677ff, #2a67b9);
-  box-shadow: 0 12px 26px rgba(22,119,255,.22);
-}
-
-.waiter-outline-button {
-  border: 1px solid rgba(255,255,255,.13);
-  color: var(--c-text-primary);
-  background: rgba(255,255,255,.035);
-}
-
-.waiter-gold-button,
-.waiter-place-order-button {
-  border: 1px solid rgba(240,201,103,.42);
-  color: #152033;
-  background: linear-gradient(135deg, var(--c-accent-light), #c88f22);
-  box-shadow: 0 12px 26px rgba(217,173,69,.18);
-}
-
-.waiter-primary-button:hover:not(:disabled),
-.waiter-outline-button:hover:not(:disabled),
-.waiter-gold-button:hover:not(:disabled),
-.waiter-place-order-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.waiter-outline-button:hover:not(:disabled) {
-  border-color: rgba(255,255,255,.24);
-  background: rgba(255,255,255,.075);
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: .58;
-  transform: none !important;
-}
-
-/* =========================================================
-   FULL WIDTH ORDER WORKSPACE
-   IMPORTANT: the expanded card spans the whole table grid.
-   ========================================================= */
-
-.waiter-order-expanded {
-  width: 100%;
-  min-width: 0;
-  margin-top: 30px;
-  padding-top: 30px;
-  border-top: 1px solid var(--c-border);
-}
-
-.waiter-existing-orders {
-  margin-bottom: 24px;
-  padding: 20px;
-  border: 1px solid var(--c-border);
-  border-radius: 18px;
-  background: rgba(5,11,24,.28);
-}
-
-.waiter-existing-orders h4,
-.waiter-new-order-header h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.waiter-order-history-card {
-  margin-top: 12px;
-  padding: 14px;
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 14px;
-  background: rgba(255,255,255,.025);
-}
-
-.waiter-order-history-top,
-.waiter-history-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-}
-
-.waiter-order-history-top {
-  padding-bottom: 10px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid var(--c-border);
-  color: var(--c-text-muted);
-  font-size: 12px;
-}
-
-.waiter-order-history-top strong {
-  color: var(--c-primary-strong);
-}
-
-.waiter-history-item {
-  padding: 6px 0;
-  color: var(--c-text-secondary);
-  font-size: 14px;
-}
-
-.waiter-history-item strong {
-  color: var(--c-white);
-}
-
-.waiter-empty-order {
-  margin: 12px 0 0;
-  color: var(--c-text-muted);
-}
-
-.waiter-new-order-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 22px;
-  margin-bottom: 22px;
-  padding: 20px 0;
-}
-
-.waiter-new-order-header p {
-  margin: 7px 0 0;
-  color: var(--c-text-secondary);
-}
-
-.waiter-place-order-button {
-  width: auto;
-  min-width: 170px;
-  flex: 0 0 auto;
-}
-
-/* MENU CARDS — FULL SCREEN WIDTH GRID */
-
-.waiter-menu-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(12px, 1.4vw, 22px);
-  align-items: start;
-}
-
-.waiter-menu-card {
-  position: relative;
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 20px;
-  background: linear-gradient(145deg, rgba(19,37,62,.98), rgba(11,24,43,.98));
-  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-}
-
-.waiter-menu-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(58,142,255,.45);
-  box-shadow: 0 18px 38px rgba(0,0,0,.22);
-}
-
-.waiter-menu-card.selected-menu-card {
-  border-color: rgba(72,149,255,.72);
-  box-shadow:
-    0 0 0 1px rgba(22,119,255,.12) inset,
-    0 18px 38px rgba(22,119,255,.10);
-}
-
-.waiter-menu-image-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: var(--c-surface-2);
-}
-
-.waiter-menu-image-wrap img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  transition: transform .35s ease;
-}
-
-.waiter-menu-card:hover .waiter-menu-image-wrap img {
-  transform: scale(1.04);
-}
-
-.waiter-menu-placeholder {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  color: var(--c-primary-strong);
-  background:
-    linear-gradient(135deg, rgba(22,119,255,.18), rgba(22,119,255,.04));
-}
-
-.waiter-checkbox {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 2;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-}
-
-.waiter-checkbox input {
-  position: absolute;
   opacity: 0;
-  pointer-events: none;
+  visibility: hidden;
+
+  transition:
+    transform .3s ease,
+    opacity .25s ease,
+    visibility .3s ease;
 }
 
-.waiter-checkbox span {
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  border: 2px solid rgba(255,255,255,.55);
-  border-radius: 10px;
-  background: rgba(4,12,25,.62);
-  backdrop-filter: blur(8px);
+.waiter-sidebar.sidebar-open {
+
+  transform: translateX(0);
+
+  opacity: 1;
+
+  visibility: visible;
 }
 
-.waiter-checkbox input:checked + span {
-  border-color: var(--c-primary);
-  background: var(--c-primary);
-}
-
-.waiter-checkbox input:checked + span::after {
-  content: "✓";
-  color: #fff;
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.waiter-menu-info {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 17px 17px 12px;
-}
-
-.waiter-menu-info h4 {
-  margin: 0;
-  min-width: 0;
-  color: var(--c-white);
-  font-size: 16px;
-  line-height: 1.35;
-}
-
-.waiter-menu-info strong {
-  flex: 0 0 auto;
-  color: var(--c-accent-light);
-  font-size: 15px;
-}
-
-.waiter-menu-controls {
-  display: grid;
-  gap: 12px;
-  padding: 0 17px 17px;
-}
-
-.waiter-quantity-control {
-  width: max-content;
-  display: inline-grid;
-  grid-template-columns: 38px 42px 38px;
-  align-items: center;
-  overflow: hidden;
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
-}
-
-.waiter-quantity-control button {
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  color: var(--c-text-primary);
-  background: rgba(255,255,255,.05);
-  cursor: pointer;
-}
-
-.waiter-quantity-control span {
-  display: grid;
-  place-items: center;
-  height: 38px;
-  color: var(--c-white);
-  font-weight: 800;
-  background: rgba(0,0,0,.12);
-}
-
-.waiter-menu-controls textarea {
-  width: 100%;
-  min-height: 70px;
-  resize: vertical;
-  padding: 11px 12px;
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
-  outline: none;
-  color: var(--c-text-primary);
-  background: rgba(0,0,0,.12);
-  font: inherit;
-  font-size: 13px;
-}
-
-.waiter-menu-controls textarea:focus {
-  border-color: rgba(47,140,255,.55);
-}
 
 /* =========================================================
-   BILLS
+   SIDEBAR BRAND
    ========================================================= */
 
-.waiter-bill-filter {
-  display: grid;
-  grid-template-columns: minmax(180px, .7fr) minmax(220px, 1fr) auto auto;
-  gap: 14px;
-  align-items: end;
-  margin-bottom: 26px;
-  padding: 18px;
-  border: 1px solid var(--c-border);
-  border-radius: 20px;
-  background: rgba(255,255,255,.025);
-}
+.waiter-sidebar .sidebar-brand {
 
-.waiter-filter-field {
-  display: grid;
-  gap: 8px;
-}
+  height: 96px;
+  min-height: 96px;
 
-.waiter-filter-field label {
+  padding: 0 18px;
+
   display: flex;
   align-items: center;
-  gap: 7px;
-  color: var(--c-text-secondary);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.waiter-filter-field input {
-  width: 100%;
-  height: 46px;
-  padding: 0 13px;
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
-  outline: none;
-  color: var(--c-text-primary);
-  background: var(--c-surface-2);
-  font: inherit;
-}
-
-.waiter-filter-field input:focus {
-  border-color: rgba(47,140,255,.55);
-}
-
-.waiter-bill-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.waiter-bill-card {
-  padding: 22px;
-  border: 1px solid var(--c-border);
-  border-radius: 20px;
-  background: linear-gradient(145deg, rgba(22,42,69,.96), rgba(12,25,44,.98));
-}
-
-.waiter-bill-card-top,
-.waiter-bill-table-info,
-.waiter-bill-total,
-.waiter-bill-footer,
-.waiter-bill-items > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.waiter-bill-card-top span,
-.waiter-bill-footer span,
-.waiter-bill-total span {
-  color: var(--c-text-muted);
-  font-size: 12px;
-}
-
-.waiter-bill-card-top h3 {
-  margin: 5px 0 0;
-}
-
-.waiter-bill-status {
-  padding: 8px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 900;
-  background: var(--a-primary-14);
-  color: var(--c-primary-strong);
-}
-
-.bill-paid { color: var(--c-success-bright); background: var(--a-success-12); }
-.bill-cancelled { color: #ff9fa6; background: var(--a-error-12); }
-
-.waiter-bill-table-info {
-  justify-content: flex-start;
-  margin: 18px 0;
-  color: var(--c-text-secondary);
-}
-
-.waiter-bill-table-info strong {
-  color: var(--c-white);
-}
-
-.waiter-bill-items {
-  padding: 14px 0;
-  border-top: 1px solid var(--c-border);
-  border-bottom: 1px solid var(--c-border);
-}
-
-.waiter-bill-items > div {
-  padding: 7px 0;
-  color: var(--c-text-secondary);
-}
-
-.waiter-bill-items small {
-  color: var(--c-text-muted);
-}
-
-.waiter-bill-items strong {
-  color: var(--c-white);
-}
-
-.waiter-bill-total {
-  padding-top: 18px;
-}
-
-.waiter-bill-total strong {
-  color: var(--c-accent-light);
-  font-size: 22px;
-}
-
-.waiter-bill-footer {
-  margin-top: 14px;
-}
-
-.waiter-bill-date {
-  margin-top: 16px;
-  color: var(--c-text-subtle);
-  font-size: 12px;
-}
-
-/* =========================================================
-   EMPTY / LOADING / TOAST
-   ========================================================= */
-
-.waiter-loading,
-.waiter-empty-state {
-  min-height: 250px;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 10px;
-  border: 1px dashed rgba(255,255,255,.13);
-  border-radius: 22px;
-  color: var(--c-text-secondary);
-  text-align: center;
-}
-
-.waiter-empty-state svg {
-  color: var(--c-primary-strong);
-}
-
-.waiter-empty-state h3 {
-  margin: 6px 0 0;
-  color: var(--c-white);
-}
-
-.waiter-empty-state p {
-  margin: 0;
-}
-
-.waiter-toast {
-  position: fixed;
-  top: 96px;
-  left: 50%;
-  z-index: 4000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: min(560px, calc(100vw - 28px));
-  padding: 15px 18px;
-  border: 1px solid var(--c-border);
-  border-radius: 15px;
-  transform: translateX(-50%);
-  box-shadow: 0 20px 50px rgba(0,0,0,.35);
-}
-
-.toast-success {
-  color: #a9f0ce;
-  background: rgba(12,65,46,.96);
-  border-color: rgba(72,213,151,.28);
-}
-
-.toast-error {
-  color: #ffc2c2;
-  background: rgba(78,28,35,.97);
-  border-color: rgba(255,143,143,.25);
-}
-
-/* =========================================================
-   READY / SERVE MODALS
-   ========================================================= */
-
-.waiter-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 5000;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(2,7,16,.62);
-  backdrop-filter: blur(10px);
-}
-
-.waiter-ready-modal,
-.waiter-serve-modal {
-  width: min(100%, 520px);
-  padding: 30px;
-  border: 1px solid rgba(62,143,255,.34);
-  border-radius: 24px;
-  background: linear-gradient(145deg, rgba(25,52,88,.98), rgba(8,20,39,.99));
-  box-shadow: 0 28px 90px rgba(0,0,0,.5);
-  text-align: center;
-}
-
-.waiter-notification-icon {
-  width: 68px;
-  height: 68px;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 18px;
-  border-radius: 50%;
-  color: var(--c-accent-light);
-  background: var(--a-accent-12);
-}
-
-.waiter-ready-modal > span,
-.waiter-serve-modal > span {
-  color: var(--c-accent-light);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .14em;
-}
-
-.waiter-ready-modal h2,
-.waiter-serve-modal h2 {
-  margin: 10px 0;
-}
-
-.waiter-ready-modal p {
-  color: var(--c-text-secondary);
-}
-
-.waiter-serve-modal > svg {
-  color: var(--c-primary-strong);
-}
-
-.waiter-serve-items {
-  display: grid;
-  gap: 8px;
-  margin: 20px 0;
-  text-align: left;
-}
-
-.waiter-serve-items > div {
-  display: flex;
-  justify-content: space-between;
-  padding: 11px 12px;
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
-  color: var(--c-text-secondary);
-}
-
-.waiter-modal-close {
-  width: 100%;
-  margin-top: 12px;
-  min-height: 46px;
-  border: 1px solid var(--c-border);
-  border-radius: 13px;
-  color: var(--c-text-primary);
-  background: rgba(255,255,255,.04);
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media (max-width: 900px) {
-  .waiter-section {
-    padding: 24px 18px 38px;
-  }
-
-  .waiter-stat-row {
-    grid-template-columns: 1fr;
-  }
-
-  .waiter-bill-filter {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .waiter-bill-filter .waiter-primary-button,
-  .waiter-bill-filter .waiter-outline-button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 680px) {
-  .waiter-header {
-    grid-template-columns: 54px 1fr auto;
-    gap: 10px;
-    min-height: 70px;
-    padding: 8px 10px;
-  }
-
-  .waiter-menu-toggle {
-    width: 48px;
-    height: 48px;
-  }
-
-  .waiter-brand {
-    font-size: 24px;
-  }
-
-  .waiter-user-text {
-    display: none;
-  }
-
-  .waiter-avatar {
-    width: 45px;
-    height: 45px;
-  }
-
-  .waiter-page-heading {
-    align-items: start;
-    flex-direction: column;
-  }
-
-  .waiter-refresh-button {
-    width: 100%;
-  }
-
-  .waiter-table-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .waiter-table-card {
-    padding: 20px;
-  }
-
-  .waiter-new-order-header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .waiter-place-order-button {
-    width: 100%;
-  }
-
-  .waiter-menu-grid {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 12px;
-  }
-
-  .waiter-menu-info {
-    padding: 13px 12px 10px;
-  }
-
-  .waiter-menu-info h4 {
-    font-size: 14px;
-  }
-
-  .waiter-menu-controls {
-    padding: 0 12px 13px;
-  }
-
-  .waiter-bill-filter {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 420px) {
-  .waiter-page-heading h1 {
-    font-size: 32px;
-  }
-}
-
-/* =========================================================
-   RESPONSIVE FULL-WIDTH CARD GRID
-
-   Mobile  : 2 cards
-   Tablet  : 4 cards
-   Desktop : 4 cards
-   ========================================================= */
-
-@media (min-width: 768px) {
-  .waiter-table-grid,
-  .waiter-menu-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1500px) {
-  .waiter-section {
-    padding-left: clamp(32px, 3vw, 64px);
-    padding-right: clamp(32px, 3vw, 64px);
-  }
-}
-
-/* =========================================================
-   WAITER FINAL LAYOUT FIXES
-   Add this at the VERY END of Waiter.css
-   ========================================================= */
-
-
-/* ---------------------------------------------------------
-   PREVENT PAGE FROM SHRINKING
-   --------------------------------------------------------- */
-
-.waiter-page,
-.waiter-main,
-.waiter-section {
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-}
-
-
-/* ---------------------------------------------------------
-   TABLE GRID
-   Mobile  : 2 cards
-   Tablet  : 4 cards
-   Desktop : 4 cards
-   --------------------------------------------------------- */
-
-.waiter-table-grid {
-  width: 100%;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-}
-
-
-/* Tablet and Desktop */
-
-@media (min-width: 768px) {
-  .waiter-table-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-
-/* ---------------------------------------------------------
-   NORMAL TABLE CARD
-   --------------------------------------------------------- */
-
-.waiter-table-card {
-  min-width: 0;
-  width: 100%;
-  overflow: hidden;
-}
-
-
-/* ---------------------------------------------------------
-   EXPANDED TAKE ORDER CARD
-   THIS IS THE IMPORTANT PART
-   --------------------------------------------------------- */
-
-.waiter-table-card.table-expanded-card {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
-  max-width: none;
-}
-
-
-/* Expanded workspace must never inherit narrow width */
-
-.table-expanded-card .waiter-order-expanded {
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-}
-
-
-/* ---------------------------------------------------------
-   STATUS OVERFLOW FIX
-   --------------------------------------------------------- */
-
-.waiter-table-status {
-  width: 100%;
-  min-width: 0;
-  gap: 8px;
-}
 
+  gap: 13px;
 
-.waiter-table-status span {
-  flex: 0 0 auto;
-  white-space: nowrap;
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.07);
 }
-
-
-.waiter-table-status strong {
-  min-width: 0;
-  max-width: 100%;
-  text-align: right;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-
-/* Mobile narrow cards */
-
-@media (max-width: 520px) {
-
-  .waiter-table-card {
-    padding: 18px;
-  }
-
-
-  .waiter-table-status {
-    min-height: auto;
-    padding: 12px 13px;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-
-  .waiter-table-status strong {
-    width: 100%;
-    text-align: left;
-    line-height: 1.4;
-  }
-
-
-  .waiter-table-status span {
-    font-size: 10px;
-  }
-
-
-  .waiter-table-status strong {
-    font-size: 11px;
-    letter-spacing: .05em;
-  }
-
-
-  .assigned-waiter {
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-
-
-  .assigned-waiter strong {
-    margin-left: 0;
-  }
-}
-
-
-/* ---------------------------------------------------------
-   EXPANDED ORDER WORKSPACE
-   --------------------------------------------------------- */
-
-.table-expanded-card {
-  padding: clamp(18px, 3vw, 38px);
-}
-
-
-.table-expanded-card .waiter-table-card-top,
-.table-expanded-card .waiter-table-status,
-.table-expanded-card .assigned-waiter,
-.table-expanded-card .picked-table-actions {
-  max-width: none;
-}
-
-
-/* Full-width divider */
-
-.table-expanded-card .waiter-order-expanded {
-  margin-top: 28px;
-  padding-top: 28px;
-  border-top: 1px solid var(--c-border);
-}
-
-
-/* ---------------------------------------------------------
-   MENU GRID
-   --------------------------------------------------------- */
-
-.table-expanded-card .waiter-menu-grid {
-  width: 100%;
-  min-width: 0;
-  max-width: none;
-}
-
-
-/* Mobile: 2 menu cards */
-
-@media (max-width: 767px) {
-
-  .table-expanded-card .waiter-menu-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-}
-
-
-/* Tablet: 4 menu cards */
-
-@media (min-width: 768px) {
-
-  .table-expanded-card .waiter-menu-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-}
-
-
-/* Large Desktop: 4 cards */
-
-@media (min-width: 1200px) {
-
-  .table-expanded-card .waiter-menu-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-}
-
-
-/* ---------------------------------------------------------
-   MENU CARD OVERFLOW PREVENTION
-   --------------------------------------------------------- */
-
-.waiter-menu-card {
-  min-width: 0;
-  width: 100%;
-}
-
-
-.waiter-menu-info {
-  min-width: 0;
-}
-
-
-.waiter-menu-info h4 {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-
-.waiter-menu-info strong {
-  white-space: nowrap;
-}
-
-
-/* ---------------------------------------------------------
-   MOBILE EXPANDED CARD
-   --------------------------------------------------------- */
-
-@media (max-width: 767px) {
-
-  .waiter-table-card.table-expanded-card {
-    grid-column: 1 / -1;
-  }
-
-
-  .table-expanded-card .waiter-new-order-header {
-    width: 100%;
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-
-  .table-expanded-card .waiter-place-order-button {
-    width: 100%;
-  }
-
-
-  .table-expanded-card .waiter-existing-orders {
-    width: 100%;
-  }
-
-}
-
-/* =========================================================
-   FINAL TABLET FIX
-   768px - 971px
-   Prevent status words from breaking letter-by-letter
-   ========================================================= */
-
-@media (min-width: 768px) and (max-width: 971px) {
-
-  /* -------------------------------------------------------
-     TABLE GRID
-     Force exactly 4 cards per row
-     ------------------------------------------------------- */
-
-  .waiter-table-grid {
-    width: 100% !important;
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 14px !important;
-    align-items: start !important;
-  }
-
-
-  /* -------------------------------------------------------
-     TABLE CARD
-     ------------------------------------------------------- */
-
-  .waiter-table-card {
-    min-width: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 16px !important;
-  }
-
-
-  .waiter-table-card-top {
-    min-width: 0 !important;
-    gap: 10px !important;
-  }
-
-
-  /* -------------------------------------------------------
-     TABLE NUMBER
-     ------------------------------------------------------- */
-
-  .waiter-table-number {
-    min-width: 0 !important;
-  }
-
-
-  .waiter-table-number strong {
-    white-space: nowrap !important;
-  }
-
-
-  /* -------------------------------------------------------
-     STATUS BOX
-
-     STATUS appears on first line.
-
-     AVAILABLE / UNAVAILABLE /
-     CHECKOUT REQUESTED stays as complete words
-     and never breaks like:
-
-     AVAIL
-     ABLE
-     ------------------------------------------------------- */
-
-  .waiter-table-status {
-    width: 100% !important;
-    min-width: 0 !important;
-
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    justify-content: center !important;
-
-    gap: 6px !important;
-
-    box-sizing: border-box !important;
-  }
-
-
-  .waiter-table-status span {
-    width: 100% !important;
-    display: block !important;
-
-    white-space: nowrap !important;
-    word-break: normal !important;
-    overflow-wrap: normal !important;
-
-    font-size: 10px !important;
-  }
-
-
-  .waiter-table-status strong {
-    width: 100% !important;
-
-    display: block !important;
-
-    white-space: normal !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-    hyphens: none !important;
-
-    line-height: 1.35 !important;
-
-    font-size: 11px !important;
-  }
-
-
-  /* -------------------------------------------------------
-     STATUS COLORS
-     ------------------------------------------------------- */
-
-  .waiter-table-status .status-available,
-  .waiter-table-status .status-unavailable,
-  .waiter-table-status .status-billing {
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-    hyphens: none !important;
-  }
-
-
-  /* -------------------------------------------------------
-     PICKED BY WAITER
-     ------------------------------------------------------- */
-
-  .assigned-waiter {
-    min-width: 0 !important;
-
-    word-break: normal !important;
-    overflow-wrap: normal !important;
-  }
-
-
-  .assigned-waiter strong {
-    word-break: normal !important;
-    overflow-wrap: anywhere !important;
-  }
-
-
-  /* -------------------------------------------------------
-     BUTTONS
-
-     Keep button text as complete words.
-     ------------------------------------------------------- */
-
-  .waiter-primary-button,
-  .waiter-outline-button,
-  .waiter-gold-button {
-    min-width: 0 !important;
-    width: 100% !important;
-
-    white-space: normal !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-
-    line-height: 1.25 !important;
-
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-
-    font-size: 15px !important;
-  }
-
-
-  /* -------------------------------------------------------
-     TAKE ORDER / PICK TABLE ICONS
-     ------------------------------------------------------- */
-
-  .waiter-primary-button svg,
-  .waiter-outline-button svg,
-  .waiter-gold-button svg {
-    flex-shrink: 0 !important;
-  }
-
-}
-
-
-/* =========================================================
-   CHECKOUT CONFIRMATION MODAL
-   ========================================================= */
 
-.waiter-checkout-modal-overlay {
-  position: fixed;
-  inset: 0;
+.waiter-sidebar .brand-icon {
 
-  z-index: 9999;
+  width: 48px;
+  height: 48px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 20px;
+  flex-shrink: 0;
 
-  background: rgba(3, 12, 28, 0.62);
-
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
-
-  box-sizing: border-box;
-}
-
-
-.waiter-checkout-confirm-modal {
-  width: min(100%, 460px);
+  color: var(--gold);
 
   background:
     linear-gradient(
       145deg,
-      rgba(31, 57, 91, 0.98),
-      rgba(13, 29, 50, 0.99)
+      #124a8e,
+      #092c5b
     );
-
-  border: 1px solid
-    rgba(65, 139, 234, 0.45);
-
-  border-radius: 22px;
-
-  padding: 30px;
-
-  box-shadow:
-    0 30px 80px
-    rgba(0, 0, 0, 0.48);
-
-  text-align: center;
-
-  animation:
-    waiterCheckoutModalIn
-    0.2s ease-out;
-
-  box-sizing: border-box;
-}
-
-
-@keyframes waiterCheckoutModalIn {
-
-  from {
-    opacity: 0;
-    transform:
-      translateY(12px)
-      scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform:
-      translateY(0)
-      scale(1);
-  }
-
-}
-
-
-.waiter-checkout-modal-icon {
-  width: 62px;
-  height: 62px;
-
-  margin:
-    0 auto 16px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 18px;
-
-  color: #f0c967;
-
-  background:
-    rgba(217, 173, 69, 0.14);
 
   border:
     1px solid
-    rgba(240, 201, 103, 0.3);
+    rgba(229,184,75,.38);
+
+  border-radius: 14px;
 }
 
-
-.waiter-checkout-modal-kicker {
-  display: block;
-
-  margin-bottom: 8px;
-
-  color: #f0c967;
-
-  font-size: 11px;
-  font-weight: 800;
-
-  letter-spacing: 1.4px;
+.waiter-sidebar .brand-text {
+  min-width: 0;
 }
 
+.waiter-sidebar .brand-text h2 {
 
-.waiter-checkout-confirm-modal h2 {
-  margin: 0 0 14px;
-
-  color: var(--text-primary, #ffffff);
-
-  font-size: 25px;
-}
-
-
-.waiter-checkout-confirm-modal p {
   margin: 0;
 
-  color:
-    var(--text-muted, #a9b8cc);
+  color: white;
 
-  line-height: 1.7;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-  font-size: 15px;
+  font-size: 18px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.3px;
+
+  white-space: nowrap;
+}
+
+.waiter-sidebar .brand-text h2 span {
+  color: var(--gold);
+}
+
+.waiter-sidebar .brand-text p {
+
+  margin: 5px 0 0;
+
+  color: #7188a7;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
 }
 
 
-.waiter-checkout-confirm-modal p strong {
-  color:
-    var(--text-primary, #ffffff);
-}
+/* =========================================================
+   SIDEBAR CLOSE
+   ========================================================= */
 
+.waiter-sidebar .mobile-close {
 
-.waiter-checkout-modal-actions {
-  display: grid;
+  width: 34px;
+  height: 34px;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 12px;
-
-  margin-top: 26px;
-}
-
-
-.waiter-checkout-cancel-button,
-.waiter-checkout-confirm-button {
-  min-height: 48px;
-
-  border-radius: 12px;
-
-  border: 1px solid;
+  margin-left: auto;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 8px;
+  color: #9bb0ca;
 
-  font-size: 14px;
-  font-weight: 700;
+  background:
+    rgba(255,255,255,.05);
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius: 9px;
 
   cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
 }
 
 
-.waiter-checkout-cancel-button:hover,
-.waiter-checkout-confirm-button:hover {
+/* =========================================================
+   SIDEBAR NAV
+   ========================================================= */
+
+.waiter-sidebar .sidebar-section {
+  padding: 25px 13px;
+}
+
+.waiter-sidebar .sidebar-title {
+
+  margin:
+    0 10px 11px;
+
+  color: #607896;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 2.5px;
+}
+
+.waiter-sidebar .sidebar-link {
+
+  width: 100%;
+  min-height: 44px;
+
+  margin-bottom: 4px;
+
+  padding:
+    0 13px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  color: #8fa5c0;
+
+  background: transparent;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+  text-align: left;
+
+  transition: .2s ease;
+}
+
+.waiter-sidebar .sidebar-link:hover {
+
+  color: white;
+
+  background:
+    rgba(255,255,255,.045);
+}
+
+.waiter-sidebar .sidebar-link.active {
+
+  color: var(--gold-light);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(229,184,75,.15),
+      rgba(229,184,75,.025)
+    );
+
+  border-color:
+    rgba(229,184,75,.18);
+
+  box-shadow:
+    inset 3px 0 var(--gold);
+}
+
+.waiter-sidebar .sidebar-link span {
+  flex: 1;
+}
+
+.waiter-sidebar .sidebar-link small {
+
+  color: #7391b5;
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+   ========================================================= */
+
+.waiter-sidebar .sidebar-bottom {
+
+  margin-top: auto;
+
+  padding: 13px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.07);
+}
+
+.waiter-sidebar .sidebar-user {
+
+  min-height: 57px;
+
+  margin-bottom: 7px;
+
+  padding: 9px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  background:
+    rgba(10,40,80,.75);
+
+  border:
+    1px solid
+    rgba(229,184,75,.16);
+
+  border-radius: 11px;
+}
+
+.waiter-sidebar .sidebar-user-icon {
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--gold);
+
+  background: #0e3f7e;
+
+  border-radius: 9px;
+}
+
+.waiter-sidebar .sidebar-user strong {
+
+  display: block;
+
+  color: white;
+
+  font-size: 11px;
+}
+
+.waiter-sidebar .sidebar-user span {
+
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--gold);
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+}
+
+.waiter-sidebar .logout-button {
+
+  width: 100%;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 0 10px;
+
+  color: #8196b1;
+
+  background: transparent;
+
+  border: none;
+
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  font-size: 12px;
+}
+
+.waiter-sidebar .logout-button:hover {
+
+  color: #ff9999;
+
+  background:
+    rgba(255,80,80,.06);
+}
+
+
+/* =========================================================
+   SIDEBAR OVERLAY
+   ========================================================= */
+
+.waiter-sidebar + .sidebar-overlay,
+.sidebar-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 2900;
+
+  background:
+    rgba(0,0,0,.68);
+
+  backdrop-filter:
+    blur(4px);
+}
+
+
+/* =========================================================
+   HEADER
+   SAME AS MANAGER
+   ========================================================= */
+
+.waiter-main .manager-header {
+
+  width: 100%;
+  height: 82px;
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 500;
+
+  padding:
+    0 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background:
+    rgba(3,9,20,.94);
+
+  backdrop-filter:
+    blur(20px);
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.07);
+}
+
+.waiter-main .header-left {
+
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+}
+
+.waiter-main .menu-button {
+
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: var(--gold);
+
+  background:
+    linear-gradient(
+      145deg,
+      #11447f,
+      #092b59
+    );
+
+  border:
+    1px solid
+    rgba(229,184,75,.35);
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition: .2s ease;
+}
+
+.waiter-main .menu-button:hover {
+
+  border-color: var(--gold);
+
   transform:
     translateY(-1px);
 }
 
+.waiter-main .header-heading span {
 
-.waiter-checkout-cancel-button {
-  color:
-    var(--text-primary, #ffffff);
+  display: block;
 
-  background:
-    rgba(255, 255, 255, 0.04);
+  margin-bottom: 4px;
+
+  color: var(--gold);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 3px;
+}
+
+.waiter-main .header-heading h1 {
+
+  margin: 0;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 31px;
+
+  font-weight: 700;
+
+  line-height: 1;
+}
+
+.waiter-main .header-right {
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+}
+
+.waiter-main .refresh-button {
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #8ca6c5;
+
+  background: #091d38;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-radius: 11px;
+
+  cursor: pointer;
+}
+
+.waiter-main .refresh-button:hover {
+
+  color: var(--gold);
 
   border-color:
-    rgba(123, 157, 199, 0.3);
+    rgba(229,184,75,.3);
+}
+
+.waiter-main .spinning {
+
+  display: flex;
+
+  animation:
+    waiter-spin .8s linear infinite;
+}
+
+@keyframes waiter-spin {
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 
-.waiter-checkout-confirm-button {
-  color: #14223a;
+/* =========================================================
+   HEADER USER
+   ========================================================= */
+
+.waiter-main .header-user {
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.waiter-main .header-user-text {
+  text-align: right;
+}
+
+.waiter-main .header-user-text strong {
+
+  display: block;
+
+  color: white;
+
+  font-size: 13px;
+}
+
+.waiter-main .header-user-text span {
+
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--gold);
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+}
+
+.waiter-main .header-user-avatar {
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--gold);
+
+  background:
+    linear-gradient(
+      145deg,
+      #124783,
+      #0a2d5c
+    );
+
+  border:
+    1px solid
+    rgba(229,184,75,.32);
+
+  border-radius: 11px;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.waiter-content-section {
+
+  width: 100%;
+
+  max-width: 1560px;
+
+  margin: 0 auto;
+
+  padding:
+    32px 35px 55px;
+}
+
+
+/* =========================================================
+   PAGE HEADING
+   ========================================================= */
+
+.waiter-content-section .page-heading {
+
+  margin-bottom: 28px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 24px;
+}
+
+.waiter-content-section .page-heading > div {
+  min-width: 0;
+}
+
+.waiter-content-section .page-heading > div > span {
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--gold);
+
+  font-size: 15px;
+
+  font-weight: 900;
+
+  letter-spacing: .14em;
+
+  line-height: 1.2;
+
+  text-transform: uppercase;
+}
+
+.waiter-content-section .page-heading h1 {
+
+  margin: 0;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 45px;
+
+  font-weight: 700;
+
+  line-height: 1.1;
+}
+
+.waiter-content-section .page-heading h1 strong {
+  color: var(--gold-light);
+}
+
+.waiter-content-section .page-heading p {
+
+  max-width: 800px;
+
+  margin: 10px 0 0;
+
+  color: var(--text-soft);
+
+  font-size: 18px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   BUTTONS
+   MANAGER STYLE
+   ========================================================= */
+
+.waiter-refresh-button,
+.waiter-primary-button,
+.waiter-outline-button,
+.waiter-gold-button,
+.waiter-place-order-button {
+
+  min-height: 50px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  padding:
+    12px 20px;
+
+  border:
+    1px solid
+    rgba(76,151,236,.28);
+
+  border-radius: 11px;
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  font-weight: 900;
+
+  letter-spacing: .03em;
+
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    border-color .2s ease,
+    opacity .2s ease;
+}
+
+
+/* BLUE BUTTON */
+
+.waiter-primary-button,
+.waiter-place-order-button {
+
+  color: white;
 
   background:
     linear-gradient(
       135deg,
-      #f0c967,
-      #d9ad45
+      #14549a,
+      #0c3974
     );
 
-  border-color:
-    rgba(240, 201, 103, 0.6);
+  box-shadow:
+    0 8px 22px
+    rgba(0,0,0,.35);
 }
 
 
-.waiter-checkout-cancel-button:disabled,
-.waiter-checkout-confirm-button:disabled {
-  opacity: 0.55;
+/* GOLD BUTTON */
+
+.waiter-gold-button {
+
+  color: #07172f;
+
+  background:
+    linear-gradient(
+      135deg,
+      #e7b94c,
+      #f6d477
+    );
+
+  border-color:
+    rgba(229,184,75,.4);
+
+  box-shadow:
+    0 8px 22px
+    rgba(0,0,0,.25);
+}
+
+
+/* OUTLINE / REFRESH */
+
+.waiter-refresh-button,
+.waiter-outline-button {
+
+  color: var(--text-soft);
+
+  background:
+    linear-gradient(
+      135deg,
+      #0c3974,
+      #092d60
+    );
+}
+
+.waiter-refresh-button:hover,
+.waiter-primary-button:hover,
+.waiter-outline-button:hover,
+.waiter-gold-button:hover,
+.waiter-place-order-button:hover {
+
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(229,184,75,.35);
+}
+
+.waiter-primary-button:disabled,
+.waiter-gold-button:disabled,
+.waiter-outline-button:disabled,
+.waiter-place-order-button:disabled,
+.waiter-refresh-button:disabled {
+
+  opacity: .55;
+
   cursor: not-allowed;
+
   transform: none;
 }
 
 
 /* =========================================================
-   MOBILE CHECKOUT MODAL
+   STATISTICS
    ========================================================= */
 
-@media (max-width: 520px) {
+.waiter-stat-row {
 
-  .waiter-checkout-modal-overlay {
-    padding: 14px;
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap: 15px;
+
+  margin-bottom: 42px;
+}
+
+.waiter-stat-row > div {
+
+  min-height: 145px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 18px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #125092 0%,
+      #0e4283 55%,
+      #0b356d 100%
+    );
+
+  box-shadow:
+    0 14px 32px
+    rgba(0,0,0,.25);
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease;
+}
+
+.waiter-stat-row > div:hover {
+
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(229,184,75,.38);
+}
+
+.waiter-stat-row svg {
+
+  color: var(--gold);
+
+  flex-shrink: 0;
+}
+
+.waiter-stat-row span {
+
+  display: block;
+
+  margin-top: auto;
+
+  color: #abc1dc;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1.2px;
+}
+
+.waiter-stat-row strong {
+
+  display: block;
+
+  margin-top: 7px;
+
+  color: white;
+
+  font-size: 35px;
+
+  font-weight: 800;
+
+  line-height: .95;
+}
+
+
+/* =========================================================
+   TABLE GRID
+   ========================================================= */
+
+.waiter-table-grid,
+.waiter-bill-grid {
+
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4,minmax(0,1fr));
+
+  gap: 18px;
+}
+
+
+/* =========================================================
+   TABLE CARD
+   ========================================================= */
+
+.waiter-table-card,
+.waiter-bill-card {
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  position: relative;
+
+  padding: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #125092 0%,
+      #0e4283 53%,
+      #0b356d 100%
+    );
+
+  box-shadow:
+    0 15px 35px
+    rgba(0,0,0,.26);
+
+  transition:
+    transform .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease;
+}
+
+.waiter-table-card:hover,
+.waiter-bill-card:hover {
+
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(229,184,75,.4);
+
+  box-shadow:
+    0 20px 42px
+    rgba(0,0,0,.32);
+}
+
+.waiter-table-card::before,
+.waiter-bill-card::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255,255,255,.06),
+      transparent 42%
+    );
+}
+
+.waiter-table-card::after {
+
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  right: -100px;
+  top: -130px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(78,165,255,.10);
+
+  filter: blur(15px);
+
+  pointer-events: none;
+}
+
+.picked-table-card {
+
+  border-color:
+    rgba(229,184,75,.32);
+}
+
+.bill-requested-card {
+
+  border-color:
+    rgba(229,184,75,.42);
+}
+
+
+/* =========================================================
+   TABLE CARD TOP
+   ========================================================= */
+
+.waiter-table-card-top,
+.waiter-bill-card-top {
+
+  position: relative;
+
+  z-index: 2;
+
+  padding:
+    19px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.waiter-table-icon {
+
+  width: 55px;
+  height: 55px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: var(--gold);
+
+  background:
+    rgba(3,25,54,.4);
+
+  border:
+    1px solid
+    rgba(229,184,75,.25);
+
+  border-radius: 14px;
+}
+
+.waiter-table-number {
+
+  flex: 1;
+
+  color: #abc1dc;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.7px;
+
+  text-transform: uppercase;
+}
+
+.waiter-table-number strong {
+
+  display: block;
+
+  margin-top: 6px;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 25px;
+
+  font-weight: 700;
+
+  letter-spacing: 0;
+}
+
+
+/* =========================================================
+   TABLE STATUS
+   ========================================================= */
+
+.waiter-table-status {
+
+  position: relative;
+
+  z-index: 2;
+
+  margin:
+    0 19px;
+
+  padding:
+    13px 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.09);
+}
+
+.waiter-table-status span {
+
+  color: #a5bdd7;
+
+  font-size: 12px;
+}
+
+.waiter-table-status strong {
+
+  padding:
+    5px 9px;
+
+  border-radius: 7px;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: .8px;
+
+  text-transform: uppercase;
+}
+
+.status-available,
+.status-free {
+
+  color: #5ce0a5;
+}
+
+.status-unavailable,
+.status-busy {
+
+  color: var(--gold-light);
+}
+
+.status-billing {
+
+  color: var(--gold-light);
+}
+
+
+/* =========================================================
+   ASSIGNED WAITER
+   ========================================================= */
+
+.assigned-waiter {
+
+  position: relative;
+
+  z-index: 2;
+
+  margin:
+    14px 19px 0;
+
+  color: #b5cae1;
+
+  font-size: 12px;
+}
+
+.assigned-waiter strong {
+  color: white;
+}
+
+
+/* =========================================================
+   TABLE ACTIONS
+   ========================================================= */
+
+.waiter-table-card > .waiter-table-actions,
+.waiter-table-actions {
+
+  position: relative;
+
+  z-index: 3;
+
+  margin-top: auto;
+
+  padding:
+    16px 19px 19px;
+
+  display: flex;
+
+  gap: 9px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.09);
+
+  background:
+    rgba(3,20,45,.28);
+}
+
+.waiter-table-actions button {
+
+  flex: 1;
+
+  min-height: 42px;
+
+  padding:
+    9px 12px;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   PICKED TABLE ACTIONS
+   ========================================================= */
+
+.picked-table-actions {
+
+  position: relative;
+
+  z-index: 3;
+
+  display: grid;
+
+  grid-template-columns:
+    1.3fr 1fr 1fr;
+
+  gap: 9px;
+
+  padding:
+    16px 19px 19px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.09);
+
+  background:
+    rgba(3,20,45,.28);
+}
+
+.picked-table-actions button {
+
+  min-height: 42px;
+
+  padding:
+    8px 10px;
+
+  border-radius: 9px;
+
+  font-size: 11px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   BILLING STATE
+   ========================================================= */
+
+.waiter-billing-state {
+
+  margin:
+    14px 19px 19px;
+
+  padding:
+    13px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  border-radius: 10px;
+
+  color: var(--gold-light);
+
+  background:
+    rgba(229,184,75,.09);
+
+  border:
+    1px solid
+    rgba(229,184,75,.2);
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   ORDER EXPANDED AREA
+   ========================================================= */
+
+.waiter-order-expanded {
+
+  position: relative;
+
+  z-index: 3;
+
+  margin:
+    0 19px 19px;
+
+  padding-top: 20px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.09);
+}
+
+
+/* =========================================================
+   ORDER HEADINGS
+   ========================================================= */
+
+.waiter-existing-orders-heading,
+.waiter-new-order-header {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.waiter-existing-orders-heading {
+
+  margin-bottom: 13px;
+}
+
+.waiter-existing-orders-heading span,
+.waiter-new-order-header span {
+
+  display: block;
+
+  color: var(--gold);
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+.waiter-existing-orders-heading h4,
+.waiter-new-order-header h3 {
+
+  margin:
+    5px 0 0;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 20px;
+
+  font-weight: 700;
+}
+
+.waiter-existing-orders-heading svg {
+
+  color:
+    #70bcff;
+}
+
+
+/* =========================================================
+   ORDER HISTORY
+   ========================================================= */
+
+.waiter-order-history-card {
+
+  padding:
+    13px;
+
+  margin-bottom: 8px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(3,20,45,.35);
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+}
+
+.waiter-order-history-top,
+.waiter-history-item {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.waiter-order-history-top {
+
+  margin-bottom: 7px;
+}
+
+.waiter-order-history-top span,
+.waiter-history-item span {
+
+  color:
+    #b5cae1;
+
+  font-size: 12px;
+}
+
+.waiter-order-history-top strong {
+
+  color:
+    var(--gold-light);
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+.waiter-history-item {
+
+  padding:
+    5px 0;
+}
+
+.waiter-history-item strong {
+  color: white;
+}
+
+.waiter-empty-order {
+
+  margin:
+    0 0 18px;
+
+  color:
+    #7892b4;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   NEW ORDER
+   ========================================================= */
+
+.waiter-new-order-header {
+
+  margin:
+    20px 0 13px;
+}
+
+.waiter-new-order-header p {
+
+  margin:
+    5px 0 0;
+
+  color:
+    #7892b4;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   MENU GRID
+   ========================================================= */
+
+.waiter-menu-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap: 11px;
+}
+
+.waiter-menu-card {
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(76,151,236,.25);
+
+  border-radius: 12px;
+
+  background:
+    rgba(3,20,45,.4);
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    background .2s ease;
+}
+
+.waiter-menu-card:hover {
+
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(229,184,75,.3);
+}
+
+.selected-menu-card {
+
+  border-color:
+    rgba(229,184,75,.42);
+
+  background:
+    rgba(229,184,75,.055);
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(229,184,75,.08);
+}
+
+
+/* =========================================================
+   MENU IMAGE
+   ========================================================= */
+
+.waiter-menu-image-wrap {
+
+  height: 125px;
+
+  position: relative;
+
+  background:
+    rgba(0,0,0,.18);
+}
+
+.waiter-menu-image-wrap img {
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.waiter-menu-placeholder {
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color:
+    #70bcff;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0e4283,
+      #092d60
+    );
+}
+
+
+/* =========================================================
+   CHECKBOX
+   ========================================================= */
+
+.waiter-checkbox {
+
+  position: absolute;
+
+  right: 9px;
+  top: 9px;
+
+  z-index: 5;
+}
+
+.waiter-checkbox input {
+
+  position: absolute;
+
+  opacity: 0;
+}
+
+.waiter-checkbox span {
+
+  width: 25px;
+  height: 25px;
+
+  display: block;
+
+  border-radius: 8px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.24);
+
+  background:
+    rgba(3,9,20,.78);
+
+  cursor: pointer;
+}
+
+.waiter-checkbox input:checked + span {
+
+  background:
+    #14549a;
+
+  border-color:
+    var(--gold);
+}
+
+.waiter-checkbox input:checked
++ span::after {
+
+  content: "✓";
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   MENU INFORMATION
+   ========================================================= */
+
+.waiter-menu-info {
+
+  padding:
+    12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.waiter-menu-info h4 {
+
+  margin: 0;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.waiter-menu-info strong {
+
+  color:
+    var(--gold-light);
+
+  font-size: 14px;
+
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   MENU CONTROLS
+   ========================================================= */
+
+.waiter-menu-controls {
+
+  padding:
+    0 12px 12px;
+}
+
+.waiter-quantity-control {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 8px;
+}
+
+.waiter-quantity-control button {
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius: 8px;
+
+  color: white;
+
+  background:
+    rgba(255,255,255,.05);
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  font-weight: 900;
+}
+
+.waiter-quantity-control button:hover {
+
+  color: var(--gold);
+
+  border-color:
+    rgba(229,184,75,.3);
+}
+
+.waiter-quantity-control span {
+
+  min-width: 22px;
+
+  text-align: center;
+
+  color: white;
+
+  font-size: 13px;
+
+  font-weight: 900;
+}
+
+.waiter-menu-controls textarea {
+
+  width: 100%;
+
+  min-height: 55px;
+
+  resize: vertical;
+
+  padding:
+    9px;
+
+  border-radius: 9px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  color: white;
+
+  background:
+    rgba(0,0,0,.12);
+
+  font: inherit;
+
+  font-size: 11px;
+
+  outline: none;
+}
+
+.waiter-menu-controls textarea:focus {
+
+  border-color:
+    rgba(229,184,75,.35);
+}
+
+
+/* =========================================================
+   PLACE ORDER
+   ========================================================= */
+
+.waiter-place-order-button {
+
+  width: 100%;
+
+  margin-top: 12px;
+
+  min-height: 46px;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #14549a,
+      #0c3974
+    );
+}
+
+
+/* =========================================================
+   BILL FILTER
+   ========================================================= */
+
+.waiter-bill-filter {
+
+  width: 100%;
+
+  margin-bottom: 28px;
+
+  padding:
+    18px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1.3fr auto auto;
+
+  gap: 12px;
+
+  align-items: end;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0b2343,
+      #091d38
+    );
+
+  box-shadow:
+    0 10px 28px
+    rgba(0,0,0,.25);
+}
+
+.waiter-filter-field label {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 7px;
+
+  color:
+    #7892b4;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+}
+
+.waiter-filter-field input {
+
+  width: 100%;
+
+  min-height: 44px;
+
+  padding:
+    0 12px;
+
+  border-radius: 10px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  color: white;
+
+  background:
+    rgba(3,9,20,.5);
+
+  outline: none;
+
+  font: inherit;
+
+  font-size: 13px;
+}
+
+.waiter-filter-field input:focus {
+
+  border-color:
+    rgba(229,184,75,.4);
+}
+
+
+/* =========================================================
+   BILL CARD
+   ========================================================= */
+
+.waiter-bill-card {
+
+  padding:
+    19px;
+}
+
+.waiter-bill-card-top {
+
+  padding: 0;
+}
+
+.waiter-bill-card-top
+> div:first-child
+> span {
+
+  color:
+    #7892b4;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+
+  text-transform: uppercase;
+}
+
+.waiter-bill-card-top h3 {
+
+  margin:
+    5px 0 0;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 23px;
+
+  font-weight: 700;
+}
+
+.waiter-bill-status {
+
+  padding:
+    7px 10px;
+
+  border-radius: 999px;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .7px;
+
+  text-transform: uppercase;
+
+  background:
+    rgba(20,84,154,.14);
+
+  color:
+    #70bcff;
+
+  border:
+    1px solid
+    rgba(76,151,236,.2);
+}
+
+
+/* =========================================================
+   BILL TABLE INFO
+   ========================================================= */
+
+.waiter-bill-table-info {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin:
+    18px 0;
+
+  color:
+    #b5cae1;
+
+  font-size: 12px;
+}
+
+.waiter-bill-table-info svg {
+
+  color:
+    #70bcff;
+}
+
+.waiter-bill-table-info strong {
+  color: white;
+}
+
+
+/* =========================================================
+   BILL ITEMS
+   ========================================================= */
+
+.waiter-bill-items {
+
+  padding:
+    14px 0;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.08);
+}
+
+.waiter-bill-items > div {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    7px 0;
+
+  color:
+    #b5cae1;
+
+  font-size: 12px;
+}
+
+.waiter-bill-items small {
+
+  color:
+    #7892b4;
+
+  font-size: 10px;
+}
+
+.waiter-bill-items strong {
+  color: white;
+}
+
+
+/* =========================================================
+   BILL TOTAL
+   ========================================================= */
+
+.waiter-bill-total {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding-top:
+    18px;
+
+  color:
+    #b5cae1;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+.waiter-bill-total strong {
+
+  color:
+    var(--gold-light);
+
+  font-size: 25px;
+
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   BILL FOOTER
+   ========================================================= */
+
+.waiter-bill-footer {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top:
+    14px;
+
+  color:
+    #7892b4;
+
+  font-size: 11px;
+}
+
+.waiter-bill-footer strong {
+  color: white;
+}
+
+.waiter-bill-date {
+
+  margin-top:
+    14px;
+
+  color:
+    #5f7899;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   LOADING / EMPTY
+   ========================================================= */
+
+.waiter-loading,
+.waiter-empty-state {
+
+  width: 100%;
+
+  min-height: 250px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  padding: 30px;
+
+  border:
+    1px dashed
+    rgba(255,255,255,.13);
+
+  border-radius: 18px;
+
+  color:
+    #a5bdd7;
+
+  background:
+    rgba(9,32,63,.45);
+
+  text-align: center;
+
+  font-size: 13px;
+}
+
+.waiter-empty-state svg {
+
+  color:
+    #70bcff;
+}
+
+.waiter-empty-state h3 {
+
+  margin:
+    6px 0 0;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 24px;
+
+  font-weight: 700;
+}
+
+.waiter-empty-state p {
+
+  margin: 0;
+
+  color:
+    #7892b4;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+.waiter-toast {
+
+  position: fixed;
+
+  top: 95px;
+  left: 50%;
+
+  z-index: 7000;
+
+  width:
+    min(560px,calc(100vw - 28px));
+
+  padding:
+    15px 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  transform:
+    translateX(-50%);
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 20px 50px
+    rgba(0,0,0,.4);
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+.toast-success {
+
+  color:
+    #8df0c1;
+
+  background:
+    rgba(8,60,43,.96);
+
+  border-color:
+    rgba(56,223,160,.2);
+}
+
+.toast-error {
+
+  color:
+    #ffc2c2;
+
+  background:
+    rgba(78,28,35,.97);
+
+  border-color:
+    rgba(255,119,119,.2);
+}
+
+
+/* =========================================================
+   MODAL OVERLAYS
+   ========================================================= */
+
+.waiter-modal-overlay,
+.waiter-drop-modal-overlay,
+.waiter-checkout-modal-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 6000;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  background:
+    rgba(3,10,24,.68);
+
+  backdrop-filter:
+    blur(8px);
+}
+
+
+/* =========================================================
+   READY / SERVE MODALS
+   ========================================================= */
+
+.waiter-ready-modal,
+.waiter-serve-modal {
+
+  width:
+    min(100%,480px);
+
+  padding:
+    30px;
+
+  border:
+    1px solid
+    rgba(76,151,236,.35);
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #125092,
+      #0b356d
+    );
+
+  box-shadow:
+    0 28px 90px
+    rgba(0,0,0,.48);
+
+  text-align: center;
+}
+
+.waiter-notification-icon {
+
+  width: 66px;
+  height: 66px;
+
+  margin:
+    0 auto 16px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+
+  color:
+    var(--gold);
+
+  background:
+    rgba(229,184,75,.1);
+
+  border:
+    1px solid
+    rgba(229,184,75,.2);
+}
+
+.waiter-ready-modal > span,
+.waiter-serve-modal > span {
+
+  color:
+    var(--gold);
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: 2.5px;
+
+  text-transform: uppercase;
+}
+
+.waiter-ready-modal h2,
+.waiter-serve-modal h2 {
+
+  margin:
+    9px 0;
+
+  color: white;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 28px;
+
+  font-weight: 700;
+}
+
+.waiter-ready-modal p {
+
+  color:
+    #c2d4e9;
+
+  line-height: 1.6;
+
+  font-size: 13px;
+}
+
+.waiter-ready-modal
+.waiter-primary-button {
+
+  margin-top:
+    12px;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   SERVE ITEMS
+   ========================================================= */
+
+.waiter-serve-items {
+
+  margin:
+    18px 0;
+
+  padding:
+    12px;
+
+  text-align: left;
+
+  border-radius: 12px;
+
+  background:
+    rgba(3,20,45,.35);
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+}
+
+.waiter-serve-items > div {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    8px 0;
+
+  color:
+    #c2d4e9;
+
+  font-size: 12px;
+}
+
+.waiter-serve-items strong {
+  color: white;
+}
+
+.waiter-serve-modal
+.waiter-gold-button {
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   MODAL CLOSE
+   ========================================================= */
+
+.waiter-modal-close {
+
+  width: 100%;
+
+  min-height: 42px;
+
+  margin-top:
+    9px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius: 10px;
+
+  color: white;
+
+  background:
+    rgba(255,255,255,.05);
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+.waiter-modal-close:hover {
+
+  background:
+    rgba(255,255,255,.09);
+
+  border-color:
+    rgba(229,184,75,.2);
+}
+
+
+/* =========================================================
+   GENERAL INPUTS
+   ========================================================= */
+
+.waiter-page input::placeholder,
+.waiter-page textarea::placeholder {
+
+  color:
+    #617995;
+
+  opacity: 1;
+}
+
+.waiter-page input:focus,
+.waiter-page textarea:focus {
+
+  outline: none;
+}
+
+
+/* =========================================================
+   TABLET
+   1200px
+   ========================================================= */
+
+@media (max-width:1200px) {
+
+  .waiter-table-grid,
+  .waiter-bill-grid {
+
+    grid-template-columns:
+      repeat(3,minmax(0,1fr));
+  }
+
+  .waiter-content-section {
+
+    padding:
+      27px 25px 50px;
+  }
+
+  .waiter-stat-row {
+
+    grid-template-columns:
+      repeat(3,minmax(0,1fr));
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   901 - 1100
+   ========================================================= */
+
+@media (max-width:1100px) {
+
+  .waiter-table-grid,
+  .waiter-bill-grid {
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+
+  .waiter-bill-filter {
+
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .waiter-stat-row {
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+}
+
+
+/* =========================================================
+   TABLET HERO / CONTENT
+   ========================================================= */
+
+@media (max-width:900px) {
+
+  .waiter-main .manager-header {
+
+    padding:
+      0 25px;
+  }
+
+  .waiter-content-section {
+
+    padding:
+      27px 25px 50px;
+  }
+
+  .waiter-content-section .page-heading h1 {
+
+    font-size: 40px;
+  }
+
+  .waiter-stat-row {
+
+    gap: 12px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   501 - 750
+   ========================================================= */
+
+@media (min-width:501px)
+and (max-width:750px) {
+
+  .waiter-main .manager-header {
+
+    height: 72px;
+
+    padding:
+      0 16px;
+  }
+
+  .waiter-content-section {
+
+    padding:
+      22px 14px 40px;
+  }
+
+  .waiter-content-section
+  .page-heading {
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 16px;
+  }
+
+  .waiter-content-section
+  .page-heading h1 {
+
+    font-size: 37px;
+  }
+
+  .waiter-content-section
+  .page-heading p {
+
+    font-size: 12px;
+  }
+
+  .waiter-table-grid,
+  .waiter-bill-grid {
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+
+    gap: 12px;
+  }
+
+  .waiter-stat-row {
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+
+    gap: 11px;
+
+    margin-bottom: 32px;
+  }
+
+  .waiter-stat-row > div {
+
+    min-height: 135px;
+
+    padding: 15px;
+  }
+
+  .waiter-stat-row strong {
+
+    font-size: 32px;
+  }
+
+  .waiter-menu-grid {
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+
+  .waiter-bill-filter {
+
+    grid-template-columns:
+      1fr 1fr;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   <=500px
+   ========================================================= */
+
+@media (max-width:500px) {
+
+  .waiter-main .manager-header {
+
+    height: 70px;
+
+    padding:
+      0 12px;
+  }
+
+  .waiter-main .header-left {
+
+    gap: 10px;
+  }
+
+  .waiter-main .menu-button {
+
+    width: 42px;
+    height: 42px;
+  }
+
+  .waiter-main .header-heading span {
+
+    margin-bottom: 3px;
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+  }
+
+  .waiter-main .header-heading h1 {
+
+    font-size: 25px;
+  }
+
+  .waiter-main .header-user-text {
+
+    display: none;
+  }
+
+  .waiter-main .header-user-avatar {
+
+    width: 39px;
+    height: 39px;
+  }
+
+  .waiter-main .refresh-button {
+
+    width: 38px;
+    height: 38px;
   }
 
 
-  .waiter-checkout-confirm-modal {
-    padding: 24px 18px;
+  /* =======================================================
+     CONTENT
+     ======================================================= */
+
+  .waiter-content-section {
+
+    padding:
+      18px 10px 35px;
+  }
+
+  .waiter-content-section
+  .page-heading {
+
+    margin-bottom: 22px;
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 13px;
+  }
+
+  .waiter-content-section
+  .page-heading
+  > div
+  > span {
+
+    margin-bottom: 6px;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+  }
+
+  .waiter-content-section
+  .page-heading
+  h1 {
+
+    font-size: 35px;
+
+    line-height: .98;
+  }
+
+  .waiter-content-section
+  .page-heading
+  p {
+
+    margin-top: 9px;
+
+    font-size: 12px;
+
+    line-height: 1.55;
+  }
+
+
+  /* =======================================================
+     STATS
+     ======================================================= */
+
+  .waiter-stat-row {
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+
+    gap: 9px;
+
+    margin-bottom: 29px;
+  }
+
+  .waiter-stat-row > div {
+
+    min-height: 130px;
+
+    padding: 13px;
+
+    border-radius: 15px;
+  }
+
+  .waiter-stat-row svg {
+
+    width: 20px;
+    height: 20px;
+  }
+
+  .waiter-stat-row span {
+
+    font-size: 7px;
+
+    letter-spacing: .9px;
+  }
+
+  .waiter-stat-row strong {
+
+    font-size: 30px;
+  }
+
+
+  /* =======================================================
+     TABLES
+     ======================================================= */
+
+  .waiter-table-grid,
+  .waiter-bill-grid {
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+
+    gap: 9px;
+  }
+
+  .waiter-table-card,
+  .waiter-bill-card {
+
+    border-radius: 15px;
+  }
+
+  .waiter-table-card-top,
+  .waiter-bill-card-top {
+
+    padding:
+      13px;
+  }
+
+  .waiter-table-icon {
+
+    width: 39px;
+    height: 39px;
+
+    border-radius: 10px;
+  }
+
+  .waiter-table-number {
+
+    font-size: 7px;
+
+    letter-spacing: 1px;
+  }
+
+  .waiter-table-number strong {
+
+    margin-top: 4px;
+
+    font-size: 17px;
+  }
+
+  .waiter-table-status {
+
+    margin:
+      0 13px;
+
+    padding:
+      10px 0;
+  }
+
+  .waiter-table-status span {
+
+    font-size: 10px;
+  }
+
+  .waiter-table-status strong {
+
+    padding:
+      4px 6px;
+
+    font-size: 8px;
+  }
+
+  .assigned-waiter {
+
+    margin:
+      10px 13px 0;
+
+    font-size: 9px;
+  }
+
+  .waiter-table-actions {
+
+    padding:
+      10px 13px 13px;
+
+    gap: 5px;
+  }
+
+  .waiter-table-actions button {
+
+    min-height: 35px;
+
+    padding:
+      6px 5px;
+
+    font-size: 9px;
+  }
+
+  .picked-table-actions {
+
+    padding:
+      10px 13px 13px;
+
+    grid-template-columns:
+      1fr;
+
+    gap: 6px;
+  }
+
+  .picked-table-actions button {
+
+    min-height: 35px;
+
+    font-size: 9px;
+  }
+
+
+  /* =======================================================
+     BILL FILTER
+     ======================================================= */
+
+  .waiter-bill-filter {
+
+    grid-template-columns:
+      1fr;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+
+    padding:
+      13px;
+
+    border-radius: 15px;
+  }
+
+  .waiter-filter-field label {
+
+    font-size: 9px;
+  }
+
+  .waiter-filter-field input {
+
+    min-height: 40px;
+
+    font-size: 11px;
+  }
+
+
+  /* =======================================================
+     BILLS
+     ======================================================= */
+
+  .waiter-bill-card {
+
+    padding:
+      13px;
+  }
+
+  .waiter-bill-card-top h3 {
+
+    font-size: 17px;
+  }
+
+  .waiter-bill-status {
+
+    padding:
+      5px 7px;
+
+    font-size: 7px;
+  }
+
+  .waiter-bill-table-info {
+
+    margin:
+      13px 0;
+
+    font-size: 10px;
+  }
+
+  .waiter-bill-items {
+
+    padding:
+      10px 0;
+  }
+
+  .waiter-bill-items > div {
+
+    padding:
+      5px 0;
+
+    font-size: 10px;
+  }
+
+  .waiter-bill-total {
+
+    padding-top:
+      13px;
+
+    font-size: 10px;
+  }
+
+  .waiter-bill-total strong {
+
+    font-size: 19px;
+  }
+
+  .waiter-bill-footer {
+
+    margin-top:
+      10px;
+
+    font-size: 9px;
+  }
+
+
+  /* =======================================================
+     ORDER AREA
+     ======================================================= */
+
+  .waiter-order-expanded {
+
+    margin:
+      0 13px 13px;
+
+    padding-top:
+      13px;
+  }
+
+  .waiter-existing-orders-heading h4,
+  .waiter-new-order-header h3 {
+
+    font-size: 16px;
+  }
+
+  .waiter-existing-orders-heading span,
+  .waiter-new-order-header span {
+
+    font-size: 7px;
+
+    letter-spacing: 1.4px;
+  }
+
+  .waiter-order-history-card {
+
+    padding:
+      9px;
+  }
+
+  .waiter-order-history-top span,
+  .waiter-history-item span {
+
+    font-size: 9px;
+  }
+
+  .waiter-order-history-top strong {
+
+    font-size: 8px;
+  }
+
+
+  /* =======================================================
+     MENU
+     ======================================================= */
+
+  .waiter-menu-grid {
+
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 7px;
+  }
+
+  .waiter-menu-image-wrap {
+
+    height: 85px;
+  }
+
+  .waiter-menu-info {
+
+    padding:
+      8px;
+  }
+
+  .waiter-menu-info h4 {
+
+    font-size: 11px;
+  }
+
+  .waiter-menu-info strong {
+
+    font-size: 10px;
+  }
+
+  .waiter-menu-controls {
+
+    padding:
+      0 8px 8px;
+  }
+
+  .waiter-quantity-control {
+
+    gap: 5px;
+  }
+
+  .waiter-quantity-control button {
+
+    width: 25px;
+    height: 25px;
+
+    font-size: 12px;
+  }
+
+  .waiter-quantity-control span {
+
+    font-size: 10px;
+  }
+
+  .waiter-menu-controls textarea {
+
+    min-height: 45px;
+
+    padding: 7px;
+
+    font-size: 9px;
+  }
+
+  .waiter-place-order-button {
+
+    min-height: 40px;
+
+    font-size: 10px;
+  }
+
+
+  /* =======================================================
+     EMPTY / LOADING
+     ======================================================= */
+
+  .waiter-loading,
+  .waiter-empty-state {
+
+    min-height: 200px;
+
+    padding:
+      20px;
+
+    border-radius: 15px;
+  }
+
+  .waiter-empty-state h3 {
+
+    font-size: 20px;
+  }
+
+  .waiter-empty-state p {
+
+    font-size: 10px;
+  }
+
+
+  /* =======================================================
+     MODALS
+     ======================================================= */
+
+  .waiter-ready-modal,
+  .waiter-serve-modal {
+
+    padding:
+      22px;
+
     border-radius: 18px;
   }
 
+  .waiter-ready-modal h2,
+  .waiter-serve-modal h2 {
 
-  .waiter-checkout-confirm-modal h2 {
-    font-size: 22px;
+    font-size: 24px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   <=380px
+   ========================================================= */
+
+@media (max-width:380px) {
+
+  .waiter-content-section {
+
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .waiter-table-grid,
+  .waiter-bill-grid {
+
+    gap: 7px;
+  }
+
+  .waiter-table-card,
+  .waiter-bill-card {
+
+    border-radius: 13px;
+  }
+
+  .waiter-table-card-top,
+  .waiter-bill-card-top {
+
+    padding:
+      10px 9px;
+  }
+
+  .waiter-table-number strong {
+
+    font-size: 15px;
+  }
+
+  .waiter-table-status {
+
+    margin:
+      0 9px;
+  }
+
+  .assigned-waiter {
+
+    margin-left: 9px;
+    margin-right: 9px;
+  }
+
+  .waiter-table-actions {
+
+    padding:
+      8px 9px 9px;
+  }
+
+  .picked-table-actions {
+
+    padding:
+      8px 9px 9px;
+  }
+
+  .waiter-stat-row > div {
+
+    min-height: 120px;
+
+    padding: 11px;
+  }
+
+  .waiter-stat-row strong {
+
+    font-size: 27px;
+  }
+
+  .waiter-content-section
+  .page-heading
+  h1 {
+
+    font-size: 32px;
+  }
+
+  .waiter-menu-image-wrap {
+
+    height: 75px;
+  }
+
+  .waiter-menu-info h4 {
+
+    font-size: 10px;
+  }
+
+  .waiter-menu-info strong {
+
+    font-size: 9px;
+  }
+}
+
+/* =========================================================
+   KITCHENFLOW WAITER
+   FINAL BUTTON HOVER + FULL WIDTH TAKE ORDER
+   ========================================================= */
+
+
+/* =========================================================
+   BUTTON HOVER
+   BLUE BUTTONS STAY BLUE NORMALLY
+   GOLD + BLACK TEXT ON HOVER
+   ========================================================= */
+
+/* Pick Table */
+.waiter-page .waiter-primary-button:hover,
+
+/* Drop Table */
+.waiter-page .waiter-outline-button:hover,
+
+/* Place Order */
+.waiter-page .waiter-place-order-button:hover {
+
+  color: #07172f !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #e7b94c,
+      #f6d477
+    ) !important;
+
+  border-color:
+    rgba(229,184,75,.65) !important;
+
+  font-weight: 900 !important;
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 10px 24px
+    rgba(0,0,0,.28);
+}
+
+
+/* =========================================================
+   GOLD BUTTONS
+   CHECKOUT / OTHER GOLD BUTTONS
+   STAY GOLD
+   ========================================================= */
+
+.waiter-page .waiter-gold-button {
+
+  color: #07172f;
+}
+
+
+/* Keep gold buttons gold when hovered */
+.waiter-page .waiter-gold-button:hover {
+
+  color: #07172f !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #e7b94c,
+      #f6d477
+    ) !important;
+
+  border-color:
+    rgba(229,184,75,.65) !important;
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 10px 24px
+    rgba(0,0,0,.28);
+}
+
+
+/* =========================================================
+   TAKE ORDER
+   FULL WIDTH EXPANDED WORKSPACE
+   ========================================================= */
+
+/*
+   When .waiter-order-expanded exists inside a table card,
+   make that COMPLETE table card span every column.
+*/
+
+.waiter-page
+.waiter-table-card:has(.waiter-order-expanded) {
+
+  grid-column:
+    1 / -1 !important;
+
+  width:
+    100% !important;
+
+  max-width:
+    none !important;
+}
+
+
+/*
+   Expanded Take Order area itself
+*/
+
+.waiter-page
+.waiter-table-card:has(.waiter-order-expanded)
+.waiter-order-expanded {
+
+  width:
+    100% !important;
+
+  max-width:
+    none !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    20px 19px 19px !important;
+}
+
+
+/* =========================================================
+   TAKE ORDER CONTENT
+   MAKE THE INNER MENU WORKSPACE USE THE FULL CARD
+   ========================================================= */
+
+.waiter-page
+.waiter-table-card:has(.waiter-order-expanded)
+.waiter-menu-grid {
+
+  width:
+    100%;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 500px) {
+
+  .waiter-page
+  .waiter-table-card:has(.waiter-order-expanded) {
+
+    grid-column:
+      1 / -1 !important;
+
+    width:
+      100% !important;
+
+    max-width:
+      none !important;
   }
 
 
-  .waiter-checkout-modal-actions {
-    grid-template-columns: 1fr;
+  .waiter-page
+  .waiter-table-card:has(.waiter-order-expanded)
+  .waiter-order-expanded {
+
+    width:
+      100% !important;
+
+    max-width:
+      none !important;
+
+    margin:
+      0 !important;
+
+    padding:
+      13px !important;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .waiter-page
+  .waiter-table-card:has(.waiter-order-expanded) {
+
+    grid-column:
+      1 / -1 !important;
+
+    width:
+      100% !important;
   }
 
+
+  .waiter-page
+  .waiter-table-card:has(.waiter-order-expanded)
+  .waiter-order-expanded {
+
+    width:
+      100% !important;
+
+    margin:
+      0 !important;
+
+    padding:
+      10px 9px !important;
+  }
 }
