@@ -1,0 +1,1504 @@
+/* =========================================================
+   KITCHEN PAGE
+   PREMIUM KITCHEN WORKSPACE
+   ========================================================= */
+
+.kitchen-page {
+  --kitchen-bg: #030914;
+  --kitchen-bg-2: #061225;
+  --kitchen-blue: #14549a;
+  --kitchen-blue-dark: #0c3974;
+  --kitchen-blue-deep: #092d60;
+  --kitchen-gold: #e7b94c;
+  --kitchen-gold-light: #f6d477;
+  --kitchen-white: #ffffff;
+  --kitchen-text-soft: #c2d4e9;
+  --kitchen-muted: #7892b4;
+  --kitchen-green: #38dfa0;
+  --kitchen-border: rgba(
+    76,
+    151,
+    236,
+    0.38
+  );
+
+  width: 100%;
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(
+        18,
+        73,
+        135,
+        0.22
+      ),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      rgba(
+        10,
+        52,
+        106,
+        0.12
+      ),
+      transparent 32%
+    ),
+    var(--kitchen-bg);
+
+  color: var(--kitchen-white);
+
+  font-family:
+    "Inter",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.kitchen-content {
+  width: 100%;
+  max-width: 1700px;
+
+  margin: 0 auto;
+
+  padding:
+    38px
+    35px
+    60px;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.kitchen-hero {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 25px;
+
+  margin-bottom: 28px;
+  padding: 32px 34px;
+
+  border:
+    1px solid
+    rgba(
+      76,
+      151,
+      236,
+      0.28
+    );
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        18,
+        80,
+        151,
+        0.76
+      ),
+      rgba(
+        7,
+        35,
+        73,
+        0.96
+      )
+    );
+
+  box-shadow:
+    0 22px 55px
+    rgba(
+      0,
+      0,
+      0,
+      0.28
+    );
+
+  overflow: hidden;
+}
+
+.kitchen-hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 260px;
+  height: 260px;
+
+  right: -100px;
+  top: -130px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(
+      231,
+      185,
+      76,
+      0.16
+    );
+
+  box-shadow:
+    0 0 0 30px
+    rgba(
+      231,
+      185,
+      76,
+      0.025
+    ),
+    0 0 0 60px
+    rgba(
+      231,
+      185,
+      76,
+      0.018
+    );
+
+  pointer-events: none;
+}
+
+.kitchen-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.kitchen-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 8px;
+
+  color: var(
+    --kitchen-gold-light
+  );
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.kitchen-kicker-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background:
+    var(--kitchen-gold);
+
+  box-shadow:
+    0 0 0 5px
+    rgba(
+      231,
+      185,
+      76,
+      0.10
+    ),
+    0 0 15px
+    rgba(
+      231,
+      185,
+      76,
+      0.55
+    );
+}
+
+.kitchen-hero h1 {
+  margin: 0;
+
+  color:
+    var(--kitchen-white);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 36px;
+  line-height: 1.1;
+}
+
+.kitchen-hero p {
+  max-width: 650px;
+
+  margin: 9px 0 0;
+
+  color:
+    var(--kitchen-text-soft);
+
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   REFRESH
+   ========================================================= */
+
+.kitchen-refresh-button {
+  position: relative;
+  z-index: 2;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-width: 125px;
+  min-height: 45px;
+
+  padding:
+    0 17px;
+
+  border:
+    1px solid
+    rgba(
+      231,
+      185,
+      76,
+      0.60
+    );
+
+  border-radius: 12px;
+
+  color:
+    var(--kitchen-gold-light);
+
+  background:
+    linear-gradient(
+      135deg,
+      #125092,
+      #0b356d
+    );
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.22s ease,
+    background 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.kitchen-refresh-button:hover:not(
+  :disabled
+) {
+  transform:
+    translateY(-2px);
+
+  color:
+    #05080d;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--kitchen-gold-light),
+      var(--kitchen-gold)
+    );
+
+  box-shadow:
+    0 10px 25px
+    rgba(
+      0,
+      0,
+      0,
+      0.24
+    );
+}
+
+.kitchen-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+.kitchen-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 17px;
+
+  margin-bottom: 28px;
+}
+
+.kitchen-summary-card {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  min-height: 90px;
+
+  padding:
+    17px 19px;
+
+  border:
+    1px solid
+    rgba(
+      76,
+      151,
+      236,
+      0.27
+    );
+
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      155deg,
+      #15599f,
+      #0c3d7a,
+      #092f62
+    );
+
+  box-shadow:
+    0 14px 30px
+    rgba(
+      0,
+      0,
+      0,
+      0.24
+    );
+
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.kitchen-summary-card:hover {
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(
+      231,
+      185,
+      76,
+      0.50
+    );
+}
+
+.kitchen-summary-icon {
+  display: grid;
+  place-items: center;
+
+  width: 48px;
+  height: 48px;
+
+  flex: 0 0 48px;
+
+  border:
+    1px solid
+    rgba(
+      231,
+      185,
+      76,
+      0.23
+    );
+
+  border-radius: 13px;
+
+  color:
+    var(--kitchen-gold-light);
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.065
+    );
+}
+
+.kitchen-summary-icon.processing {
+  color:
+    var(--kitchen-gold-light);
+
+  border-color:
+    rgba(
+      231,
+      185,
+      76,
+      0.28
+    );
+}
+
+.kitchen-summary-icon.incoming {
+  color:
+    #8fc6ff;
+
+  border-color:
+    rgba(
+      143,
+      198,
+      255,
+      0.22
+    );
+}
+
+.kitchen-summary-card span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color:
+    var(--kitchen-muted);
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+.kitchen-summary-card strong {
+  display: block;
+
+  color:
+    var(--kitchen-white);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 25px;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.kitchen-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 20px;
+  padding:
+    13px 16px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      119,
+      119,
+      0.25
+    );
+
+  border-radius: 12px;
+
+  color:
+    #ffb0b0;
+
+  background:
+    rgba(
+      255,
+      119,
+      119,
+      0.07
+    );
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   KITCHEN ORDER SECTION
+   ========================================================= */
+
+.kitchen-orders-section {
+  width: 100%;
+}
+
+.kitchen-orders-grid {
+  align-items: stretch;
+}
+
+
+/* =========================================================
+   KITCHEN ORDER CARD
+   ========================================================= */
+
+.kitchen-order-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(
+      76,
+      151,
+      236,
+      0.28
+    );
+
+  background:
+    linear-gradient(
+      155deg,
+      #15599f,
+      #0c3d7a,
+      #092f62
+    );
+
+  box-shadow:
+    0 15px 35px
+    rgba(
+      0,
+      0,
+      0,
+      0.27
+    );
+}
+
+.kitchen-order-card::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(
+        231,
+        185,
+        76,
+        0.70
+      ),
+      transparent
+    );
+
+  opacity: 0.7;
+}
+
+.kitchen-order-card:hover {
+  border-color:
+    rgba(
+      231,
+      185,
+      76,
+      0.56
+    );
+}
+
+
+/* =========================================================
+   KITCHEN PROGRESS
+   ========================================================= */
+
+.kitchen-order-progress {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  margin:
+    14px 0
+    4px;
+
+  padding:
+    11px 12px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.07
+    );
+
+  border-radius: 12px;
+
+  background:
+    rgba(
+      2,
+      12,
+      27,
+      0.24
+    );
+}
+
+.kitchen-progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 4px;
+
+  min-width: 55px;
+
+  color:
+    rgba(
+      194,
+      212,
+      233,
+      0.38
+    );
+
+  text-align: center;
+}
+
+.kitchen-progress-step span {
+  display: grid;
+  place-items: center;
+
+  width: 23px;
+  height: 23px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.12
+    );
+
+  color:
+    var(--kitchen-muted);
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.035
+    );
+
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.kitchen-progress-step strong {
+  font-size: 7px;
+  letter-spacing: 0.6px;
+}
+
+.kitchen-progress-step.completed {
+  color:
+    var(--kitchen-gold-light);
+}
+
+.kitchen-progress-step.completed span {
+  color:
+    #08111d;
+
+  border-color:
+    var(--kitchen-gold);
+
+  background:
+    var(--kitchen-gold);
+}
+
+.kitchen-progress-line {
+  flex: 1;
+
+  height: 1px;
+
+  margin:
+    0 4px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.09
+    );
+}
+
+
+/* =========================================================
+   SPECIAL NOTE
+   ========================================================= */
+
+.order-instruction {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+
+  margin-top: 9px !important;
+  padding:
+    9px 10px;
+
+  border:
+    1px solid
+    rgba(
+      231,
+      185,
+      76,
+      0.22
+    );
+
+  border-radius: 9px;
+
+  color:
+    var(--kitchen-text-soft);
+
+  background:
+    rgba(
+      231,
+      185,
+      76,
+      0.065
+    );
+}
+
+.kitchen-note-icon {
+  display: grid;
+  place-items: center;
+
+  width: 23px;
+  height: 23px;
+
+  flex: 0 0 23px;
+
+  border-radius: 7px;
+
+  color:
+    var(--kitchen-gold-light);
+
+  background:
+    rgba(
+      231,
+      185,
+      76,
+      0.10
+    );
+}
+
+.order-instruction strong {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color:
+    var(--kitchen-gold-light);
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.order-instruction p {
+  margin: 0;
+
+  color:
+    var(--kitchen-text-soft);
+
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   KITCHEN ACTION AREA
+   ========================================================= */
+
+.kitchen-order-actions {
+  display: flex;
+
+  margin-top: auto;
+  padding-top: 17px;
+}
+
+.kitchen-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  width: 100%;
+  min-height: 45px;
+
+  padding:
+    0 15px;
+
+  border-radius: 11px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  letter-spacing: 0.7px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   START PREPARING
+   ========================================================= */
+
+.kitchen-action-button.start-preparing {
+  border:
+    1px solid
+    rgba(
+      76,
+      151,
+      236,
+      0.45
+    );
+
+  color:
+    #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1763b0,
+      #0d407f
+    );
+}
+
+.kitchen-action-button.start-preparing:hover:not(
+  :disabled
+) {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    var(--kitchen-gold);
+
+  color:
+    #05080d;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--kitchen-gold-light),
+      var(--kitchen-gold)
+    );
+
+  box-shadow:
+    0 10px 24px
+    rgba(
+      0,
+      0,
+      0,
+      0.25
+    );
+}
+
+
+/* =========================================================
+   MARK PREPARED
+   ========================================================= */
+
+.kitchen-action-button.mark-prepared {
+  border:
+    1px solid
+    rgba(
+      56,
+      223,
+      160,
+      0.36
+    );
+
+  color:
+    #08130f;
+
+  background:
+    linear-gradient(
+      135deg,
+      #54e4ad,
+      #35d89c
+    );
+}
+
+.kitchen-action-button.mark-prepared:hover:not(
+  :disabled
+) {
+  transform:
+    translateY(-2px);
+
+  color:
+    #05080d;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--kitchen-gold-light),
+      var(--kitchen-gold)
+    );
+
+  border-color:
+    var(--kitchen-gold);
+
+  box-shadow:
+    0 10px 24px
+    rgba(
+      0,
+      0,
+      0,
+      0.25
+    );
+}
+
+.kitchen-action-button:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   KITCHEN EMPTY STATE
+   ========================================================= */
+
+.kitchen-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 260px;
+
+  gap: 9px;
+
+  text-align: center;
+}
+
+.kitchen-empty-state svg {
+  color:
+    var(--kitchen-gold-light);
+  margin-bottom: 4px;
+}
+
+.kitchen-empty-state strong {
+  color:
+    var(--kitchen-white);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 22px;
+}
+
+.kitchen-empty-state span {
+  color:
+    var(--kitchen-muted);
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* -----------------------------------------
+   LARGE DESKTOP
+   ----------------------------------------- */
+
+@media (min-width: 1500px) {
+  .kitchen-content {
+    padding-left: 35px;
+    padding-right: 35px;
+  }
+
+  .kitchen-orders-grid {
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+
+/* -----------------------------------------
+   TABLET
+   ----------------------------------------- */
+
+@media (min-width: 751px) and
+  (max-width: 1200px) {
+  .kitchen-content {
+    padding:
+      28px
+      20px
+      50px;
+  }
+
+  .kitchen-summary {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .kitchen-orders-grid {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .kitchen-hero {
+    padding: 27px;
+  }
+
+  .kitchen-hero h1 {
+    font-size: 31px;
+  }
+}
+
+
+/* -----------------------------------------
+   SMALL TABLET / LARGE PHONE
+   ----------------------------------------- */
+
+@media (min-width: 501px) and
+  (max-width: 750px) {
+  .kitchen-content {
+    padding:
+      22px
+      14px
+      45px;
+  }
+
+  .kitchen-hero {
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding: 23px;
+  }
+
+  .kitchen-hero h1 {
+    font-size: 28px;
+  }
+
+  .kitchen-summary {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .kitchen-summary-card:last-child {
+    grid-column:
+      span 2;
+  }
+
+  .kitchen-orders-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+
+/* -----------------------------------------
+   MOBILE
+   ----------------------------------------- */
+
+@media (max-width: 500px) {
+  .kitchen-content {
+    padding:
+      18px
+      10px
+      35px;
+  }
+
+  .kitchen-hero {
+    align-items: stretch;
+    flex-direction: column;
+
+    padding: 21px 18px;
+    border-radius: 17px;
+  }
+
+  .kitchen-hero h1 {
+    font-size: 25px;
+  }
+
+  .kitchen-hero p {
+    font-size: 11px;
+  }
+
+  .kitchen-refresh-button {
+    width: 100%;
+  }
+
+  .kitchen-summary {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 10px;
+  }
+
+  .kitchen-summary-card {
+    min-height: 78px;
+
+    padding:
+      12px;
+  }
+
+  .kitchen-summary-card:last-child {
+    grid-column:
+      span 2;
+  }
+
+  .kitchen-summary-icon {
+    width: 39px;
+    height: 39px;
+    flex-basis: 39px;
+  }
+
+  .kitchen-summary-card strong {
+    font-size: 21px;
+  }
+
+  .kitchen-summary-card span {
+    font-size: 7px;
+  }
+
+  /*
+   * Your existing project uses two cards
+   * per phone row.
+   */
+  .kitchen-orders-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 9px;
+  }
+
+  .kitchen-order-progress {
+    padding:
+      8px 6px;
+  }
+
+  .kitchen-progress-step {
+    min-width: 40px;
+  }
+
+  .kitchen-progress-step strong {
+    font-size: 6px;
+  }
+
+  .kitchen-action-button {
+    min-height: 40px;
+
+    padding:
+      0 8px;
+
+    font-size: 8px;
+
+    gap: 5px;
+  }
+}
+
+/* =========================================================
+   KITCHEN ORDER ACTION BUTTON
+   Separate from Manager order-status-controls buttons
+   ========================================================= */
+
+.kitchen-order-action {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.kitchen-order-action-btn {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 16px;
+
+  border: 1px solid rgba(76, 151, 236, 0.55);
+  border-radius: 10px;
+
+  background: #14549a;
+  color: #ffffff;
+
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER
+   Blue → Gold
+   White → Black
+   ========================================================= */
+
+.kitchen-order-action-btn:hover:not(:disabled) {
+  background: #e7b94c;
+  color: #000000;
+
+  border-color: #f6d477;
+
+  font-weight: 900;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(231, 185, 76, 0.18);
+}
+
+
+/* =========================================================
+   ACTIVE
+   ========================================================= */
+
+.kitchen-order-action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   DISABLED / COMPLETED
+   ========================================================= */
+
+.kitchen-order-action-btn:disabled {
+  cursor: default;
+}
+
+
+/* Completed Cooked / Served button */
+
+.kitchen-order-action-btn.completed {
+  background: rgba(255, 255, 255, 0.07);
+  color: #7892b4;
+
+  border-color: rgba(255, 255, 255, 0.12);
+
+  box-shadow: none;
+
+  transform: none;
+}
+
+.kitchen-item-image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 60px;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+/* =========================================================
+   KITCHEN SIDEBAR
+   ========================================================= */
+
+.kitchen-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(2px);
+}
+
+.kitchen-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  width: 275px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(
+      180deg,
+      #061326 0%,
+      #04101f 100%
+    );
+  border-right: 1px solid rgba(231, 185, 76, 0.28);
+  box-shadow:
+    18px 0 45px rgba(0, 0, 0, 0.42);
+}
+
+.kitchen-sidebar-header {
+  min-height: 82px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.kitchen-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.kitchen-sidebar-brand-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #f6d477;
+  background:
+    linear-gradient(
+      145deg,
+      #14549a,
+      #0b356d
+    );
+  border: 1px solid rgba(231, 185, 76, 0.28);
+}
+
+.kitchen-sidebar-brand strong {
+  display: block;
+  color: #ffffff;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size: 16px;
+}
+
+.kitchen-sidebar-brand span {
+  display: block;
+  margin-top: 3px;
+  color: #7892b4;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+.kitchen-sidebar-close {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.kitchen-sidebar-close:hover {
+  background: #e7b94c;
+  border-color: #f6d477;
+  color: #000000;
+}
+
+.kitchen-sidebar-content {
+  flex: 1;
+}
+
+.kitchen-sidebar-bottom {
+  padding: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.kitchen-sidebar-logout {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 119, 119, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 119, 119, 0.06);
+  color: #ff9b9b;
+  font-family:
+    "Inter",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.kitchen-sidebar-logout:hover {
+  background: #e7b94c;
+  border-color: #f6d477;
+  color: #000000;
+  transform: translateY(-1px);
+}

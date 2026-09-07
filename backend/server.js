@@ -5,7 +5,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import http from "http";
+import { initializeSocket } from "./socket.js";
 /* =========================================================
    ROUTE IMPORTS
    ========================================================= */
@@ -15,6 +16,7 @@ import managerRoutes from "./routes/managerRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import menuRoutes from "./routes/menuRoutes.js";
 import waiterRoutes from "./routes/waiterRoutes.js";
+import kitchenRoutes from "./routes/kitchenRoutes.js";
 
 
 /* =========================================================
@@ -185,6 +187,27 @@ app.use(
 
 
 /* =========================================================
+   KITCHEN ROUTES
+
+   BASE:
+   /api/kitchen
+
+   Kitchen can:
+   - Fetch waiter-created orders
+   - Update kitchen order status
+
+   IMPORTANT:
+   This MUST come before the API 404 handler.
+   ========================================================= */
+
+app.use(
+  "/api/kitchen",
+
+  kitchenRoutes
+);
+
+
+/* =========================================================
    API 404 HANDLER
 
    IMPORTANT:
@@ -209,8 +232,6 @@ app.use(
 
   }
 );
-
-
 
 
 /* =========================================================

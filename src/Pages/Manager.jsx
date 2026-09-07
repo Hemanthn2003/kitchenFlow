@@ -8,6 +8,8 @@ import WaitersList from "../components/WaitersList.jsx";
 import KitchenList from "../components/KitchenList.jsx";
 import MenuItems from "../components/MenuItems.jsx";
 import OrdersList from "../components/OrdersList.jsx";
+import ManagerTables from "../components/ManagerTables.jsx";
+import ManagerBills from "../components/ManagerBills.jsx";
 import Icon from "../components/Icon.jsx";
 
 import {
@@ -25,6 +27,7 @@ import {
 } from "../components/managerFunctions.js";
 
 import "./Manager.css";
+
 
 // ============================================================
 // STAT CARD
@@ -55,11 +58,13 @@ const StatCard = ({
   </div>
 );
 
+
 // ============================================================
 // MANAGER COMPONENT
 // ============================================================
 
 const Manager = () => {
+
   // ==========================================================
   // GENERAL STATE
   // ==========================================================
@@ -79,6 +84,63 @@ const Manager = () => {
   const [lastUpdated, setLastUpdated] =
     useState(null);
 
+
+  // ==========================================================
+  // TABLES STATE
+  // ==========================================================
+
+  const [tables, setTables] =
+    useState([]);
+
+  const [tablesLoading, setTablesLoading] =
+    useState(false);
+
+  const [tablesError, setTablesError] =
+    useState("");
+
+  const [tableStats, setTableStats] =
+    useState({
+      total: 0,
+      free: 0,
+      occupied: 0,
+    });
+
+
+  // ==========================================================
+  // BILLS STATE
+  // ==========================================================
+
+  const [bills, setBills] =
+    useState([]);
+
+  const [billsLoading, setBillsLoading] =
+    useState(false);
+
+  const [billsError, setBillsError] =
+    useState("");
+
+  const [billStats, setBillStats] =
+    useState({
+      total: 0,
+      checkout: 0,
+      generated: 0,
+      paid: 0,
+      unpaid: 0,
+    });
+
+  const [generatingBillId, setGeneratingBillId] =
+    useState(null);
+
+  const [payingBillId, setPayingBillId] =
+    useState(null);
+
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState({});
+
+  const [upiBill, setUpiBill] =
+    useState(null);
+
+
   // ==========================================================
   // ORDERS STATE
   // ==========================================================
@@ -91,6 +153,7 @@ const Manager = () => {
 
   const [updatingOrderId, setUpdatingOrderId] =
     useState(null);
+
 
   // ==========================================================
   // MENU STATE
@@ -108,6 +171,7 @@ const Manager = () => {
   const [updatingMenuId, setUpdatingMenuId] =
     useState(null);
 
+
   // ==========================================================
   // ADD DISH FORM
   // ==========================================================
@@ -119,6 +183,7 @@ const Manager = () => {
     imageUrl: "",
     isAvailable: true,
   });
+
 
   // ==========================================================
   // EDIT DISH STATE
@@ -139,6 +204,7 @@ const Manager = () => {
   const [savingDish, setSavingDish] =
     useState(false);
 
+
   // ==========================================================
   // IMAGE UPLOAD STATE
   // ==========================================================
@@ -156,12 +222,14 @@ const Manager = () => {
     setImageUploadError,
   ] = useState("");
 
+
   // ==========================================================
   // INITIAL USERS LOAD REFERENCE
   // ==========================================================
 
   const initialUsersLoadRef =
     useRef(false);
+
 
   // ==========================================================
   // REDUX
@@ -180,6 +248,7 @@ const Manager = () => {
     (state) => state.kitchen
   );
 
+
   // ==========================================================
   // ACTIVE MANAGER
   // ==========================================================
@@ -188,6 +257,7 @@ const Manager = () => {
     Array.isArray(users?.manager)
       ? users.manager[0]
       : users?.manager;
+
 
   // ==========================================================
   // LOGGED-IN USER
@@ -203,6 +273,7 @@ const Manager = () => {
   } catch {
     loggedInUser = null;
   }
+
 
   // ==========================================================
   // TEAM DATA
@@ -225,6 +296,7 @@ const Manager = () => {
   const currentUser =
     manager || loggedInUser;
 
+
   // ==========================================================
   // LOADING STATES
   // ==========================================================
@@ -238,6 +310,7 @@ const Manager = () => {
   const menuLoading =
     reduxLoading?.menuItems;
 
+
   // ==========================================================
   // GENERAL ERROR
   // ==========================================================
@@ -246,6 +319,7 @@ const Manager = () => {
     localError ||
     errors?.users ||
     "";
+
 
   // ==========================================================
   // MENU CATEGORIES
@@ -269,6 +343,7 @@ const Manager = () => {
     ).sort((a, b) =>
       a.localeCompare(b)
     );
+
 
   // ==========================================================
   // LOAD ACTIVE USERS ON FIRST LOAD
@@ -295,6 +370,7 @@ const Manager = () => {
     dispatch,
     lastFetched?.users,
   ]);
+
 
   // ==========================================================
   // LOAD ORDERS / MENU WHEN PAGE OPENS
@@ -329,6 +405,717 @@ const Manager = () => {
     lastFetched?.menuItems,
   ]);
 
+
+  // ==========================================================
+  // LOAD MANAGER TABLES
+  // ==========================================================
+
+  const loadManagerTables = async ({
+    force = false,
+  } = {}) => {
+
+    if (
+      !force &&
+      Array.isArray(tables) &&
+      tables.length > 0
+    ) {
+      return;
+    }
+
+    setTablesLoading(true);
+    setTablesError("");
+
+    try {
+      const response =
+        await fetch(
+          "http://localhost:5000/api/manager/tables",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to load tables."
+        );
+      }
+
+      setTables(
+        Array.isArray(data?.tables)
+          ? data.tables
+          : []
+      );
+
+      setTableStats({
+        total:
+          Number(data?.counts?.total) || 0,
+        free:
+          Number(data?.counts?.free) || 0,
+        occupied:
+          Number(data?.counts?.occupied) || 0,
+      });
+
+    } catch (error) {
+      console.error(
+        "Manager tables load error:",
+        error
+      );
+
+      setTablesError(
+        error?.message ||
+          "Unable to load tables."
+      );
+
+    } finally {
+      setTablesLoading(false);
+    }
+  };
+
+
+  // ==========================================================
+  // LOAD MANAGER BILLS
+  // ==========================================================
+
+  const loadManagerBills = async ({
+    force = false,
+  } = {}) => {
+
+    if (
+      !force &&
+      Array.isArray(bills) &&
+      bills.length > 0
+    ) {
+      return;
+    }
+
+    setBillsLoading(true);
+    setBillsError("");
+
+    try {
+      const response =
+        await fetch(
+          "http://localhost:5000/api/manager/bills",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to load bills."
+        );
+      }
+
+      const loadedBills =
+        Array.isArray(data?.bills)
+          ? data.bills
+          : [];
+
+      setBills(loadedBills);
+
+      setBillStats({
+        total:
+          Number(data?.counts?.total) || 0,
+        checkout:
+          Number(data?.counts?.checkout) || 0,
+        generated:
+          Number(data?.counts?.generated) || 0,
+        paid:
+          Number(data?.counts?.paid) || 0,
+        unpaid:
+          Number(data?.counts?.unpaid) || 0,
+      });
+
+    } catch (error) {
+      console.error(
+        "Manager bills load error:",
+        error
+      );
+
+      setBillsError(
+        error?.message ||
+          "Unable to load bills."
+      );
+
+    } finally {
+      setBillsLoading(false);
+    }
+  };
+
+
+  // ==========================================================
+  // LOAD TABLES / BILLS WHEN PAGE OPENS
+  // ==========================================================
+
+  useEffect(() => {
+
+    if (activePage === "tables") {
+      loadManagerTables({
+        force: false,
+      });
+    }
+
+    if (activePage === "bills") {
+      loadManagerBills({
+        force: false,
+      });
+    }
+
+  }, [activePage]);
+
+
+  // ==========================================================
+  // GENERATE BILL
+  // ==========================================================
+
+  const handleGenerateBill = async (
+    billId,
+    paymentMethod
+  ) => {
+
+    if (!billId) {
+      return;
+    }
+
+    const normalizedMethod =
+      String(
+        paymentMethod || ""
+      )
+        .trim()
+        .toUpperCase();
+
+    if (
+      !["UPI", "CASH", "CARD"].includes(
+        normalizedMethod
+      )
+    ) {
+      setBillsError(
+        "Please select a payment method."
+      );
+      return;
+    }
+
+    setGeneratingBillId(billId);
+    setBillsError("");
+
+    try {
+
+      const response =
+        await fetch(
+          `http://localhost:5000/api/manager/bills/${billId}/generate`,
+          {
+            method: "PATCH",
+            credentials: "include",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to generate bill."
+        );
+      }
+
+      if (normalizedMethod === "UPI") {
+
+        const generatedBill =
+          data?.bill || null;
+
+        setUpiBill(
+          generatedBill || {
+            _id: billId,
+            id: billId,
+            paymentMethod: "UPI",
+          }
+        );
+
+      } else {
+
+        await loadManagerBills({
+          force: true,
+        });
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Generate bill error:",
+        error
+      );
+
+      setBillsError(
+        error?.message ||
+          "Unable to generate bill."
+      );
+
+    } finally {
+      setGeneratingBillId(null);
+    }
+  };
+
+
+  // ==========================================================
+  // PAY BILL
+  // ==========================================================
+
+  const handlePayBill = async (
+    billId,
+    paymentMethod
+  ) => {
+
+    if (!billId) {
+      return;
+    }
+
+    const normalizedMethod =
+      String(
+        paymentMethod || ""
+      )
+        .trim()
+        .toUpperCase();
+
+    if (
+      !["UPI", "CASH", "CARD"].includes(
+        normalizedMethod
+      )
+    ) {
+      setBillsError(
+        "Please select a payment method."
+      );
+      return;
+    }
+
+    setPayingBillId(billId);
+    setBillsError("");
+
+    try {
+
+      const response =
+        await fetch(
+          `http://localhost:5000/api/manager/bills/${billId}/pay`,
+          {
+            method: "PATCH",
+            credentials: "include",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              paymentMethod:
+                normalizedMethod,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to mark bill as paid."
+        );
+      }
+
+      setUpiBill(null);
+
+      await loadManagerBills({
+        force: true,
+      });
+
+      await loadManagerTables({
+        force: true,
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Pay bill error:",
+        error
+      );
+
+      setBillsError(
+        error?.message ||
+          "Unable to mark bill as paid."
+      );
+
+    } finally {
+      setPayingBillId(null);
+    }
+  };
+
+
+  // ==========================================================
+  // CLOSE UPI POPUP
+  // ==========================================================
+
+  const closeUpiBill = () => {
+
+    if (payingBillId) {
+      return;
+    }
+
+    setUpiBill(null);
+  };
+
+
+  // ==========================================================
+  // PRINT BILL
+  // ==========================================================
+
+  const handlePrintBill = (bill) => {
+
+    if (!bill) {
+      return;
+    }
+
+    const billNumber =
+      bill.billNumber ||
+      bill.invoiceNumber ||
+      bill._id ||
+      bill.id ||
+      "N/A";
+
+    const tableNumber =
+      bill.tableId?.tableNumber ??
+      bill.tableNumber ??
+      "N/A";
+
+    const waiterName =
+      bill.waiterId?.name ||
+      bill.waiterName ||
+      "N/A";
+
+    const paymentMethod =
+      bill.paymentMethod ||
+      "N/A";
+
+    const createdAt =
+      bill.paidAt ||
+      bill.generatedAt ||
+      bill.createdAt ||
+      new Date();
+
+    const items =
+      Array.isArray(bill.items)
+        ? bill.items
+        : [];
+
+    const rows =
+      items
+        .map((item) => {
+
+          const name =
+            item.name ||
+            item.menuItemName ||
+            "Item";
+
+          const quantity =
+            Number(
+              item.quantity ??
+                item.qty ??
+                1
+            );
+
+          const price =
+            Number(
+              item.price ??
+                item.unitPrice ??
+                0
+            );
+
+          const total =
+            quantity * price;
+
+          return `
+            <tr>
+              <td>${name}</td>
+              <td>${quantity}</td>
+              <td>₹${price.toFixed(2)}</td>
+              <td>₹${total.toFixed(2)}</td>
+            </tr>
+          `;
+        })
+        .join("");
+
+    const totalAmount =
+      Number(
+        bill.totalAmount ??
+          bill.total ??
+          bill.subtotal ??
+          0
+      );
+
+    const printableWindow =
+      window.open(
+        "",
+        "_blank",
+        "width=850,height=900"
+      );
+
+    if (!printableWindow) {
+      setBillsError(
+        "Please allow pop-ups to print the bill."
+      );
+      return;
+    }
+
+    printableWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>KitchenFlow Bill ${billNumber}</title>
+
+          <style>
+            * {
+              box-sizing: border-box;
+            }
+
+            body {
+              margin: 0;
+              padding: 35px;
+              font-family: Arial, sans-serif;
+              color: #111;
+              background: #fff;
+            }
+
+            .bill {
+              max-width: 760px;
+              margin: 0 auto;
+            }
+
+            .header {
+              text-align: center;
+              border-bottom: 2px solid #111;
+              padding-bottom: 18px;
+              margin-bottom: 22px;
+            }
+
+            .header h1 {
+              margin: 0;
+              font-size: 28px;
+              letter-spacing: 2px;
+            }
+
+            .header p {
+              margin: 7px 0 0;
+              font-size: 13px;
+            }
+
+            .details {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 8px 25px;
+              margin-bottom: 25px;
+              font-size: 14px;
+            }
+
+            .details strong {
+              display: inline-block;
+              min-width: 115px;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 15px;
+            }
+
+            th,
+            td {
+              padding: 11px 8px;
+              border-bottom: 1px solid #ddd;
+              text-align: left;
+              font-size: 14px;
+            }
+
+            th:nth-child(n+2),
+            td:nth-child(n+2) {
+              text-align: right;
+            }
+
+            th {
+              border-top: 2px solid #111;
+              border-bottom: 2px solid #111;
+            }
+
+            .total {
+              margin-top: 25px;
+              display: flex;
+              justify-content: flex-end;
+            }
+
+            .total-box {
+              width: 280px;
+              border-top: 2px solid #111;
+              padding-top: 12px;
+              display: flex;
+              justify-content: space-between;
+              font-size: 19px;
+              font-weight: 700;
+            }
+
+            .footer {
+              text-align: center;
+              margin-top: 45px;
+              padding-top: 15px;
+              border-top: 1px solid #ddd;
+              font-size: 12px;
+            }
+
+            @media print {
+              body {
+                padding: 15px;
+              }
+            }
+          </style>
+        </head>
+
+        <body>
+          <div class="bill">
+
+            <div class="header">
+              <h1>KITCHENFLOW</h1>
+              <p>Restaurant Bill</p>
+            </div>
+
+            <div class="details">
+              <div>
+                <strong>Bill No:</strong>
+                ${billNumber}
+              </div>
+
+              <div>
+                <strong>Date:</strong>
+                ${new Date(createdAt).toLocaleString()}
+              </div>
+
+              <div>
+                <strong>Table:</strong>
+                ${tableNumber}
+              </div>
+
+              <div>
+                <strong>Waiter:</strong>
+                ${waiterName}
+              </div>
+
+              <div>
+                <strong>Payment:</strong>
+                ${paymentMethod}
+              </div>
+
+              <div>
+                <strong>Status:</strong>
+                PAID
+              </div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+
+            <div class="total">
+              <div class="total-box">
+                <span>Grand Total</span>
+                <span>₹${totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div class="footer">
+              Thank you for dining with us.
+            </div>
+
+          </div>
+
+          <script>
+            window.onload = function () {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `);
+
+    printableWindow.document.close();
+  };
+
+
+  // ==========================================================
+  // CHANGE PAGE
+  // ==========================================================
+
+  const changePage = (page) => {
+    setActivePage(page);
+    setMenuOpen(false);
+  };
+
+
+  // ==========================================================
+  // REFRESH CURRENT MANAGER PAGE
+  // ==========================================================
+
+  const handleManagerRefresh = async () => {
+
+    if (activePage === "tables") {
+
+      await loadManagerTables({
+        force: true,
+      });
+
+      return;
+    }
+
+    if (activePage === "bills") {
+
+      await loadManagerBills({
+        force: true,
+      });
+
+      return;
+    }
+
+    await refreshCurrentPage({
+      dispatch,
+      activePage,
+      setRefreshing,
+      setLocalError,
+      setLastUpdated,
+      setOrdersError,
+      setMenuError,
+    });
+  };
+
+
   // ==========================================================
   // OPEN EDIT DISH
   // ==========================================================
@@ -357,6 +1144,7 @@ const Manager = () => {
     });
   };
 
+
   // ==========================================================
   // CLOSE EDIT DISH
   // ==========================================================
@@ -370,14 +1158,6 @@ const Manager = () => {
     setImageUploadError("");
   };
 
-  // ==========================================================
-  // CHANGE PAGE
-  // ==========================================================
-
-  const changePage = (page) => {
-    setActivePage(page);
-    setMenuOpen(false);
-  };
 
   // ==========================================================
   // LOADING SCREEN
@@ -386,6 +1166,7 @@ const Manager = () => {
   if (loading) {
     return (
       <div className="manager-loading">
+
         <div className="loading-logo">
           <Icon
             name="chef"
@@ -401,9 +1182,11 @@ const Manager = () => {
         <p>
           Loading manager dashboard...
         </p>
+
       </div>
     );
   }
+
 
   // ==========================================================
   // MAIN UI
@@ -412,6 +1195,7 @@ const Manager = () => {
   return (
     <div className="manager-page">
 
+
       {/* ======================================================
           MOBILE SIDEBAR OVERLAY
       ====================================================== */}
@@ -419,7 +1203,9 @@ const Manager = () => {
       {menuOpen && (
         <div
           className="sidebar-overlay"
-          onClick={() => setMenuOpen(false)}
+          onClick={() =>
+            setMenuOpen(false)
+          }
           style={{
             position: "fixed",
             inset: 0,
@@ -427,6 +1213,7 @@ const Manager = () => {
           }}
         />
       )}
+
 
       {/* ======================================================
           SIDEBAR
@@ -448,10 +1235,12 @@ const Manager = () => {
             ? "translateX(0)"
             : "translateX(-105%)",
           zIndex: 1000,
-          transition: "transform 0.28s ease",
+          transition:
+            "transform 0.28s ease",
         }}
         aria-hidden={!menuOpen}
       >
+
 
         {/* ====================================================
             SIDEBAR BRAND
@@ -467,6 +1256,7 @@ const Manager = () => {
           </div>
 
           <div className="brand-text">
+
             <h2>
               KITCHEN
               <span>FLOW</span>
@@ -475,6 +1265,7 @@ const Manager = () => {
             <p>
               MANAGER PANEL
             </p>
+
           </div>
 
           <button
@@ -492,6 +1283,7 @@ const Manager = () => {
 
         </div>
 
+
         {/* ====================================================
             SIDEBAR NAVIGATION
         ==================================================== */}
@@ -501,6 +1293,7 @@ const Manager = () => {
           <p className="sidebar-title">
             WORKSPACE
           </p>
+
 
           {/* HOME */}
 
@@ -524,6 +1317,7 @@ const Manager = () => {
               Home
             </span>
           </button>
+
 
           {/* ORDERS */}
 
@@ -550,7 +1344,9 @@ const Manager = () => {
             <small>
               LIVE
             </small>
+
           </button>
+
 
           {/* MENU */}
 
@@ -577,9 +1373,65 @@ const Manager = () => {
             <small>
               LIVE
             </small>
+
+          </button>
+
+
+          {/* TABLES */}
+
+          <button
+            type="button"
+            className={`sidebar-link ${
+              activePage === "tables"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              changePage("tables")
+            }
+          >
+            <Icon
+              name="table"
+              size={18}
+            />
+
+            <span>
+              Tables
+            </span>
+
+            <small>
+              LIVE
+            </small>
+
+          </button>
+
+
+          {/* BILLS */}
+
+          <button
+            type="button"
+            className={`sidebar-link ${
+              activePage === "bills"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              changePage("bills")
+            }
+          >
+            <Icon
+              name="orders"
+              size={18}
+            />
+
+            <span>
+              Bills
+            </span>
+
           </button>
 
         </div>
+
 
         {/* ====================================================
             SIDEBAR BOTTOM
@@ -610,11 +1462,13 @@ const Manager = () => {
 
       </aside>
 
+
       {/* ======================================================
           MAIN AREA
       ====================================================== */}
 
       <div className="manager-main">
+
 
         {/* ====================================================
             HEADER
@@ -629,30 +1483,28 @@ const Manager = () => {
             )
           }
 
-          onRefresh={() =>
-            refreshCurrentPage({
-              dispatch,
-              activePage,
-              setRefreshing,
-              setLocalError,
-              setLastUpdated,
-              setOrdersError,
-              setMenuError,
-            })
+          onRefresh={
+            handleManagerRefresh
           }
 
-          refreshing={refreshing}
+          refreshing={
+            refreshing ||
+            tablesLoading ||
+            billsLoading
+          }
 
           user={currentUser}
 
           role="Manager"
         />
 
+
         {/* ====================================================
             CONTENT
         ==================================================== */}
 
         <main className="manager-content">
+
 
           {/* ==================================================
               GENERAL ERROR
@@ -664,12 +1516,14 @@ const Manager = () => {
             </div>
           )}
 
+
           {/* ==================================================
               HOME PAGE
           ================================================== */}
 
           {activePage === "home" && (
             <>
+
 
               {/* ==============================================
                   HERO
@@ -722,6 +1576,7 @@ const Manager = () => {
                 </div>
 
               </section>
+
 
               {/* ==============================================
                   STATISTICS
@@ -776,6 +1631,7 @@ const Manager = () => {
 
               </section>
 
+
               {/* ==============================================
                   MANAGER
               ============================================== */}
@@ -784,6 +1640,7 @@ const Manager = () => {
                 manager={manager}
               />
 
+
               {/* ==============================================
                   WAITERS
               ============================================== */}
@@ -791,6 +1648,7 @@ const Manager = () => {
               <WaitersList
                 waiters={waiters}
               />
+
 
               {/* ==============================================
                   KITCHEN STAFF
@@ -801,6 +1659,7 @@ const Manager = () => {
                   kitchenStaff
                 }
               />
+
 
               {/* ==============================================
                   FOOTER
@@ -822,6 +1681,7 @@ const Manager = () => {
 
             </>
           )}
+
 
           {/* ==================================================
               ORDERS PAGE
@@ -864,6 +1724,7 @@ const Manager = () => {
               }
             />
           )}
+
 
           {/* ==================================================
               MENU PAGE
@@ -926,6 +1787,7 @@ const Manager = () => {
                 }
               />
 
+
               {/* ==============================================
                   MENU ERROR
               ============================================== */}
@@ -936,6 +1798,7 @@ const Manager = () => {
                 </div>
               )}
 
+
               {/* ==============================================
                   ADD DISH MODAL
               ============================================== */}
@@ -944,6 +1807,7 @@ const Manager = () => {
                 <div className="dish-modal-backdrop">
 
                   <div className="dish-modal">
+
 
                     {/* ========================================
                         MODAL HEADER
@@ -967,6 +1831,7 @@ const Manager = () => {
                         type="button"
                         className="modal-close-button"
                         onClick={() => {
+
                           if (
                             addingDish ||
                             uploadingImage
@@ -982,6 +1847,7 @@ const Manager = () => {
                       </button>
 
                     </div>
+
 
                     {/* ========================================
                         ADD FORM
@@ -1001,6 +1867,7 @@ const Manager = () => {
                         })
                       }
                     >
+
 
                       {/* DISH NAME */}
 
@@ -1027,7 +1894,9 @@ const Manager = () => {
                           }
                           placeholder="e.g. Veg Biryani"
                         />
+
                       </label>
+
 
                       {/* CATEGORY */}
 
@@ -1075,7 +1944,9 @@ const Manager = () => {
                           )}
 
                         </select>
+
                       </label>
+
 
                       {/* PRICE */}
 
@@ -1104,7 +1975,9 @@ const Manager = () => {
                           }
                           placeholder="220"
                         />
+
                       </label>
+
 
                       {/* IMAGE */}
 
@@ -1138,7 +2011,9 @@ const Manager = () => {
                           directly to Cloudinary
                           (max 5 MB).
                         </small>
+
                       </label>
+
 
                       {/* IMAGE ERROR */}
 
@@ -1149,6 +2024,7 @@ const Manager = () => {
                           }
                         </div>
                       )}
+
 
                       {/* IMAGE PREVIEW */}
 
@@ -1164,6 +2040,7 @@ const Manager = () => {
 
                         </div>
                       )}
+
 
                       {/* AVAILABILITY */}
 
@@ -1193,6 +2070,7 @@ const Manager = () => {
 
                       </label>
 
+
                       {/* BUTTONS */}
 
                       <div className="dish-modal-actions">
@@ -1201,6 +2079,7 @@ const Manager = () => {
                           type="button"
                           className="modal-cancel-button"
                           onClick={() => {
+
                             if (
                               addingDish ||
                               uploadingImage
@@ -1243,6 +2122,7 @@ const Manager = () => {
                 </div>
               )}
 
+
               {/* ==============================================
                   EDIT DISH MODAL
               ============================================== */}
@@ -1251,6 +2131,7 @@ const Manager = () => {
                 <div className="dish-modal-backdrop">
 
                   <div className="dish-modal">
+
 
                     {/* ========================================
                         EDIT MODAL HEADER
@@ -1285,6 +2166,7 @@ const Manager = () => {
 
                     </div>
 
+
                     {/* ========================================
                         EDIT FORM
                     ======================================== */}
@@ -1304,6 +2186,7 @@ const Manager = () => {
                         })
                       }
                     >
+
 
                       {/* DISH NAME */}
 
@@ -1329,7 +2212,9 @@ const Manager = () => {
                             )
                           }
                         />
+
                       </label>
+
 
                       {/* CATEGORY */}
 
@@ -1377,7 +2262,9 @@ const Manager = () => {
                           )}
 
                         </select>
+
                       </label>
+
 
                       {/* PRICE */}
 
@@ -1405,7 +2292,9 @@ const Manager = () => {
                             )
                           }
                         />
+
                       </label>
+
 
                       {/* REPLACE IMAGE */}
 
@@ -1439,7 +2328,9 @@ const Manager = () => {
                           will replace the current
                           Cloudinary image after saving.
                         </small>
+
                       </label>
+
 
                       {/* IMAGE PREVIEW */}
 
@@ -1455,6 +2346,7 @@ const Manager = () => {
 
                         </div>
                       )}
+
 
                       {/* AVAILABILITY */}
 
@@ -1484,6 +2376,7 @@ const Manager = () => {
 
                       </label>
 
+
                       {/* IMAGE ERROR */}
 
                       {imageUploadError && (
@@ -1493,6 +2386,7 @@ const Manager = () => {
                           }
                         </div>
                       )}
+
 
                       {/* BUTTONS */}
 
@@ -1536,6 +2430,69 @@ const Manager = () => {
               )}
 
             </>
+          )}
+
+
+          {/* ==================================================
+              TABLES PAGE
+          ================================================== */}
+
+          {activePage === "tables" && (
+            <ManagerTables
+              tables={tables}
+              tableStats={tableStats}
+              loading={tablesLoading}
+              error={tablesError}
+              onRefresh={() =>
+                loadManagerTables({
+                  force: true,
+                })
+              }
+            />
+          )}
+
+
+          {/* ==================================================
+              BILLS PAGE
+          ================================================== */}
+
+          {activePage === "bills" && (
+            <ManagerBills
+              bills={bills}
+              billStats={billStats}
+              loading={billsLoading}
+              error={billsError}
+              generatingBillId={
+                generatingBillId
+              }
+              payingBillId={
+                payingBillId
+              }
+              selectedPaymentMethod={
+                selectedPaymentMethod
+              }
+              setSelectedPaymentMethod={
+                setSelectedPaymentMethod
+              }
+              upiBill={upiBill}
+              onCloseUpi={
+                closeUpiBill
+              }
+              onRefresh={() =>
+                loadManagerBills({
+                  force: true,
+                })
+              }
+              onGenerateBill={
+                handleGenerateBill
+              }
+              onPayBill={
+                handlePayBill
+              }
+              onPrintBill={
+                handlePrintBill
+              }
+            />
           )}
 
         </main>
