@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 /* =========================================================
+
    KITCHENFLOW GLOBAL THEME
+
    ========================================================= */
 
 :root {
@@ -9,7 +11,9 @@
   /* Brand */
 
   --c-brand-dark: #06101f;
+
   --c-brand-mid: #0a1830;
+
   --c-brand-deep: #071426;
 
   /* Background */
@@ -19,29 +23,41 @@
   /* Surfaces */
 
   --c-surface: #0a1426;
+
   --c-surface-2: #0d1a2f;
+
   --c-surface-3: #101f36;
 
   /* Primary blue */
 
   --c-primary: #1677ff;
+
   --c-primary-strong: #2f8cff;
+
   --c-primary-dark: #0d4fa8;
+
   --c-primary-deeper: #092f68;
 
   /* Accent gold */
 
   --c-accent: #d9ad45;
+
   --c-accent-light: #f0c967;
 
   /* Text */
 
   --c-white: #ffffff;
+
   --c-text-primary: #f5f7fb;
+
   --c-text-secondary: #aebbd0;
+
   --c-text-muted: #8796ad;
+
   --c-text-subtle: #6e7e96;
+
   --c-text-dim: #596a82;
+
   --c-text-faint: #45546a;
 
   /* Icons */
@@ -66,46 +82,92 @@
 
 
   /* =======================================================
+
      TRANSPARENT COLOURS
-     ======================================================= */
+
+     ======================================================== */
 
   --a-black-25: rgba(0, 0, 0, 0.25);
+
   --a-black-35: rgba(0, 0, 0, 0.35);
+
   --a-black-40: rgba(0, 0, 0, 0.40);
+
   --a-black-45: rgba(0, 0, 0, 0.45);
 
   --a-white-05: rgba(255, 255, 255, 0.05);
 
   --a-primary-14: rgba(22, 119, 255, 0.14);
+
   --a-primary-22: rgba(22, 119, 255, 0.22);
 
   --a-accent-06: rgba(217, 173, 69, 0.06);
+
   --a-accent-08: rgba(217, 173, 69, 0.08);
+
   --a-accent-12: rgba(217, 173, 69, 0.12);
+
   --a-accent-28: rgba(217, 173, 69, 0.28);
+
   --a-accent-35: rgba(217, 173, 69, 0.35);
 
   --a-success-12: rgba(72, 213, 151, 0.12);
 
   --a-error-12: rgba(255, 80, 80, 0.12);
+
 }
 
 
 /* =========================================================
+
    GLOBAL
+
+   ========================================================= */
+
+html,
+
+body,
+
+#root {
+
+  min-height: 100%;
+
+  margin: 0;
+
+}
+
+
+body {
+
+  background: var(--c-bg);
+
+  color: var(--c-text-primary);
+
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+
+    "Segoe UI", sans-serif;
+}
+
+
+/* =========================================================
+   
+   REMOVE TEXT EDITOR / CARET FROM NORMAL PAGE CONTENT
+   
    ========================================================= */
 
 html,
 body,
 #root {
-  min-height: 100%;
-  margin: 0;
+  caret-color: transparent;
 }
 
 
-body {
-  background: var(--c-bg);
-  color: var(--c-text-primary);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+/* Keep the blinking caret available inside
+   actual editable fields */
+
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  caret-color: auto;
 }

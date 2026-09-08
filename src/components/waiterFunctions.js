@@ -728,3 +728,62 @@ export const formatDate = (
 
   return date.toLocaleString();
 };
+
+// ============================================================
+// LOAD MY ORDERS
+//
+// GET /api/waiter/my-orders
+//
+// Only orders taken by the currently logged-in waiter.
+// Orders disappear from this list once their bill is GENERATED.
+// ============================================================
+
+export const loadMyOrders = async ({
+  force = false,
+  loadedRef,
+  setLoadingMyOrders,
+  setMyOrders,
+  showMessage,
+}) => {
+  if (
+    !force &&
+    loadedRef?.current?.myOrders
+  ) {
+    return;
+  }
+
+  try {
+    setLoadingMyOrders(true);
+
+    const data = await apiRequest(
+      "/waiter/my-orders"
+    );
+
+    setMyOrders(
+      Array.isArray(data?.orders)
+        ? data.orders
+        : []
+    );
+
+    if (loadedRef?.current) {
+      loadedRef.current.myOrders = true;
+    }
+  } catch (error) {
+    console.error(
+      "My orders load error:",
+      error
+    );
+
+    if (loadedRef?.current) {
+      loadedRef.current.myOrders = false;
+    }
+
+    showMessage(
+      "error",
+      error?.message ||
+        "Unable to load your orders"
+    );
+  } finally {
+    setLoadingMyOrders(false);
+  }
+};

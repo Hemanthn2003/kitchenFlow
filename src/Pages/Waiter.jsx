@@ -14,6 +14,7 @@ import WaiterSidebar from "../components/WaiterSidebar.jsx";
 import WaiterTablesPage from "../components/WaiterTablesPage.jsx";
 import WaiterPickedTablesPage from "../components/WaiterPickedTablesPage.jsx";
 import WaiterBillsPage from "../components/WaiterBillsPage.jsx";
+import WaiterOrderList from "../components/waiterorderlist.jsx";
 
 import {
   DropTableModal,
@@ -26,6 +27,7 @@ import {
   loadPickedTables,
   loadTableOrders,
   loadBills,
+  loadMyOrders,
   pickTable,
   dropTable,
   placeOrder,
@@ -90,6 +92,7 @@ const Waiter = () => {
 
   const [bills, setBills] = useState([]);
 
+  const [myOrders, setMyOrders] = useState([]);
   // ==========================================================
   // LOADING
   // ==========================================================
@@ -100,6 +103,9 @@ const Waiter = () => {
     useState(false);
 
   const [loadingBills, setLoadingBills] = useState(false);
+
+  const [loadingMyOrders, setLoadingMyOrders] =
+  useState(false);
 
   const [actionLoading, setActionLoading] = useState("");
 
@@ -144,6 +150,7 @@ const Waiter = () => {
     menu: false,
     picked: false,
     bills: false,
+   myOrders: false,
   });
 
   // ==========================================================
@@ -312,7 +319,17 @@ const Waiter = () => {
 
       return;
     }
+  if (activePage === "my-orders") {
+    await loadMyOrders({
+      force: true,
+      loadedRef,
+      setLoadingMyOrders,
+      setMyOrders,
+      showMessage,
+    });
 
+    return;
+  }
     if (activePage === "picked") {
       await loadPickedTables({
         force: true,
@@ -342,45 +359,100 @@ const Waiter = () => {
   // LOAD PAGE DATA
   // ==========================================================
 
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
+ useEffect(() => {
+  if (!user) {
+    return;
+  }
 
-    if (activePage === "tables") {
-      loadTables({
-        loadedRef,
-        setLoadingTables,
-        setTables,
-        showMessage,
-      });
-    }
+  /* ==========================================================
+     TABLES
 
-    if (activePage === "picked") {
-      loadPickedTables({
-        loadedRef,
-        setLoadingPickedTables,
-        setPickedTables,
-        showMessage,
-      });
-    }
+     Mark as started BEFORE the API request.
+     This prevents React StrictMode from starting
+     the same initial request twice.
+     ========================================================== */
 
-    if (
-      activePage === "bills" &&
-      !loadedRef.current.bills
-    ) {
-      loadBills({
-        setLoadingBills,
-        setBills,
-        showMessage,
-      });
+  if (
+    activePage === "tables" &&
+    !loadedRef.current.tables
+  ) {
+    loadedRef.current.tables = true;
 
-      loadedRef.current.bills = true;
-    }
-  }, [
-    user,
-    activePage,
-  ]);
+    loadTables({
+      force: true,
+      loadedRef,
+      setLoadingTables,
+      setTables,
+      showMessage,
+    });
+  }
+
+
+  /* ==========================================================
+     PICKED TABLES
+     ========================================================== */
+
+  if (
+    activePage === "picked" &&
+    !loadedRef.current.picked
+  ) {
+    loadedRef.current.picked = true;
+
+    loadPickedTables({
+      force: true,
+      loadedRef,
+      setLoadingPickedTables,
+      setPickedTables,
+      showMessage,
+    });
+  }
+
+
+  /* ==========================================================
+     MY ORDERS
+     ========================================================== */
+
+  if (
+    activePage === "my-orders" &&
+    !loadedRef.current.myOrders
+  ) {
+    loadedRef.current.myOrders = true;
+
+    loadMyOrders({
+      force: true,
+      loadedRef,
+      setLoadingMyOrders,
+      setMyOrders,
+      showMessage,
+    });
+  }
+
+
+  /* ==========================================================
+     BILLS
+     ========================================================== */
+
+  if (
+    activePage === "bills" &&
+    !loadedRef.current.bills
+  ) {
+    loadedRef.current.bills = true;
+
+    loadBills({
+      filters: {
+        date: billDate,
+        billNumber,
+      },
+      setLoadingBills,
+      setBills,
+      showMessage,
+    });
+  }
+
+}, [
+  user,
+  activePage,
+]);
 
   // ==========================================================
   // PICK TABLE
@@ -657,6 +729,8 @@ const Waiter = () => {
               ? loadingTables
               : activePage === "picked"
               ? loadingPickedTables
+              : activePage === "my-orders"
+              ? loadingMyOrders
               : loadingBills
           }
 
@@ -702,7 +776,25 @@ const Waiter = () => {
             onPlaceOrder={handlePlaceOrder}
           />
         )}
+{/* ====================================================
+    MY ORDERS
+    ==================================================== */}
 
+{activePage === "my-orders" && (
+  <WaiterOrderList
+    orders={myOrders}
+    loading={loadingMyOrders}
+    onRefresh={() =>
+      loadMyOrders({
+        force: true,
+        loadedRef,
+        setLoadingMyOrders,
+        setMyOrders,
+        showMessage,
+      })
+    }
+  />
+)}
         {/* ====================================================
             BILLS
             ==================================================== */}

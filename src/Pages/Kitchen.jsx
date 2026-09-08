@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -29,7 +30,8 @@ const Kitchen = () => {
      KITCHEN ORDERS
      ===================================================== */
 
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] =
+    useState([]);
 
   const [loading, setLoading] =
     useState(false);
@@ -40,6 +42,24 @@ const Kitchen = () => {
   const [updatingOrderId, setUpdatingOrderId] =
     useState(null);
 
+  const [loggingOut, setLoggingOut] =
+    useState(false);
+
+
+  /* =====================================================
+     API REQUEST GUARDS
+
+     Prevents React StrictMode from making the same
+     initial API request twice.
+
+     It also prevents multiple refresh requests from
+     running at the same time.
+     ===================================================== */
+
+  const initialLoadRef = useRef(false);
+
+  const requestInFlightRef = useRef(false);
+
 
   /* =====================================================
      LOAD KITCHEN ORDERS
@@ -47,20 +67,56 @@ const Kitchen = () => {
 
   const fetchKitchenOrders = async () => {
 
-    await loadKitchenOrders({
-      setOrders,
-      setLoading,
-      setError,
-    });
+    /*
+     * Do not start another request while one is
+     * already running.
+     *
+     * This protects against:
+     * - StrictMode duplicate effect execution
+     * - double clicking Refresh
+     * - multiple refresh triggers at once
+     */
+
+    if (requestInFlightRef.current) {
+      return;
+    }
+
+    requestInFlightRef.current = true;
+
+    try {
+
+      await loadKitchenOrders({
+        setOrders,
+        setLoading,
+        setError,
+      });
+
+    } finally {
+
+      requestInFlightRef.current = false;
+
+    }
 
   };
 
 
   /* =====================================================
      INITIAL LOAD
+
+     React StrictMode may execute this effect twice
+     during development.
+
+     initialLoadRef makes sure the initial API call
+     happens only once.
      ===================================================== */
 
   useEffect(() => {
+
+    if (initialLoadRef.current) {
+      return;
+    }
+
+    initialLoadRef.current = true;
 
     fetchKitchenOrders();
 
@@ -94,6 +150,106 @@ const Kitchen = () => {
   };
 
 
+  /* =====================================================
+     LOGOUT
+
+     IMPORTANT:
+
+     Authentication uses HTTP-only cookies.
+
+     Therefore we MUST call the backend logout API.
+
+     Backend will:
+       1. Find the logged-in user from accessToken
+       2. Set isActive = false
+       3. Set lastActiveAt
+       4. Clear accessToken cookie
+       5. Clear refreshToken cookie
+
+     Only after that do we redirect to login.
+     ===================================================== */
+
+  const handleLogout = async () => {
+
+    if (loggingOut) {
+      return;
+    }
+
+    try {
+
+      setLoggingOut(true);
+
+
+      const response =
+        await fetch(
+          "http://localhost:5000/api/auth/logout",
+          {
+            method: "POST",
+
+            credentials: "include",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+          }
+        );
+
+
+      /*
+       * We intentionally don't block logout
+       * if the server returns an error.
+       *
+       * The local session should still be cleared.
+       */
+
+      if (!response.ok) {
+
+        console.warn(
+          "Logout request returned:",
+          response.status
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Kitchen logout error:",
+        error
+      );
+
+    } finally {
+
+      /*
+       * Clear any old local authentication data.
+       *
+       * The real authentication cookies are cleared
+       * by the backend logout endpoint above.
+       */
+
+      localStorage.removeItem(
+        "user"
+      );
+
+      localStorage.removeItem(
+        "token"
+      );
+
+
+      /*
+       * Redirect only after the logout request has
+       * been attempted.
+       */
+
+      window.location.href =
+        "/login";
+
+    }
+
+  };
+
+
   return (
 
     <div className="kitchen-page">
@@ -123,13 +279,16 @@ const Kitchen = () => {
               <div className="kitchen-sidebar-brand">
 
                 <div className="kitchen-sidebar-brand-icon">
+
                   <Icon
                     name="chef"
                     size={22}
                   />
+
                 </div>
 
                 <div>
+
                   <strong>
                     KitchenFlow
                   </strong>
@@ -137,6 +296,7 @@ const Kitchen = () => {
                   <span>
                     KITCHEN
                   </span>
+
                 </div>
 
               </div>
@@ -150,10 +310,12 @@ const Kitchen = () => {
                 }
                 aria-label="Close navigation"
               >
+
                 <Icon
                   name="close"
                   size={19}
                 />
+
               </button>
 
             </div>
@@ -175,18 +337,8 @@ const Kitchen = () => {
               <button
                 type="button"
                 className="kitchen-sidebar-logout"
-                onClick={() => {
-                  localStorage.removeItem(
-                    "user"
-                  );
-
-                  localStorage.removeItem(
-                    "token"
-                  );
-
-                  window.location.href =
-                    "/login";
-                }}
+                onClick={handleLogout}
+                disabled={loggingOut}
               >
 
                 <Icon
@@ -195,7 +347,9 @@ const Kitchen = () => {
                 />
 
                 <span>
-                  Logout
+                  {loggingOut
+                    ? "Logging out..."
+                    : "Logout"}
                 </span>
 
               </button>
@@ -214,18 +368,22 @@ const Kitchen = () => {
 
       <Header
         activePage="orders"
+
         onMenuToggle={() =>
           setMenuOpen(
             (previous) =>
               !previous
           )
         }
+
         onRefresh={
           fetchKitchenOrders
         }
+
         refreshing={
           loading
         }
+
         role="KITCHEN"
       />
 
@@ -343,6 +501,7 @@ const Kitchen = () => {
               </span>
 
               <strong>
+
                 {String(
                   orders.filter(
                     (order) =>
@@ -352,6 +511,7 @@ const Kitchen = () => {
                       "PROCESSING"
                   ).length
                 ).padStart(2, "0")}
+
               </strong>
 
             </div>
@@ -377,6 +537,7 @@ const Kitchen = () => {
               </span>
 
               <strong>
+
                 {String(
                   orders.filter(
                     (order) =>
@@ -386,6 +547,7 @@ const Kitchen = () => {
                       "ORDERED"
                   ).length
                 ).padStart(2, "0")}
+
               </strong>
 
             </div>
@@ -423,14 +585,19 @@ const Kitchen = () => {
 
         <KitchenOrderList
           orders={orders}
+
           loading={loading}
+
           error=""
+
           onRefresh={
             fetchKitchenOrders
           }
+
           onStatusChange={
             handleKitchenStatusChange
           }
+
           updatingOrderId={
             updatingOrderId
           }

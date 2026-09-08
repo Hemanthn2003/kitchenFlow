@@ -103,6 +103,31 @@ const WaiterSidebar = ({
             </span>
           </button>
 
+          {/* =====================================================
+              MY ORDERS
+              ===================================================== */}
+
+          <button
+            type="button"
+            className={`sidebar-link ${
+              activePage === "my-orders"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              changePage("my-orders")
+            }
+          >
+            <Icon
+              name="orders"
+              size={18}
+            />
+
+            <span>
+              My Orders
+            </span>
+          </button>
+
           <button
             type="button"
             className={`sidebar-link ${

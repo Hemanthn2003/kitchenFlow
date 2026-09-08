@@ -32,7 +32,10 @@ const Header = ({
           ? "Your Tables"
           : activePage === "bills"
             ? "Bills"
+            :activePage === "my-orders"
+            ?"My Orders"
             : "Waiter"
+            
       : activePage === "home"
         ? "Overview"
         : activePage === "orders"

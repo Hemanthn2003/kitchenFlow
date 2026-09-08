@@ -905,6 +905,186 @@ router.post(
 
   }
 );
+
+/* =========================================================
+   GET MY ORDERS
+
+   GET /api/waiter/my-orders
+
+   Shows only orders taken by the logged-in waiter.
+
+   Visible statuses:
+   ORDERED
+   PROCESSING
+   COOKED
+
+   Once an order belongs to a GENERATED or PAID bill,
+   it is removed from this list.
+
+   The waiter cannot change order status here.
+   ========================================================= */
+
+router.get(
+  "/my-orders",
+
+  authenticate,
+  authorizeRoles("WAITER"),
+
+  async (req, res) => {
+    try {
+      const waiterId = req.user.id;
+
+      // -------------------------------------------------------
+      // Get only active orders taken by this waiter.
+      // -------------------------------------------------------
+
+      const orders = await Order.find({
+        createdBy: waiterId,
+
+        status: {
+          $in: [
+            "ORDERED",
+            "PROCESSING",
+            "COOKED",
+          ],
+        },
+      })
+        .sort({
+          createdAt: -1,
+        })
+        .lean();
+
+      if (orders.length === 0) {
+        return res.status(200).json({
+          success: true,
+          orders: [],
+        });
+      }
+
+      // -------------------------------------------------------
+      // Find bills which have already reached GENERATED/PAID.
+      //
+      // These orders should no longer appear in My Orders.
+      // -------------------------------------------------------
+
+      const orderIds = orders.map(
+        (order) => order._id
+      );
+
+      const generatedBills =
+        await Bill.find({
+          status: {
+            $in: [
+              "GENERATED",
+              "PAID",
+            ],
+          },
+
+          orderIds: {
+            $in: orderIds,
+          },
+        })
+          .select("orderIds")
+          .lean();
+
+      // -------------------------------------------------------
+      // Build a Set of orders already included in a generated
+      // or paid bill.
+      // -------------------------------------------------------
+
+      const billedOrderIds =
+        new Set();
+
+      generatedBills.forEach(
+        (bill) => {
+          (bill.orderIds || []).forEach(
+            (orderId) => {
+              billedOrderIds.add(
+                String(orderId)
+              );
+            }
+          );
+        }
+      );
+
+      // -------------------------------------------------------
+      // Remove orders whose bill has been generated.
+      // -------------------------------------------------------
+
+      const visibleOrders =
+        orders.filter(
+          (order) =>
+            !billedOrderIds.has(
+              String(order._id)
+            )
+        );
+
+      // -------------------------------------------------------
+      // Populate table information if needed.
+      // -------------------------------------------------------
+
+      const tableIds =
+        visibleOrders
+          .map((order) => order.tableId)
+          .filter(Boolean);
+
+      const tables =
+        tableIds.length > 0
+          ? await Table.find({
+              _id: {
+                $in: tableIds,
+              },
+            })
+              .select(
+                "_id tableNumber status"
+              )
+              .lean()
+          : [];
+
+      const tableMap = new Map();
+
+      tables.forEach((table) => {
+        tableMap.set(
+          String(table._id),
+          table
+        );
+      });
+
+      const result =
+        visibleOrders.map((order) => {
+          const table =
+            tableMap.get(
+              String(order.tableId)
+            );
+
+          return {
+            ...order,
+
+            tableNumber:
+              order.tableNumber ??
+              table?.tableNumber ??
+              null,
+          };
+        });
+
+      return res.status(200).json({
+        success: true,
+        orders: result,
+      });
+    } catch (error) {
+      console.error(
+        "Get waiter my orders error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Unable to fetch your orders",
+      });
+    }
+  }
+);
 /* =========================================================
    CHECKOUT TABLE
 

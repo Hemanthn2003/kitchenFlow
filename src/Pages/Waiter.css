@@ -1,205 +1,102 @@
 /* =========================================================
-   KITCHENFLOW
-   PREMIUM WAITER DASHBOARD
-   SAME DESIGN SYSTEM AS MANAGER
-   COMPLETE REPLACEMENT
-   ========================================================= */
-
-
-/* =========================================================
-   THEME
+   KITCHENFLOW - PREMIUM WAITER DASHBOARD
+   Deduplicated build: every exact-duplicate selector and
+   every exact-duplicate @media condition scattered across
+   the file has been merged into a single rule, positioned
+   at its LAST original occurrence so the cascade order
+   (and therefore the rendered visuals) is unchanged.
+   No property values were altered.
    ========================================================= */
 
 .waiter-page {
-
   --bg: #030914;
   --bg-2: #061225;
-
   --sidebar: #061326;
-
   --blue: #14549a;
   --blue-dark: #0c3974;
   --blue-deep: #092d60;
-
   --gold: #e7b94c;
   --gold-light: #f6d477;
-
   --white: #ffffff;
   --text: #ffffff;
   --text-soft: #c2d4e9;
   --text-muted: #7892b4;
-
   --green: #38dfa0;
   --red: #ff7777;
-
   --border: rgba(76,151,236,0.38);
-
   --surface: #0b2343;
   --surface-2: #0e4283;
   --surface-3: #092c59;
-
   width: 100%;
   min-height: 100vh;
-
-  background:
-    radial-gradient(
-      circle at 80% 0%,
-      rgba(18,73,135,0.18),
-      transparent 30%
-    ),
-    #030914;
-
+  background: radial-gradient( circle at 80% 0%, rgba(18,73,135,0.18), transparent 30% ), #030914;
   color: var(--white);
-
-  font-family:
-    "Inter",
-    "Segoe UI",
-    Arial,
-    sans-serif;
-
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
   overflow-x: hidden;
 }
 
-
-/* =========================================================
-   RESET
-   ========================================================= */
-
-.waiter-page *,
-.waiter-page *::before,
-.waiter-page *::after {
+.waiter-page *,.waiter-page *::before,.waiter-page *::after {
   box-sizing: border-box;
 }
 
-.waiter-page h1,
-.waiter-page h2,
-.waiter-page h3,
-.waiter-page h4,
-.waiter-page h5,
-.waiter-page p {
+.waiter-page h1,.waiter-page h2,.waiter-page h3,.waiter-page h4,.waiter-page h5,.waiter-page p {
   margin-top: 0;
 }
 
-.waiter-page button,
-.waiter-page input,
-.waiter-page textarea {
+.waiter-page button,.waiter-page input,.waiter-page textarea {
   font-family: inherit;
 }
 
-
-/* =========================================================
-   MAIN
-   ========================================================= */
-
 .waiter-main {
-
   width: 100%;
   min-width: 0;
   margin: 0;
 }
 
-
-/* =========================================================
-   SIDEBAR
-   SAME MANAGER DESIGN
-   ========================================================= */
-
 .waiter-sidebar {
-
   position: fixed;
-
   top: 0;
   left: 0;
-
   width: 275px;
   height: 100vh;
-
   z-index: 3000;
-
   display: flex;
   flex-direction: column;
-
-  background:
-    linear-gradient(
-      180deg,
-      #07172f 0%,
-      #051123 100%
-    );
-
-  border-right:
-    1px solid
-    rgba(229,184,75,0.16);
-
-  box-shadow:
-    20px 0 60px
-    rgba(0,0,0,0.45);
-
+  background: linear-gradient( 180deg, #07172f 0%, #051123 100% );
+  border-right: 1px solid rgba(229,184,75,0.16);
+  box-shadow: 20px 0 60px rgba(0,0,0,0.45);
   transform: translateX(-105%);
-
   opacity: 0;
   visibility: hidden;
-
-  transition:
-    transform .3s ease,
-    opacity .25s ease,
-    visibility .3s ease;
+  transition: transform .3s ease, opacity .25s ease, visibility .3s ease;
 }
 
 .waiter-sidebar.sidebar-open {
-
   transform: translateX(0);
-
   opacity: 1;
-
   visibility: visible;
 }
 
-
-/* =========================================================
-   SIDEBAR BRAND
-   ========================================================= */
-
 .waiter-sidebar .sidebar-brand {
-
   height: 96px;
   min-height: 96px;
-
   padding: 0 18px;
-
   display: flex;
   align-items: center;
-
   gap: 13px;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.07);
+  border-bottom: 1px solid rgba(255,255,255,.07);
 }
 
 .waiter-sidebar .brand-icon {
-
   width: 48px;
   height: 48px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   color: var(--gold);
-
-  background:
-    linear-gradient(
-      145deg,
-      #124a8e,
-      #092c5b
-    );
-
-  border:
-    1px solid
-    rgba(229,184,75,.38);
-
+  background: linear-gradient( 145deg, #124a8e, #092c5b );
+  border: 1px solid rgba(229,184,75,.38);
   border-radius: 14px;
 }
 
@@ -208,22 +105,12 @@
 }
 
 .waiter-sidebar .brand-text h2 {
-
   margin: 0;
-
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 18px;
-
   font-weight: 700;
-
   letter-spacing: 1.3px;
-
   white-space: nowrap;
 }
 
@@ -232,128 +119,67 @@
 }
 
 .waiter-sidebar .brand-text p {
-
   margin: 5px 0 0;
-
   color: #7188a7;
-
   font-size: 8px;
-
   font-weight: 800;
-
   letter-spacing: 2px;
 }
 
-
-/* =========================================================
-   SIDEBAR CLOSE
-   ========================================================= */
-
 .waiter-sidebar .mobile-close {
-
   width: 34px;
   height: 34px;
-
   margin-left: auto;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   color: #9bb0ca;
-
-  background:
-    rgba(255,255,255,.05);
-
-  border:
-    1px solid
-    rgba(255,255,255,.1);
-
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
   border-radius: 9px;
-
   cursor: pointer;
 }
-
-
-/* =========================================================
-   SIDEBAR NAV
-   ========================================================= */
 
 .waiter-sidebar .sidebar-section {
   padding: 25px 13px;
 }
 
 .waiter-sidebar .sidebar-title {
-
-  margin:
-    0 10px 11px;
-
+  margin: 0 10px 11px;
   color: #607896;
-
   font-size: 9px;
-
   font-weight: 800;
-
   letter-spacing: 2.5px;
 }
 
 .waiter-sidebar .sidebar-link {
-
   width: 100%;
   min-height: 44px;
-
   margin-bottom: 4px;
-
-  padding:
-    0 13px;
-
+  padding: 0 13px;
   display: flex;
   align-items: center;
-
   gap: 11px;
-
   color: #8fa5c0;
-
   background: transparent;
-
-  border:
-    1px solid transparent;
-
+  border: 1px solid transparent;
   border-radius: 10px;
-
   cursor: pointer;
-
   font-size: 13px;
-
   text-align: left;
-
   transition: .2s ease;
 }
 
 .waiter-sidebar .sidebar-link:hover {
-
   color: white;
-
-  background:
-    rgba(255,255,255,.045);
+  background: rgba(255,255,255,.045);
 }
 
 .waiter-sidebar .sidebar-link.active {
-
   color: var(--gold-light);
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(229,184,75,.15),
-      rgba(229,184,75,.025)
-    );
-
-  border-color:
-    rgba(229,184,75,.18);
-
-  box-shadow:
-    inset 3px 0 var(--gold);
+  background: linear-gradient( 90deg, rgba(229,184,75,.15), rgba(229,184,75,.025) );
+  border-color: rgba(229,184,75,.18);
+  box-shadow: inset 3px 0 var(--gold);
 }
 
 .waiter-sidebar .sidebar-link span {
@@ -361,308 +187,170 @@
 }
 
 .waiter-sidebar .sidebar-link small {
-
   color: #7391b5;
-
   font-size: 7px;
-
   font-weight: 800;
-
   letter-spacing: 1px;
 }
 
-
-/* =========================================================
-   SIDEBAR BOTTOM
-   ========================================================= */
-
 .waiter-sidebar .sidebar-bottom {
-
   margin-top: auto;
-
   padding: 13px;
-
-  border-top:
-    1px solid
-    rgba(255,255,255,.07);
+  border-top: 1px solid rgba(255,255,255,.07);
 }
 
 .waiter-sidebar .sidebar-user {
-
   min-height: 57px;
-
   margin-bottom: 7px;
-
   padding: 9px;
-
   display: flex;
   align-items: center;
-
   gap: 10px;
-
-  background:
-    rgba(10,40,80,.75);
-
-  border:
-    1px solid
-    rgba(229,184,75,.16);
-
+  background: rgba(10,40,80,.75);
+  border: 1px solid rgba(229,184,75,.16);
   border-radius: 11px;
 }
 
 .waiter-sidebar .sidebar-user-icon {
-
   width: 36px;
   height: 36px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   color: var(--gold);
-
   background: #0e3f7e;
-
   border-radius: 9px;
 }
 
 .waiter-sidebar .sidebar-user strong {
-
   display: block;
-
   color: white;
-
   font-size: 11px;
 }
 
 .waiter-sidebar .sidebar-user span {
-
   display: block;
-
   margin-top: 3px;
-
   color: var(--gold);
-
   font-size: 8px;
-
   font-weight: 800;
-
   letter-spacing: 1.2px;
 }
 
 .waiter-sidebar .logout-button {
-
   width: 100%;
   height: 40px;
-
   display: flex;
   align-items: center;
-
   gap: 9px;
-
   padding: 0 10px;
-
   color: #8196b1;
-
   background: transparent;
-
   border: none;
-
   border-radius: 9px;
-
   cursor: pointer;
-
   font-size: 12px;
 }
 
 .waiter-sidebar .logout-button:hover {
-
   color: #ff9999;
-
-  background:
-    rgba(255,80,80,.06);
+  background: rgba(255,80,80,.06);
 }
 
-
-/* =========================================================
-   SIDEBAR OVERLAY
-   ========================================================= */
-
-.waiter-sidebar + .sidebar-overlay,
-.sidebar-overlay {
-
+.waiter-sidebar + .sidebar-overlay,.sidebar-overlay {
   position: fixed;
-
   inset: 0;
-
   z-index: 2900;
-
-  background:
-    rgba(0,0,0,.68);
-
-  backdrop-filter:
-    blur(4px);
+  background: rgba(0,0,0,.68);
+  backdrop-filter: blur(4px);
 }
-
-
-/* =========================================================
-   HEADER
-   SAME AS MANAGER
-   ========================================================= */
 
 .waiter-main .manager-header {
-
   width: 100%;
   height: 82px;
-
   position: sticky;
-
   top: 0;
-
   z-index: 500;
-
-  padding:
-    0 35px;
-
+  padding: 0 35px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  background:
-    rgba(3,9,20,.94);
-
-  backdrop-filter:
-    blur(20px);
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.07);
+  background: rgba(3,9,20,.94);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
 }
 
 .waiter-main .header-left {
-
   display: flex;
   align-items: center;
-
   gap: 16px;
 }
 
 .waiter-main .menu-button {
-
   width: 46px;
   height: 46px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   color: var(--gold);
-
-  background:
-    linear-gradient(
-      145deg,
-      #11447f,
-      #092b59
-    );
-
-  border:
-    1px solid
-    rgba(229,184,75,.35);
-
+  background: linear-gradient( 145deg, #11447f, #092b59 );
+  border: 1px solid rgba(229,184,75,.35);
   border-radius: 12px;
-
   cursor: pointer;
-
   transition: .2s ease;
 }
 
 .waiter-main .menu-button:hover {
-
   border-color: var(--gold);
-
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 }
 
 .waiter-main .header-heading span {
-
   display: block;
-
   margin-bottom: 4px;
-
   color: var(--gold);
-
   font-size: 11px;
-
   font-weight: 800;
-
   letter-spacing: 3px;
 }
 
 .waiter-main .header-heading h1 {
-
   margin: 0;
-
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 31px;
-
   font-weight: 700;
-
   line-height: 1;
 }
 
 .waiter-main .header-right {
-
   display: flex;
   align-items: center;
-
   gap: 13px;
 }
 
 .waiter-main .refresh-button {
-
   width: 42px;
   height: 42px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   color: #8ca6c5;
-
   background: #091d38;
-
-  border:
-    1px solid
-    rgba(255,255,255,.09);
-
+  border: 1px solid rgba(255,255,255,.09);
   border-radius: 11px;
-
   cursor: pointer;
 }
 
 .waiter-main .refresh-button:hover {
-
   color: var(--gold);
-
-  border-color:
-    rgba(229,184,75,.3);
+  border-color: rgba(229,184,75,.3);
 }
 
 .waiter-main .spinning {
-
   display: flex;
-
-  animation:
-    waiter-spin .8s linear infinite;
+  animation: waiter-spin .8s linear infinite;
 }
 
 @keyframes waiter-spin {
@@ -672,16 +360,9 @@
   }
 }
 
-
-/* =========================================================
-   HEADER USER
-   ========================================================= */
-
 .waiter-main .header-user {
-
   display: flex;
   align-items: center;
-
   gap: 10px;
 }
 
@@ -690,84 +371,44 @@
 }
 
 .waiter-main .header-user-text strong {
-
   display: block;
-
   color: white;
-
   font-size: 13px;
 }
 
 .waiter-main .header-user-text span {
-
   display: block;
-
   margin-top: 3px;
-
   color: var(--gold);
-
   font-size: 8px;
-
   font-weight: 800;
-
   letter-spacing: 1.3px;
 }
 
 .waiter-main .header-user-avatar {
-
   width: 42px;
   height: 42px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   color: var(--gold);
-
-  background:
-    linear-gradient(
-      145deg,
-      #124783,
-      #0a2d5c
-    );
-
-  border:
-    1px solid
-    rgba(229,184,75,.32);
-
+  background: linear-gradient( 145deg, #124783, #0a2d5c );
+  border: 1px solid rgba(229,184,75,.32);
   border-radius: 11px;
 }
 
-
-/* =========================================================
-   CONTENT
-   ========================================================= */
-
 .waiter-content-section {
-
   width: 100%;
-
   max-width: 1560px;
-
   margin: 0 auto;
-
-  padding:
-    32px 35px 55px;
+  padding: 32px 35px 55px;
 }
 
-
-/* =========================================================
-   PAGE HEADING
-   ========================================================= */
-
 .waiter-content-section .page-heading {
-
   margin-bottom: 28px;
-
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-
   gap: 24px;
 }
 
@@ -776,39 +417,22 @@
 }
 
 .waiter-content-section .page-heading > div > span {
-
   display: block;
-
   margin-bottom: 8px;
-
   color: var(--gold);
-
   font-size: 15px;
-
   font-weight: 900;
-
   letter-spacing: .14em;
-
   line-height: 1.2;
-
   text-transform: uppercase;
 }
 
 .waiter-content-section .page-heading h1 {
-
   margin: 0;
-
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 45px;
-
   font-weight: 700;
-
   line-height: 1.1;
 }
 
@@ -817,554 +441,251 @@
 }
 
 .waiter-content-section .page-heading p {
-
   max-width: 800px;
-
   margin: 10px 0 0;
-
   color: var(--text-soft);
-
   font-size: 18px;
-
   line-height: 1.6;
 }
 
-
-/* =========================================================
-   BUTTONS
-   MANAGER STYLE
-   ========================================================= */
-
-.waiter-refresh-button,
-.waiter-primary-button,
-.waiter-outline-button,
-.waiter-gold-button,
-.waiter-place-order-button {
-
+.waiter-refresh-button,.waiter-primary-button,.waiter-outline-button,.waiter-gold-button,.waiter-place-order-button {
   min-height: 50px;
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 10px;
-
-  padding:
-    12px 20px;
-
-  border:
-    1px solid
-    rgba(76,151,236,.28);
-
+  padding: 12px 20px;
+  border: 1px solid rgba(76,151,236,.28);
   border-radius: 11px;
-
   cursor: pointer;
-
   font-size: 15px;
-
   font-weight: 900;
-
   letter-spacing: .03em;
-
-  transition:
-    transform .2s ease,
-    background .2s ease,
-    border-color .2s ease,
-    opacity .2s ease;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
 }
 
-
-/* BLUE BUTTON */
-
-.waiter-primary-button,
-.waiter-place-order-button {
-
+.waiter-primary-button,.waiter-place-order-button {
   color: white;
-
-  background:
-    linear-gradient(
-      135deg,
-      #14549a,
-      #0c3974
-    );
-
-  box-shadow:
-    0 8px 22px
-    rgba(0,0,0,.35);
+  background: linear-gradient( 135deg, #14549a, #0c3974 );
+  box-shadow: 0 8px 22px rgba(0,0,0,.35);
 }
-
-
-/* GOLD BUTTON */
 
 .waiter-gold-button {
-
   color: #07172f;
-
-  background:
-    linear-gradient(
-      135deg,
-      #e7b94c,
-      #f6d477
-    );
-
-  border-color:
-    rgba(229,184,75,.4);
-
-  box-shadow:
-    0 8px 22px
-    rgba(0,0,0,.25);
+  background: linear-gradient( 135deg, #e7b94c, #f6d477 );
+  border-color: rgba(229,184,75,.4);
+  box-shadow: 0 8px 22px rgba(0,0,0,.25);
 }
 
-
-/* OUTLINE / REFRESH */
-
-.waiter-refresh-button,
-.waiter-outline-button {
-
+.waiter-refresh-button,.waiter-outline-button {
   color: var(--text-soft);
-
-  background:
-    linear-gradient(
-      135deg,
-      #0c3974,
-      #092d60
-    );
+  background: linear-gradient( 135deg, #0c3974, #092d60 );
 }
 
-.waiter-refresh-button:hover,
-.waiter-primary-button:hover,
-.waiter-outline-button:hover,
-.waiter-gold-button:hover,
-.waiter-place-order-button:hover {
-
-  transform:
-    translateY(-2px);
-
-  border-color:
-    rgba(229,184,75,.35);
+.waiter-refresh-button:hover,.waiter-primary-button:hover,.waiter-outline-button:hover,.waiter-gold-button:hover,.waiter-place-order-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(229,184,75,.35);
 }
 
-.waiter-primary-button:disabled,
-.waiter-gold-button:disabled,
-.waiter-outline-button:disabled,
-.waiter-place-order-button:disabled,
-.waiter-refresh-button:disabled {
-
+.waiter-primary-button:disabled,.waiter-gold-button:disabled,.waiter-outline-button:disabled,.waiter-place-order-button:disabled,.waiter-refresh-button:disabled {
   opacity: .55;
-
   cursor: not-allowed;
-
   transform: none;
 }
 
-
-/* =========================================================
-   STATISTICS
-   ========================================================= */
-
 .waiter-stat-row {
-
   width: 100%;
-
   display: grid;
-
-  grid-template-columns:
-    repeat(3,minmax(0,1fr));
-
+  grid-template-columns: repeat(3,minmax(0,1fr));
   gap: 15px;
-
   margin-bottom: 42px;
 }
 
 .waiter-stat-row > div {
-
   min-height: 145px;
-
   position: relative;
-
   overflow: hidden;
-
   padding: 18px;
-
   display: flex;
-
   flex-direction: column;
-
-  border:
-    1px solid
-    var(--border);
-
+  border: 1px solid var(--border);
   border-radius: 17px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #125092 0%,
-      #0e4283 55%,
-      #0b356d 100%
-    );
-
-  box-shadow:
-    0 14px 32px
-    rgba(0,0,0,.25);
-
-  transition:
-    transform .2s ease,
-    border-color .2s ease;
+  background: linear-gradient( 145deg, #125092 0%, #0e4283 55%, #0b356d 100% );
+  box-shadow: 0 14px 32px rgba(0,0,0,.25);
+  transition: transform .2s ease, border-color .2s ease;
 }
 
 .waiter-stat-row > div:hover {
-
-  transform:
-    translateY(-4px);
-
-  border-color:
-    rgba(229,184,75,.38);
+  transform: translateY(-4px);
+  border-color: rgba(229,184,75,.38);
 }
 
 .waiter-stat-row svg {
-
   color: var(--gold);
-
   flex-shrink: 0;
 }
 
 .waiter-stat-row span {
-
   display: block;
-
   margin-top: auto;
-
   color: #abc1dc;
-
   font-size: 8px;
-
   font-weight: 800;
-
   text-transform: uppercase;
-
   letter-spacing: 1.2px;
 }
 
 .waiter-stat-row strong {
-
   display: block;
-
   margin-top: 7px;
-
   color: white;
-
   font-size: 35px;
-
   font-weight: 800;
-
   line-height: .95;
 }
 
-
-/* =========================================================
-   TABLE GRID
-   ========================================================= */
-
-.waiter-table-grid,
-.waiter-bill-grid {
-
+.waiter-table-grid,.waiter-bill-grid {
   width: 100%;
-
   display: grid;
-
-  grid-template-columns:
-    repeat(4,minmax(0,1fr));
-
+  grid-template-columns: repeat(4,minmax(0,1fr));
   gap: 18px;
 }
 
-
-/* =========================================================
-   TABLE CARD
-   ========================================================= */
-
-.waiter-table-card,
-.waiter-bill-card {
-
+.waiter-table-card,.waiter-bill-card {
   min-width: 0;
-
   overflow: hidden;
-
   position: relative;
-
   padding: 0;
-
   display: flex;
-
   flex-direction: column;
-
-  border:
-    1px solid
-    var(--border);
-
+  border: 1px solid var(--border);
   border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #125092 0%,
-      #0e4283 53%,
-      #0b356d 100%
-    );
-
-  box-shadow:
-    0 15px 35px
-    rgba(0,0,0,.26);
-
-  transition:
-    transform .22s ease,
-    border-color .22s ease,
-    box-shadow .22s ease;
+  background: linear-gradient( 145deg, #125092 0%, #0e4283 53%, #0b356d 100% );
+  box-shadow: 0 15px 35px rgba(0,0,0,.26);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
 }
 
-.waiter-table-card:hover,
-.waiter-bill-card:hover {
-
-  transform:
-    translateY(-4px);
-
-  border-color:
-    rgba(229,184,75,.4);
-
-  box-shadow:
-    0 20px 42px
-    rgba(0,0,0,.32);
+.waiter-table-card:hover,.waiter-bill-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(229,184,75,.4);
+  box-shadow: 0 20px 42px rgba(0,0,0,.32);
 }
 
-.waiter-table-card::before,
-.waiter-bill-card::before {
-
+.waiter-table-card::before,.waiter-bill-card::before {
   content: "";
-
   position: absolute;
-
   inset: 0;
-
   pointer-events: none;
-
-  background:
-    linear-gradient(
-      115deg,
-      rgba(255,255,255,.06),
-      transparent 42%
-    );
+  background: linear-gradient( 115deg, rgba(255,255,255,.06), transparent 42% );
 }
 
 .waiter-table-card::after {
-
   content: "";
-
   position: absolute;
-
   width: 220px;
   height: 220px;
-
   right: -100px;
   top: -130px;
-
   border-radius: 50%;
-
-  background:
-    rgba(78,165,255,.10);
-
+  background: rgba(78,165,255,.10);
   filter: blur(15px);
-
   pointer-events: none;
 }
 
 .picked-table-card {
-
-  border-color:
-    rgba(229,184,75,.32);
+  border-color: rgba(229,184,75,.32);
 }
 
 .bill-requested-card {
-
-  border-color:
-    rgba(229,184,75,.42);
+  border-color: rgba(229,184,75,.42);
 }
 
-
-/* =========================================================
-   TABLE CARD TOP
-   ========================================================= */
-
-.waiter-table-card-top,
-.waiter-bill-card-top {
-
+.waiter-table-card-top,.waiter-bill-card-top {
   position: relative;
-
   z-index: 2;
-
-  padding:
-    19px;
-
+  padding: 19px;
   display: flex;
-
   align-items: flex-start;
-
   justify-content: space-between;
-
   gap: 15px;
 }
 
 .waiter-table-icon {
-
   width: 55px;
   height: 55px;
-
   flex-shrink: 0;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   color: var(--gold);
-
-  background:
-    rgba(3,25,54,.4);
-
-  border:
-    1px solid
-    rgba(229,184,75,.25);
-
+  background: rgba(3,25,54,.4);
+  border: 1px solid rgba(229,184,75,.25);
   border-radius: 14px;
 }
 
 .waiter-table-number {
-
   flex: 1;
-
   color: #abc1dc;
-
   font-size: 10px;
-
   font-weight: 800;
-
   letter-spacing: 1.7px;
-
   text-transform: uppercase;
 }
 
 .waiter-table-number strong {
-
   display: block;
-
   margin-top: 6px;
-
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 25px;
-
   font-weight: 700;
-
   letter-spacing: 0;
 }
 
-
-/* =========================================================
-   TABLE STATUS
-   ========================================================= */
-
 .waiter-table-status {
-
   position: relative;
-
   z-index: 2;
-
-  margin:
-    0 19px;
-
-  padding:
-    13px 0;
-
+  margin: 0 19px;
+  padding: 13px 0;
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 12px;
-
-  border-top:
-    1px solid
-    rgba(255,255,255,.09);
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.09);
+  border-top: 1px solid rgba(255,255,255,.09);
+  border-bottom: 1px solid rgba(255,255,255,.09);
 }
 
 .waiter-table-status span {
-
   color: #a5bdd7;
-
   font-size: 12px;
 }
 
 .waiter-table-status strong {
-
-  padding:
-    5px 9px;
-
+  padding: 5px 9px;
   border-radius: 7px;
-
   font-size: 10px;
-
   font-weight: 900;
-
   letter-spacing: .8px;
-
   text-transform: uppercase;
 }
 
-.status-available,
-.status-free {
-
+.status-available,.status-free {
   color: #5ce0a5;
 }
 
-.status-unavailable,
-.status-busy {
-
+.status-unavailable,.status-busy {
   color: var(--gold-light);
 }
 
 .status-billing {
-
   color: var(--gold-light);
 }
 
-
-/* =========================================================
-   ASSIGNED WAITER
-   ========================================================= */
-
 .assigned-waiter {
-
   position: relative;
-
   z-index: 2;
-
-  margin:
-    14px 19px 0;
-
+  margin: 14px 19px 0;
   color: #b5cae1;
-
   font-size: 12px;
 }
 
@@ -1372,278 +693,133 @@
   color: white;
 }
 
-
-/* =========================================================
-   TABLE ACTIONS
-   ========================================================= */
-
-.waiter-table-card > .waiter-table-actions,
-.waiter-table-actions {
-
+.waiter-table-card > .waiter-table-actions,.waiter-table-actions {
   position: relative;
-
   z-index: 3;
-
   margin-top: auto;
-
-  padding:
-    16px 19px 19px;
-
+  padding: 16px 19px 19px;
   display: flex;
-
   gap: 9px;
-
-  border-top:
-    1px solid
-    rgba(255,255,255,.09);
-
-  background:
-    rgba(3,20,45,.28);
+  border-top: 1px solid rgba(255,255,255,.09);
+  background: rgba(3,20,45,.28);
 }
 
 .waiter-table-actions button {
-
   flex: 1;
-
   min-height: 42px;
-
-  padding:
-    9px 12px;
-
+  padding: 9px 12px;
   border-radius: 9px;
-
   font-size: 12px;
-
   font-weight: 900;
-
   cursor: pointer;
 }
 
-
-/* =========================================================
-   PICKED TABLE ACTIONS
-   ========================================================= */
-
 .picked-table-actions {
-
   position: relative;
-
   z-index: 3;
-
   display: grid;
-
-  grid-template-columns:
-    1.3fr 1fr 1fr;
-
+  grid-template-columns: 1.3fr 1fr 1fr;
   gap: 9px;
-
-  padding:
-    16px 19px 19px;
-
-  border-top:
-    1px solid
-    rgba(255,255,255,.09);
-
-  background:
-    rgba(3,20,45,.28);
+  padding: 16px 19px 19px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  background: rgba(3,20,45,.28);
 }
 
 .picked-table-actions button {
-
   min-height: 42px;
-
-  padding:
-    8px 10px;
-
+  padding: 8px 10px;
   border-radius: 9px;
-
   font-size: 11px;
-
   font-weight: 900;
-
   cursor: pointer;
 }
 
-
-/* =========================================================
-   BILLING STATE
-   ========================================================= */
-
 .waiter-billing-state {
-
-  margin:
-    14px 19px 19px;
-
-  padding:
-    13px;
-
+  margin: 14px 19px 19px;
+  padding: 13px;
   display: flex;
-
   align-items: center;
-
   gap: 8px;
-
   border-radius: 10px;
-
   color: var(--gold-light);
-
-  background:
-    rgba(229,184,75,.09);
-
-  border:
-    1px solid
-    rgba(229,184,75,.2);
-
+  background: rgba(229,184,75,.09);
+  border: 1px solid rgba(229,184,75,.2);
   font-size: 11px;
-
   line-height: 1.5;
 }
 
-
-/* =========================================================
-   ORDER EXPANDED AREA
-   ========================================================= */
-
 .waiter-order-expanded {
-
   position: relative;
-
   z-index: 3;
-
-  margin:
-    0 19px 19px;
-
+  margin: 0 19px 19px;
   padding-top: 20px;
-
-  border-top:
-    1px solid
-    rgba(255,255,255,.09);
+  border-top: 1px solid rgba(255,255,255,.09);
 }
 
-
-/* =========================================================
-   ORDER HEADINGS
-   ========================================================= */
-
-.waiter-existing-orders-heading,
-.waiter-new-order-header {
-
+.waiter-existing-orders-heading,.waiter-new-order-header {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 15px;
 }
 
 .waiter-existing-orders-heading {
-
   margin-bottom: 13px;
 }
 
-.waiter-existing-orders-heading span,
-.waiter-new-order-header span {
-
+.waiter-existing-orders-heading span,.waiter-new-order-header span {
   display: block;
-
   color: var(--gold);
-
   font-size: 10px;
-
   font-weight: 900;
-
   letter-spacing: 2px;
-
   text-transform: uppercase;
 }
 
-.waiter-existing-orders-heading h4,
-.waiter-new-order-header h3 {
-
-  margin:
-    5px 0 0;
-
+.waiter-existing-orders-heading h4,.waiter-new-order-header h3 {
+  margin: 5px 0 0;
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 20px;
-
   font-weight: 700;
 }
 
 .waiter-existing-orders-heading svg {
-
-  color:
-    #70bcff;
+  color: #70bcff;
 }
-
-
-/* =========================================================
-   ORDER HISTORY
-   ========================================================= */
 
 .waiter-order-history-card {
-
-  padding:
-    13px;
-
+  padding: 13px;
   margin-bottom: 8px;
-
   border-radius: 10px;
-
-  background:
-    rgba(3,20,45,.35);
-
-  border:
-    1px solid
-    rgba(255,255,255,.09);
+  background: rgba(3,20,45,.35);
+  border: 1px solid rgba(255,255,255,.09);
 }
 
-.waiter-order-history-top,
-.waiter-history-item {
-
+.waiter-order-history-top,.waiter-history-item {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 12px;
 }
 
 .waiter-order-history-top {
-
   margin-bottom: 7px;
 }
 
-.waiter-order-history-top span,
-.waiter-history-item span {
-
-  color:
-    #b5cae1;
-
+.waiter-order-history-top span,.waiter-history-item span {
+  color: #b5cae1;
   font-size: 12px;
 }
 
 .waiter-order-history-top strong {
-
-  color:
-    var(--gold-light);
-
+  color: var(--gold-light);
   font-size: 10px;
-
   font-weight: 900;
 }
 
 .waiter-history-item {
-
-  padding:
-    5px 0;
+  padding: 5px 0;
 }
 
 .waiter-history-item strong {
@@ -1651,634 +827,311 @@
 }
 
 .waiter-empty-order {
-
-  margin:
-    0 0 18px;
-
-  color:
-    #7892b4;
-
+  margin: 0 0 18px;
+  color: #7892b4;
   font-size: 12px;
 }
 
-
-/* =========================================================
-   NEW ORDER
-   ========================================================= */
-
 .waiter-new-order-header {
-
-  margin:
-    20px 0 13px;
+  margin: 20px 0 13px;
 }
 
 .waiter-new-order-header p {
-
-  margin:
-    5px 0 0;
-
-  color:
-    #7892b4;
-
+  margin: 5px 0 0;
+  color: #7892b4;
   font-size: 11px;
 }
 
-
-/* =========================================================
-   MENU GRID
-   ========================================================= */
-
 .waiter-menu-grid {
-
   display: grid;
-
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-
+  grid-template-columns: repeat(2,minmax(0,1fr));
   gap: 11px;
 }
 
 .waiter-menu-card {
-
   min-width: 0;
-
   overflow: hidden;
-
-  border:
-    1px solid
-    rgba(76,151,236,.25);
-
+  border: 1px solid rgba(76,151,236,.25);
   border-radius: 12px;
-
-  background:
-    rgba(3,20,45,.4);
-
-  transition:
-    transform .2s ease,
-    border-color .2s ease,
-    background .2s ease;
+  background: rgba(3,20,45,.4);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
 }
 
 .waiter-menu-card:hover {
-
-  transform:
-    translateY(-2px);
-
-  border-color:
-    rgba(229,184,75,.3);
+  transform: translateY(-2px);
+  border-color: rgba(229,184,75,.3);
 }
 
 .selected-menu-card {
-
-  border-color:
-    rgba(229,184,75,.42);
-
-  background:
-    rgba(229,184,75,.055);
-
-  box-shadow:
-    inset 0 0 0 1px
-    rgba(229,184,75,.08);
+  border-color: rgba(229,184,75,.42);
+  background: rgba(229,184,75,.055);
+  box-shadow: inset 0 0 0 1px rgba(229,184,75,.08);
 }
 
-
-/* =========================================================
-   MENU IMAGE
-   ========================================================= */
-
 .waiter-menu-image-wrap {
-
   height: 125px;
-
   position: relative;
-
-  background:
-    rgba(0,0,0,.18);
+  background: rgba(0,0,0,.18);
 }
 
 .waiter-menu-image-wrap img {
-
   width: 100%;
   height: 100%;
-
   display: block;
-
   object-fit: cover;
 }
 
 .waiter-menu-placeholder {
-
   width: 100%;
   height: 100%;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
-  color:
-    #70bcff;
-
-  background:
-    linear-gradient(
-      145deg,
-      #0e4283,
-      #092d60
-    );
+  color: #70bcff;
+  background: linear-gradient( 145deg, #0e4283, #092d60 );
 }
 
-
-/* =========================================================
-   CHECKBOX
-   ========================================================= */
-
 .waiter-checkbox {
-
   position: absolute;
-
   right: 9px;
   top: 9px;
-
   z-index: 5;
 }
 
 .waiter-checkbox input {
-
   position: absolute;
-
   opacity: 0;
 }
 
 .waiter-checkbox span {
-
   width: 25px;
   height: 25px;
-
   display: block;
-
   border-radius: 8px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.24);
-
-  background:
-    rgba(3,9,20,.78);
-
+  border: 1px solid rgba(255,255,255,.24);
+  background: rgba(3,9,20,.78);
   cursor: pointer;
 }
 
 .waiter-checkbox input:checked + span {
-
-  background:
-    #14549a;
-
-  border-color:
-    var(--gold);
+  background: #14549a;
+  border-color: var(--gold);
 }
 
-.waiter-checkbox input:checked
-+ span::after {
-
+.waiter-checkbox input:checked + span::after {
   content: "✓";
-
   width: 100%;
   height: 100%;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   color: white;
-
   font-size: 14px;
-
   font-weight: 900;
 }
 
-
-/* =========================================================
-   MENU INFORMATION
-   ========================================================= */
-
 .waiter-menu-info {
-
-  padding:
-    12px;
-
+  padding: 12px;
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 8px;
 }
 
 .waiter-menu-info h4 {
-
   margin: 0;
-
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 17px;
-
   font-weight: 700;
-
   line-height: 1.2;
 }
 
 .waiter-menu-info strong {
-
-  color:
-    var(--gold-light);
-
+  color: var(--gold-light);
   font-size: 14px;
-
   font-weight: 900;
-
   white-space: nowrap;
 }
 
-
-/* =========================================================
-   MENU CONTROLS
-   ========================================================= */
-
 .waiter-menu-controls {
-
-  padding:
-    0 12px 12px;
+  padding: 0 12px 12px;
 }
 
 .waiter-quantity-control {
-
   display: flex;
-
   align-items: center;
-
   gap: 9px;
-
   margin-bottom: 8px;
 }
 
 .waiter-quantity-control button {
-
   width: 30px;
   height: 30px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
-  border:
-    1px solid
-    rgba(255,255,255,.1);
-
+  border: 1px solid rgba(255,255,255,.1);
   border-radius: 8px;
-
   color: white;
-
-  background:
-    rgba(255,255,255,.05);
-
+  background: rgba(255,255,255,.05);
   cursor: pointer;
-
   font-size: 15px;
-
   font-weight: 900;
 }
 
 .waiter-quantity-control button:hover {
-
   color: var(--gold);
-
-  border-color:
-    rgba(229,184,75,.3);
+  border-color: rgba(229,184,75,.3);
 }
 
 .waiter-quantity-control span {
-
   min-width: 22px;
-
   text-align: center;
-
   color: white;
-
   font-size: 13px;
-
   font-weight: 900;
 }
 
 .waiter-menu-controls textarea {
-
   width: 100%;
-
   min-height: 55px;
-
   resize: vertical;
-
-  padding:
-    9px;
-
+  padding: 9px;
   border-radius: 9px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.09);
-
+  border: 1px solid rgba(255,255,255,.09);
   color: white;
-
-  background:
-    rgba(0,0,0,.12);
-
+  background: rgba(0,0,0,.12);
   font: inherit;
-
   font-size: 11px;
-
   outline: none;
 }
 
 .waiter-menu-controls textarea:focus {
-
-  border-color:
-    rgba(229,184,75,.35);
+  border-color: rgba(229,184,75,.35);
 }
-
-
-/* =========================================================
-   PLACE ORDER
-   ========================================================= */
 
 .waiter-place-order-button {
-
   width: 100%;
-
   margin-top: 12px;
-
   min-height: 46px;
-
   color: white;
-
-  background:
-    linear-gradient(
-      135deg,
-      #14549a,
-      #0c3974
-    );
+  background: linear-gradient( 135deg, #14549a, #0c3974 );
 }
 
-
-/* =========================================================
-   BILL FILTER
-   ========================================================= */
-
 .waiter-bill-filter {
-
   width: 100%;
-
   margin-bottom: 28px;
-
-  padding:
-    18px;
-
+  padding: 18px;
   display: grid;
-
-  grid-template-columns:
-    1fr 1.3fr auto auto;
-
+  grid-template-columns: 1fr 1.3fr auto auto;
   gap: 12px;
-
   align-items: end;
-
-  border:
-    1px solid
-    var(--border);
-
+  border: 1px solid var(--border);
   border-radius: 17px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #0b2343,
-      #091d38
-    );
-
-  box-shadow:
-    0 10px 28px
-    rgba(0,0,0,.25);
+  background: linear-gradient( 145deg, #0b2343, #091d38 );
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
 }
 
 .waiter-filter-field label {
-
   display: flex;
-
   align-items: center;
-
   gap: 7px;
-
   margin-bottom: 7px;
-
-  color:
-    #7892b4;
-
+  color: #7892b4;
   font-size: 10px;
-
   font-weight: 800;
-
   letter-spacing: 1px;
-
   text-transform: uppercase;
 }
 
 .waiter-filter-field input {
-
   width: 100%;
-
   min-height: 44px;
-
-  padding:
-    0 12px;
-
+  padding: 0 12px;
   border-radius: 10px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.09);
-
+  border: 1px solid rgba(255,255,255,.09);
   color: white;
-
-  background:
-    rgba(3,9,20,.5);
-
+  background: rgba(3,9,20,.5);
   outline: none;
-
   font: inherit;
-
   font-size: 13px;
 }
 
 .waiter-filter-field input:focus {
-
-  border-color:
-    rgba(229,184,75,.4);
+  border-color: rgba(229,184,75,.4);
 }
 
-
-/* =========================================================
-   BILL CARD
-   ========================================================= */
-
 .waiter-bill-card {
-
-  padding:
-    19px;
+  padding: 19px;
 }
 
 .waiter-bill-card-top {
-
   padding: 0;
 }
 
-.waiter-bill-card-top
-> div:first-child
-> span {
-
-  color:
-    #7892b4;
-
+.waiter-bill-card-top > div:first-child > span {
+  color: #7892b4;
   font-size: 10px;
-
   font-weight: 800;
-
   letter-spacing: 1.3px;
-
   text-transform: uppercase;
 }
 
 .waiter-bill-card-top h3 {
-
-  margin:
-    5px 0 0;
-
+  margin: 5px 0 0;
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 23px;
-
   font-weight: 700;
 }
 
 .waiter-bill-status {
-
-  padding:
-    7px 10px;
-
+  padding: 7px 10px;
   border-radius: 999px;
-
   font-size: 9px;
-
   font-weight: 900;
-
   letter-spacing: .7px;
-
   text-transform: uppercase;
-
-  background:
-    rgba(20,84,154,.14);
-
-  color:
-    #70bcff;
-
-  border:
-    1px solid
-    rgba(76,151,236,.2);
+  background: rgba(20,84,154,.14);
+  color: #70bcff;
+  border: 1px solid rgba(76,151,236,.2);
 }
 
-
-/* =========================================================
-   BILL TABLE INFO
-   ========================================================= */
-
 .waiter-bill-table-info {
-
   display: flex;
-
   align-items: center;
-
   gap: 7px;
-
-  margin:
-    18px 0;
-
-  color:
-    #b5cae1;
-
+  margin: 18px 0;
+  color: #b5cae1;
   font-size: 12px;
 }
 
 .waiter-bill-table-info svg {
-
-  color:
-    #70bcff;
+  color: #70bcff;
 }
 
 .waiter-bill-table-info strong {
   color: white;
 }
 
-
-/* =========================================================
-   BILL ITEMS
-   ========================================================= */
-
 .waiter-bill-items {
-
-  padding:
-    14px 0;
-
-  border-top:
-    1px solid
-    rgba(255,255,255,.08);
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.08);
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
 .waiter-bill-items > div {
-
   display: flex;
-
   justify-content: space-between;
-
   gap: 12px;
-
-  padding:
-    7px 0;
-
-  color:
-    #b5cae1;
-
+  padding: 7px 0;
+  color: #b5cae1;
   font-size: 12px;
 }
 
 .waiter-bill-items small {
-
-  color:
-    #7892b4;
-
+  color: #7892b4;
   font-size: 10px;
 }
 
@@ -2286,57 +1139,27 @@
   color: white;
 }
 
-
-/* =========================================================
-   BILL TOTAL
-   ========================================================= */
-
 .waiter-bill-total {
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  padding-top:
-    18px;
-
-  color:
-    #b5cae1;
-
+  padding-top: 18px;
+  color: #b5cae1;
   font-size: 13px;
-
   font-weight: 700;
 }
 
 .waiter-bill-total strong {
-
-  color:
-    var(--gold-light);
-
+  color: var(--gold-light);
   font-size: 25px;
-
   font-weight: 900;
 }
 
-
-/* =========================================================
-   BILL FOOTER
-   ========================================================= */
-
 .waiter-bill-footer {
-
   display: flex;
-
   justify-content: space-between;
-
-  margin-top:
-    14px;
-
-  color:
-    #7892b4;
-
+  margin-top: 14px;
+  color: #7892b4;
   font-size: 11px;
 }
 
@@ -2345,339 +1168,153 @@
 }
 
 .waiter-bill-date {
-
-  margin-top:
-    14px;
-
-  color:
-    #5f7899;
-
+  margin-top: 14px;
+  color: #5f7899;
   font-size: 10px;
 }
 
-
-/* =========================================================
-   LOADING / EMPTY
-   ========================================================= */
-
-.waiter-loading,
-.waiter-empty-state {
-
+.waiter-loading,.waiter-empty-state {
   width: 100%;
-
   min-height: 250px;
-
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 9px;
-
   padding: 30px;
-
-  border:
-    1px dashed
-    rgba(255,255,255,.13);
-
+  border: 1px dashed rgba(255,255,255,.13);
   border-radius: 18px;
-
-  color:
-    #a5bdd7;
-
-  background:
-    rgba(9,32,63,.45);
-
+  color: #a5bdd7;
+  background: rgba(9,32,63,.45);
   text-align: center;
-
   font-size: 13px;
 }
 
 .waiter-empty-state svg {
-
-  color:
-    #70bcff;
+  color: #70bcff;
 }
 
 .waiter-empty-state h3 {
-
-  margin:
-    6px 0 0;
-
+  margin: 6px 0 0;
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 24px;
-
   font-weight: 700;
 }
 
 .waiter-empty-state p {
-
   margin: 0;
-
-  color:
-    #7892b4;
-
+  color: #7892b4;
   font-size: 12px;
 }
 
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-
 .waiter-toast {
-
   position: fixed;
-
   top: 95px;
   left: 50%;
-
   z-index: 7000;
-
-  width:
-    min(560px,calc(100vw - 28px));
-
-  padding:
-    15px 18px;
-
+  width: min(560px,calc(100vw - 28px));
+  padding: 15px 18px;
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
-  transform:
-    translateX(-50%);
-
-  border:
-    1px solid
-    rgba(255,255,255,.1);
-
+  transform: translateX(-50%);
+  border: 1px solid rgba(255,255,255,.1);
   border-radius: 12px;
-
-  box-shadow:
-    0 20px 50px
-    rgba(0,0,0,.4);
-
+  box-shadow: 0 20px 50px rgba(0,0,0,.4);
   font-size: 13px;
-
   font-weight: 700;
 }
 
 .toast-success {
-
-  color:
-    #8df0c1;
-
-  background:
-    rgba(8,60,43,.96);
-
-  border-color:
-    rgba(56,223,160,.2);
+  color: #8df0c1;
+  background: rgba(8,60,43,.96);
+  border-color: rgba(56,223,160,.2);
 }
 
 .toast-error {
-
-  color:
-    #ffc2c2;
-
-  background:
-    rgba(78,28,35,.97);
-
-  border-color:
-    rgba(255,119,119,.2);
+  color: #ffc2c2;
+  background: rgba(78,28,35,.97);
+  border-color: rgba(255,119,119,.2);
 }
 
-
-/* =========================================================
-   MODAL OVERLAYS
-   ========================================================= */
-
-.waiter-modal-overlay,
-.waiter-drop-modal-overlay,
-.waiter-checkout-modal-overlay {
-
+.waiter-modal-overlay,.waiter-drop-modal-overlay,.waiter-checkout-modal-overlay {
   position: fixed;
-
   inset: 0;
-
   z-index: 6000;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   padding: 20px;
-
-  background:
-    rgba(3,10,24,.68);
-
-  backdrop-filter:
-    blur(8px);
+  background: rgba(3,10,24,.68);
+  backdrop-filter: blur(8px);
 }
 
-
-/* =========================================================
-   READY / SERVE MODALS
-   ========================================================= */
-
-.waiter-ready-modal,
-.waiter-serve-modal {
-
-  width:
-    min(100%,480px);
-
-  padding:
-    30px;
-
-  border:
-    1px solid
-    rgba(76,151,236,.35);
-
+.waiter-ready-modal,.waiter-serve-modal {
+  width: min(100%,480px);
+  padding: 30px;
+  border: 1px solid rgba(76,151,236,.35);
   border-radius: 20px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #125092,
-      #0b356d
-    );
-
-  box-shadow:
-    0 28px 90px
-    rgba(0,0,0,.48);
-
+  background: linear-gradient( 145deg, #125092, #0b356d );
+  box-shadow: 0 28px 90px rgba(0,0,0,.48);
   text-align: center;
 }
 
 .waiter-notification-icon {
-
   width: 66px;
   height: 66px;
-
-  margin:
-    0 auto 16px;
-
+  margin: 0 auto 16px;
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   border-radius: 15px;
-
-  color:
-    var(--gold);
-
-  background:
-    rgba(229,184,75,.1);
-
-  border:
-    1px solid
-    rgba(229,184,75,.2);
+  color: var(--gold);
+  background: rgba(229,184,75,.1);
+  border: 1px solid rgba(229,184,75,.2);
 }
 
-.waiter-ready-modal > span,
-.waiter-serve-modal > span {
-
-  color:
-    var(--gold);
-
+.waiter-ready-modal > span,.waiter-serve-modal > span {
+  color: var(--gold);
   font-size: 10px;
-
   font-weight: 900;
-
   letter-spacing: 2.5px;
-
   text-transform: uppercase;
 }
 
-.waiter-ready-modal h2,
-.waiter-serve-modal h2 {
-
-  margin:
-    9px 0;
-
+.waiter-ready-modal h2,.waiter-serve-modal h2 {
+  margin: 9px 0;
   color: white;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 28px;
-
   font-weight: 700;
 }
 
 .waiter-ready-modal p {
-
-  color:
-    #c2d4e9;
-
+  color: #c2d4e9;
   line-height: 1.6;
-
   font-size: 13px;
 }
 
-.waiter-ready-modal
-.waiter-primary-button {
-
-  margin-top:
-    12px;
-
+.waiter-ready-modal .waiter-primary-button {
+  margin-top: 12px;
   width: 100%;
 }
 
-
-/* =========================================================
-   SERVE ITEMS
-   ========================================================= */
-
 .waiter-serve-items {
-
-  margin:
-    18px 0;
-
-  padding:
-    12px;
-
+  margin: 18px 0;
+  padding: 12px;
   text-align: left;
-
   border-radius: 12px;
-
-  background:
-    rgba(3,20,45,.35);
-
-  border:
-    1px solid
-    rgba(255,255,255,.08);
+  background: rgba(3,20,45,.35);
+  border: 1px solid rgba(255,255,255,.08);
 }
 
 .waiter-serve-items > div {
-
   display: flex;
-
   justify-content: space-between;
-
   gap: 12px;
-
-  padding:
-    8px 0;
-
-  color:
-    #c2d4e9;
-
+  padding: 8px 0;
+  color: #c2d4e9;
   font-size: 12px;
 }
 
@@ -2685,1092 +1322,1350 @@
   color: white;
 }
 
-.waiter-serve-modal
-.waiter-gold-button {
-
+.waiter-serve-modal .waiter-gold-button {
   width: 100%;
 }
 
-
-/* =========================================================
-   MODAL CLOSE
-   ========================================================= */
-
 .waiter-modal-close {
-
   width: 100%;
-
   min-height: 42px;
-
-  margin-top:
-    9px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.1);
-
+  margin-top: 9px;
+  border: 1px solid rgba(255,255,255,.1);
   border-radius: 10px;
-
   color: white;
-
-  background:
-    rgba(255,255,255,.05);
-
+  background: rgba(255,255,255,.05);
   cursor: pointer;
-
   font-size: 12px;
-
   font-weight: 800;
 }
 
 .waiter-modal-close:hover {
-
-  background:
-    rgba(255,255,255,.09);
-
-  border-color:
-    rgba(229,184,75,.2);
+  background: rgba(255,255,255,.09);
+  border-color: rgba(229,184,75,.2);
 }
 
-
-/* =========================================================
-   GENERAL INPUTS
-   ========================================================= */
-
-.waiter-page input::placeholder,
-.waiter-page textarea::placeholder {
-
-  color:
-    #617995;
-
+.waiter-page input::placeholder,.waiter-page textarea::placeholder {
+  color: #617995;
   opacity: 1;
 }
 
-.waiter-page input:focus,
-.waiter-page textarea:focus {
-
+.waiter-page input:focus,.waiter-page textarea:focus {
   outline: none;
 }
 
-
-/* =========================================================
-   TABLET
-   1200px
-   ========================================================= */
-
 @media (max-width:1200px) {
 
-  .waiter-table-grid,
-  .waiter-bill-grid {
-
-    grid-template-columns:
-      repeat(3,minmax(0,1fr));
+  .waiter-table-grid,.waiter-bill-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
   }
 
   .waiter-content-section {
-
-    padding:
-      27px 25px 50px;
+    padding: 27px 25px 50px;
   }
 
   .waiter-stat-row {
-
-    grid-template-columns:
-      repeat(3,minmax(0,1fr));
+    grid-template-columns: repeat(3,minmax(0,1fr));
   }
+
 }
-
-
-/* =========================================================
-   TABLET
-   901 - 1100
-   ========================================================= */
-
-@media (max-width:1100px) {
-
-  .waiter-table-grid,
-  .waiter-bill-grid {
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
-  }
-
-  .waiter-bill-filter {
-
-    grid-template-columns:
-      1fr 1fr;
-  }
-
-  .waiter-stat-row {
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
-  }
-}
-
-
-/* =========================================================
-   TABLET HERO / CONTENT
-   ========================================================= */
 
 @media (max-width:900px) {
 
   .waiter-main .manager-header {
-
-    padding:
-      0 25px;
+    padding: 0 25px;
   }
 
   .waiter-content-section {
-
-    padding:
-      27px 25px 50px;
+    padding: 27px 25px 50px;
   }
 
   .waiter-content-section .page-heading h1 {
-
     font-size: 40px;
   }
 
   .waiter-stat-row {
-
     gap: 12px;
   }
+
 }
 
-
-/* =========================================================
-   MOBILE
-   501 - 750
-   ========================================================= */
-
-@media (min-width:501px)
-and (max-width:750px) {
+@media (min-width:501px) and (max-width:750px) {
 
   .waiter-main .manager-header {
-
     height: 72px;
-
-    padding:
-      0 16px;
+    padding: 0 16px;
   }
 
   .waiter-content-section {
-
-    padding:
-      22px 14px 40px;
+    padding: 22px 14px 40px;
   }
 
-  .waiter-content-section
-  .page-heading {
-
-    align-items:
-      flex-start;
-
-    flex-direction:
-      column;
-
+  .waiter-content-section .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
     gap: 16px;
   }
 
-  .waiter-content-section
-  .page-heading h1 {
-
+  .waiter-content-section .page-heading h1 {
     font-size: 37px;
   }
 
-  .waiter-content-section
-  .page-heading p {
-
+  .waiter-content-section .page-heading p {
     font-size: 12px;
   }
 
-  .waiter-table-grid,
-  .waiter-bill-grid {
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
-
+  .waiter-table-grid,.waiter-bill-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
     gap: 12px;
   }
 
   .waiter-stat-row {
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
-
+    grid-template-columns: repeat(2,minmax(0,1fr));
     gap: 11px;
-
     margin-bottom: 32px;
   }
 
   .waiter-stat-row > div {
-
     min-height: 135px;
-
     padding: 15px;
   }
 
   .waiter-stat-row strong {
-
     font-size: 32px;
   }
 
   .waiter-menu-grid {
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
+    grid-template-columns: repeat(2,minmax(0,1fr));
   }
 
   .waiter-bill-filter {
-
-    grid-template-columns:
-      1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
+
 }
 
+.waiter-page .waiter-primary-button:hover,.waiter-page .waiter-outline-button:hover,.waiter-page .waiter-place-order-button:hover {
+  color: #07172f !important;
+  background: linear-gradient( 135deg, #e7b94c, #f6d477 ) !important;
+  border-color: rgba(229,184,75,.65) !important;
+  font-weight: 900 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+}
 
-/* =========================================================
-   SMALL MOBILE
-   <=500px
-   ========================================================= */
+.waiter-page .waiter-gold-button {
+  color: #07172f;
+}
+
+.waiter-page .waiter-gold-button:hover {
+  color: #07172f !important;
+  background: linear-gradient( 135deg, #e7b94c, #f6d477 ) !important;
+  border-color: rgba(229,184,75,.65) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+}
+
+.waiter-page .waiter-table-card:has(.waiter-order-expanded) {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.waiter-page .waiter-table-card:has(.waiter-order-expanded) .waiter-order-expanded {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 20px 19px 19px !important;
+}
+
+.waiter-page .waiter-table-card:has(.waiter-order-expanded) .waiter-menu-grid {
+  width: 100%;
+}
 
 @media (max-width:500px) {
 
   .waiter-main .manager-header {
-
     height: 70px;
-
-    padding:
-      0 12px;
+    padding: 0 12px;
   }
 
   .waiter-main .header-left {
-
     gap: 10px;
   }
 
   .waiter-main .menu-button {
-
     width: 42px;
     height: 42px;
   }
 
   .waiter-main .header-heading span {
-
     margin-bottom: 3px;
-
     font-size: 9px;
-
     letter-spacing: 2px;
   }
 
   .waiter-main .header-heading h1 {
-
     font-size: 25px;
   }
 
   .waiter-main .header-user-text {
-
     display: none;
   }
 
   .waiter-main .header-user-avatar {
-
     width: 39px;
     height: 39px;
   }
 
   .waiter-main .refresh-button {
-
     width: 38px;
     height: 38px;
   }
 
-
-  /* =======================================================
-     CONTENT
-     ======================================================= */
-
   .waiter-content-section {
-
-    padding:
-      18px 10px 35px;
+    padding: 18px 10px 35px;
   }
 
-  .waiter-content-section
-  .page-heading {
-
+  .waiter-content-section .page-heading {
     margin-bottom: 22px;
-
-    align-items:
-      flex-start;
-
-    flex-direction:
-      column;
-
+    align-items: flex-start;
+    flex-direction: column;
     gap: 13px;
   }
 
-  .waiter-content-section
-  .page-heading
-  > div
-  > span {
-
+  .waiter-content-section .page-heading > div > span {
     margin-bottom: 6px;
-
     font-size: 11px;
-
     letter-spacing: 2px;
   }
 
-  .waiter-content-section
-  .page-heading
-  h1 {
-
+  .waiter-content-section .page-heading h1 {
     font-size: 35px;
-
     line-height: .98;
   }
 
-  .waiter-content-section
-  .page-heading
-  p {
-
+  .waiter-content-section .page-heading p {
     margin-top: 9px;
-
     font-size: 12px;
-
     line-height: 1.55;
   }
 
-
-  /* =======================================================
-     STATS
-     ======================================================= */
-
   .waiter-stat-row {
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
-
+    grid-template-columns: repeat(2,minmax(0,1fr));
     gap: 9px;
-
     margin-bottom: 29px;
   }
 
   .waiter-stat-row > div {
-
     min-height: 130px;
-
     padding: 13px;
-
     border-radius: 15px;
   }
 
   .waiter-stat-row svg {
-
     width: 20px;
     height: 20px;
   }
 
   .waiter-stat-row span {
-
     font-size: 7px;
-
     letter-spacing: .9px;
   }
 
   .waiter-stat-row strong {
-
     font-size: 30px;
   }
 
-
-  /* =======================================================
-     TABLES
-     ======================================================= */
-
-  .waiter-table-grid,
-  .waiter-bill-grid {
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
-
+  .waiter-table-grid,.waiter-bill-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
     gap: 9px;
   }
 
-  .waiter-table-card,
-  .waiter-bill-card {
-
+  .waiter-table-card,.waiter-bill-card {
     border-radius: 15px;
   }
 
-  .waiter-table-card-top,
-  .waiter-bill-card-top {
-
-    padding:
-      13px;
+  .waiter-table-card-top,.waiter-bill-card-top {
+    padding: 13px;
   }
 
   .waiter-table-icon {
-
     width: 39px;
     height: 39px;
-
     border-radius: 10px;
   }
 
   .waiter-table-number {
-
     font-size: 7px;
-
     letter-spacing: 1px;
   }
 
   .waiter-table-number strong {
-
     margin-top: 4px;
-
     font-size: 17px;
   }
 
   .waiter-table-status {
-
-    margin:
-      0 13px;
-
-    padding:
-      10px 0;
+    margin: 0 13px;
+    padding: 10px 0;
   }
 
   .waiter-table-status span {
-
     font-size: 10px;
   }
 
   .waiter-table-status strong {
-
-    padding:
-      4px 6px;
-
+    padding: 4px 6px;
     font-size: 8px;
   }
 
   .assigned-waiter {
-
-    margin:
-      10px 13px 0;
-
+    margin: 10px 13px 0;
     font-size: 9px;
   }
 
   .waiter-table-actions {
-
-    padding:
-      10px 13px 13px;
-
+    padding: 10px 13px 13px;
     gap: 5px;
   }
 
   .waiter-table-actions button {
-
     min-height: 35px;
-
-    padding:
-      6px 5px;
-
+    padding: 6px 5px;
     font-size: 9px;
   }
 
   .picked-table-actions {
-
-    padding:
-      10px 13px 13px;
-
-    grid-template-columns:
-      1fr;
-
+    padding: 10px 13px 13px;
+    grid-template-columns: 1fr;
     gap: 6px;
   }
 
   .picked-table-actions button {
-
     min-height: 35px;
-
     font-size: 9px;
   }
 
-
-  /* =======================================================
-     BILL FILTER
-     ======================================================= */
-
   .waiter-bill-filter {
-
-    grid-template-columns:
-      1fr;
-
+    grid-template-columns: 1fr;
     gap: 10px;
-
     margin-bottom: 18px;
-
-    padding:
-      13px;
-
+    padding: 13px;
     border-radius: 15px;
   }
 
   .waiter-filter-field label {
-
     font-size: 9px;
   }
 
   .waiter-filter-field input {
-
     min-height: 40px;
-
     font-size: 11px;
   }
 
-
-  /* =======================================================
-     BILLS
-     ======================================================= */
-
   .waiter-bill-card {
-
-    padding:
-      13px;
+    padding: 13px;
   }
 
   .waiter-bill-card-top h3 {
-
     font-size: 17px;
   }
 
   .waiter-bill-status {
-
-    padding:
-      5px 7px;
-
+    padding: 5px 7px;
     font-size: 7px;
   }
 
   .waiter-bill-table-info {
-
-    margin:
-      13px 0;
-
+    margin: 13px 0;
     font-size: 10px;
   }
 
   .waiter-bill-items {
-
-    padding:
-      10px 0;
+    padding: 10px 0;
   }
 
   .waiter-bill-items > div {
-
-    padding:
-      5px 0;
-
+    padding: 5px 0;
     font-size: 10px;
   }
 
   .waiter-bill-total {
-
-    padding-top:
-      13px;
-
+    padding-top: 13px;
     font-size: 10px;
   }
 
   .waiter-bill-total strong {
-
     font-size: 19px;
   }
 
   .waiter-bill-footer {
-
-    margin-top:
-      10px;
-
+    margin-top: 10px;
     font-size: 9px;
   }
 
-
-  /* =======================================================
-     ORDER AREA
-     ======================================================= */
-
   .waiter-order-expanded {
-
-    margin:
-      0 13px 13px;
-
-    padding-top:
-      13px;
+    margin: 0 13px 13px;
+    padding-top: 13px;
   }
 
-  .waiter-existing-orders-heading h4,
-  .waiter-new-order-header h3 {
-
+  .waiter-existing-orders-heading h4,.waiter-new-order-header h3 {
     font-size: 16px;
   }
 
-  .waiter-existing-orders-heading span,
-  .waiter-new-order-header span {
-
+  .waiter-existing-orders-heading span,.waiter-new-order-header span {
     font-size: 7px;
-
     letter-spacing: 1.4px;
   }
 
   .waiter-order-history-card {
-
-    padding:
-      9px;
+    padding: 9px;
   }
 
-  .waiter-order-history-top span,
-  .waiter-history-item span {
-
+  .waiter-order-history-top span,.waiter-history-item span {
     font-size: 9px;
   }
 
   .waiter-order-history-top strong {
-
     font-size: 8px;
   }
 
-
-  /* =======================================================
-     MENU
-     ======================================================= */
-
   .waiter-menu-grid {
-
-    grid-template-columns:
-      1fr 1fr;
-
+    grid-template-columns: 1fr 1fr;
     gap: 7px;
   }
 
   .waiter-menu-image-wrap {
-
     height: 85px;
   }
 
   .waiter-menu-info {
-
-    padding:
-      8px;
+    padding: 8px;
   }
 
   .waiter-menu-info h4 {
-
     font-size: 11px;
   }
 
   .waiter-menu-info strong {
-
     font-size: 10px;
   }
 
   .waiter-menu-controls {
-
-    padding:
-      0 8px 8px;
+    padding: 0 8px 8px;
   }
 
   .waiter-quantity-control {
-
     gap: 5px;
   }
 
   .waiter-quantity-control button {
-
     width: 25px;
     height: 25px;
-
     font-size: 12px;
   }
 
   .waiter-quantity-control span {
-
     font-size: 10px;
   }
 
   .waiter-menu-controls textarea {
-
     min-height: 45px;
-
     padding: 7px;
-
     font-size: 9px;
   }
 
   .waiter-place-order-button {
-
     min-height: 40px;
-
     font-size: 10px;
   }
 
-
-  /* =======================================================
-     EMPTY / LOADING
-     ======================================================= */
-
-  .waiter-loading,
-  .waiter-empty-state {
-
+  .waiter-loading,.waiter-empty-state {
     min-height: 200px;
-
-    padding:
-      20px;
-
+    padding: 20px;
     border-radius: 15px;
   }
 
   .waiter-empty-state h3 {
-
     font-size: 20px;
   }
 
   .waiter-empty-state p {
-
     font-size: 10px;
   }
 
-
-  /* =======================================================
-     MODALS
-     ======================================================= */
-
-  .waiter-ready-modal,
-  .waiter-serve-modal {
-
-    padding:
-      22px;
-
+  .waiter-ready-modal,.waiter-serve-modal {
+    padding: 22px;
     border-radius: 18px;
   }
 
-  .waiter-ready-modal h2,
-  .waiter-serve-modal h2 {
-
+  .waiter-ready-modal h2,.waiter-serve-modal h2 {
     font-size: 24px;
   }
+
+  .waiter-page .waiter-table-card:has(.waiter-order-expanded) {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .waiter-page .waiter-table-card:has(.waiter-order-expanded) .waiter-order-expanded {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 13px !important;
+  }
+
 }
-
-
-/* =========================================================
-   VERY SMALL PHONES
-   <=380px
-   ========================================================= */
 
 @media (max-width:380px) {
 
   .waiter-content-section {
-
     padding-left: 7px;
     padding-right: 7px;
   }
 
-  .waiter-table-grid,
-  .waiter-bill-grid {
-
+  .waiter-table-grid,.waiter-bill-grid {
     gap: 7px;
   }
 
-  .waiter-table-card,
-  .waiter-bill-card {
-
+  .waiter-table-card,.waiter-bill-card {
     border-radius: 13px;
   }
 
-  .waiter-table-card-top,
-  .waiter-bill-card-top {
-
-    padding:
-      10px 9px;
+  .waiter-table-card-top,.waiter-bill-card-top {
+    padding: 10px 9px;
   }
 
   .waiter-table-number strong {
-
     font-size: 15px;
   }
 
   .waiter-table-status {
-
-    margin:
-      0 9px;
+    margin: 0 9px;
   }
 
   .assigned-waiter {
-
     margin-left: 9px;
     margin-right: 9px;
   }
 
   .waiter-table-actions {
-
-    padding:
-      8px 9px 9px;
+    padding: 8px 9px 9px;
   }
 
   .picked-table-actions {
-
-    padding:
-      8px 9px 9px;
+    padding: 8px 9px 9px;
   }
 
   .waiter-stat-row > div {
-
     min-height: 120px;
-
     padding: 11px;
   }
 
   .waiter-stat-row strong {
-
     font-size: 27px;
   }
 
-  .waiter-content-section
-  .page-heading
-  h1 {
-
+  .waiter-content-section .page-heading h1 {
     font-size: 32px;
   }
 
   .waiter-menu-image-wrap {
-
     height: 75px;
   }
 
   .waiter-menu-info h4 {
-
     font-size: 10px;
   }
 
   .waiter-menu-info strong {
-
     font-size: 9px;
   }
-}
 
-/* =========================================================
-   KITCHENFLOW WAITER
-   FINAL BUTTON HOVER + FULL WIDTH TAKE ORDER
-   ========================================================= */
-
-
-/* =========================================================
-   BUTTON HOVER
-   BLUE BUTTONS STAY BLUE NORMALLY
-   GOLD + BLACK TEXT ON HOVER
-   ========================================================= */
-
-/* Pick Table */
-.waiter-page .waiter-primary-button:hover,
-
-/* Drop Table */
-.waiter-page .waiter-outline-button:hover,
-
-/* Place Order */
-.waiter-page .waiter-place-order-button:hover {
-
-  color: #07172f !important;
-
-  background:
-    linear-gradient(
-      135deg,
-      #e7b94c,
-      #f6d477
-    ) !important;
-
-  border-color:
-    rgba(229,184,75,.65) !important;
-
-  font-weight: 900 !important;
-
-  transform:
-    translateY(-2px);
-
-  box-shadow:
-    0 10px 24px
-    rgba(0,0,0,.28);
-}
-
-
-/* =========================================================
-   GOLD BUTTONS
-   CHECKOUT / OTHER GOLD BUTTONS
-   STAY GOLD
-   ========================================================= */
-
-.waiter-page .waiter-gold-button {
-
-  color: #07172f;
-}
-
-
-/* Keep gold buttons gold when hovered */
-.waiter-page .waiter-gold-button:hover {
-
-  color: #07172f !important;
-
-  background:
-    linear-gradient(
-      135deg,
-      #e7b94c,
-      #f6d477
-    ) !important;
-
-  border-color:
-    rgba(229,184,75,.65) !important;
-
-  transform:
-    translateY(-2px);
-
-  box-shadow:
-    0 10px 24px
-    rgba(0,0,0,.28);
-}
-
-
-/* =========================================================
-   TAKE ORDER
-   FULL WIDTH EXPANDED WORKSPACE
-   ========================================================= */
-
-/*
-   When .waiter-order-expanded exists inside a table card,
-   make that COMPLETE table card span every column.
-*/
-
-.waiter-page
-.waiter-table-card:has(.waiter-order-expanded) {
-
-  grid-column:
-    1 / -1 !important;
-
-  width:
-    100% !important;
-
-  max-width:
-    none !important;
-}
-
-
-/*
-   Expanded Take Order area itself
-*/
-
-.waiter-page
-.waiter-table-card:has(.waiter-order-expanded)
-.waiter-order-expanded {
-
-  width:
-    100% !important;
-
-  max-width:
-    none !important;
-
-  margin:
-    0 !important;
-
-  padding:
-    20px 19px 19px !important;
-}
-
-
-/* =========================================================
-   TAKE ORDER CONTENT
-   MAKE THE INNER MENU WORKSPACE USE THE FULL CARD
-   ========================================================= */
-
-.waiter-page
-.waiter-table-card:has(.waiter-order-expanded)
-.waiter-menu-grid {
-
-  width:
-    100%;
-
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 500px) {
-
-  .waiter-page
-  .waiter-table-card:has(.waiter-order-expanded) {
-
-    grid-column:
-      1 / -1 !important;
-
-    width:
-      100% !important;
-
-    max-width:
-      none !important;
+  .waiter-page .waiter-table-card:has(.waiter-order-expanded) {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
   }
 
-
-  .waiter-page
-  .waiter-table-card:has(.waiter-order-expanded)
-  .waiter-order-expanded {
-
-    width:
-      100% !important;
-
-    max-width:
-      none !important;
-
-    margin:
-      0 !important;
-
-    padding:
-      13px !important;
+  .waiter-page .waiter-table-card:has(.waiter-order-expanded) .waiter-order-expanded {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10px 9px !important;
   }
+
 }
 
+.waiter-orders-page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 24px 20px 40px;
+  overflow-x: hidden;
+}
 
-/* =========================================================
-   VERY SMALL PHONES
-   ========================================================= */
+.waiter-order-page-heading {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 0 24px;
+}
 
-@media (max-width: 380px) {
+.waiter-order-page-heading > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
 
-  .waiter-page
-  .waiter-table-card:has(.waiter-order-expanded) {
+.waiter-page-kicker {
+  display: inline-block;
+  margin-bottom: 7px;
+  color: var(--c-primary-strong);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
 
-    grid-column:
-      1 / -1 !important;
+.waiter-order-page-heading h2 {
+  margin: 0;
+  color: var(--c-white);
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.15;
+}
 
-    width:
-      100% !important;
+.waiter-order-page-heading p {
+  margin: 7px 0 0;
+  color: var(--c-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.waiter-orders-refresh {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  gap: 8px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  color: var(--c-white);
+  background: var(--c-surface-2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.waiter-orders-refresh:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(47, 140, 255, .45);
+  background: var(--a-primary-14);
+}
+
+.waiter-orders-refresh:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.waiter-order-grid {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.waiter-order-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 21px;
+  border: 1px solid var(--c-border);
+  border-radius: 20px;
+  background: linear-gradient( 145deg, rgba(22, 42, 69, .97), rgba(12, 25, 44, .99) );
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .18);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.waiter-order-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--c-primary-strong);
+  opacity: .85;
+}
+
+.waiter-order-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(47, 140, 255, .32);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, .25);
+}
+
+.waiter-order-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+}
+
+.waiter-order-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--c-text-muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+}
+
+.waiter-order-card-header h3 {
+  margin: 0;
+  color: var(--c-white);
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.waiter-order-table-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  color: var(--c-primary-strong);
+  background: var(--a-primary-14);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.waiter-order-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.waiter-order-info > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 12px;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.waiter-order-info span {
+  color: var(--c-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+}
+
+.waiter-order-info strong {
+  color: var(--c-text-primary);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.waiter-order-items {
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid var(--c-border);
+}
+
+.waiter-order-items-title {
+  margin-bottom: 8px;
+  color: var(--c-text-secondary);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+
+.waiter-order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  min-width: 0;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .055);
+}
+
+.waiter-order-item:last-child {
+  border-bottom: 0;
+}
+
+.waiter-order-item-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.waiter-order-item-main strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--c-text-primary);
+  font-size: 13px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.waiter-order-item-main small {
+  color: var(--c-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.waiter-order-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.waiter-order-item-meta span {
+  color: var(--c-text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.waiter-order-item-meta strong {
+  color: var(--c-white);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.waiter-order-no-items {
+  padding: 12px 0;
+  color: var(--c-text-muted);
+  font-size: 12px;
+}
+
+.waiter-order-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 16px;
+  padding-top: 15px;
+  border-top: 1px solid var(--c-border);
+}
+
+.waiter-order-total span {
+  color: var(--c-text-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.waiter-order-total strong {
+  color: var(--c-accent-light);
+  font-size: 21px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.waiter-order-status-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin-top: 18px;
+  padding: 13px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+
+.waiter-order-status-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+}
+
+.waiter-order-status-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.waiter-order-status-content span {
+  color: var(--c-text-muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+.waiter-order-status-content strong {
+  font-size: 13px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.waiter-order-status-ordered {
+  border-color: rgba(240, 201, 103, .24);
+  background: rgba(240, 201, 103, .07);
+}
+
+.waiter-order-status-ordered .waiter-order-status-icon {
+  color: var(--c-accent-light);
+  background: rgba(240, 201, 103, .12);
+}
+
+.waiter-order-status-ordered .waiter-order-status-content strong {
+  color: var(--c-accent-light);
+}
+
+.waiter-order-status-processing {
+  border-color: rgba(47, 140, 255, .25);
+  background: rgba(47, 140, 255, .07);
+}
+
+.waiter-order-status-processing .waiter-order-status-icon {
+  color: var(--c-primary-strong);
+  background: var(--a-primary-14);
+}
+
+.waiter-order-status-processing .waiter-order-status-content strong {
+  color: var(--c-primary-strong);
+}
+
+.waiter-order-status-cooked {
+  border-color: rgba(72, 213, 151, .24);
+  background: var(--a-success-12);
+}
+
+.waiter-order-status-cooked .waiter-order-status-icon {
+  color: var(--c-success-bright);
+  background: rgba(72, 213, 151, .12);
+}
+
+.waiter-order-status-cooked .waiter-order-status-content strong {
+  color: var(--c-success-bright);
+}
+
+.waiter-order-status-default {
+  background: rgba(255, 255, 255, .035);
+}
+
+.waiter-order-status-default .waiter-order-status-content strong {
+  color: var(--c-text-secondary);
+}
+
+.waiter-orders-loading {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 11px;
+  border: 1px dashed rgba(255, 255, 255, .13);
+  border-radius: 22px;
+  color: var(--c-text-secondary);
+  text-align: center;
+}
+
+.waiter-orders-loading svg {
+  color: var(--c-primary-strong);
+}
+
+.waiter-orders-empty {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 35px 20px;
+  border: 1px dashed rgba(255, 255, 255, .13);
+  border-radius: 22px;
+  text-align: center;
+}
+
+.waiter-orders-empty-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 5px;
+  border: 1px solid var(--c-border);
+  border-radius: 18px;
+  color: var(--c-primary-strong);
+  background: var(--a-primary-14);
+}
+
+.waiter-orders-empty h3 {
+  margin: 5px 0 0;
+  color: var(--c-white);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.waiter-orders-empty p {
+  max-width: 430px;
+  margin: 0;
+  color: var(--c-text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+@media (max-width:1100px) {
+
+  .waiter-table-grid,.waiter-bill-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
   }
 
-
-  .waiter-page
-  .waiter-table-card:has(.waiter-order-expanded)
-  .waiter-order-expanded {
-
-    width:
-      100% !important;
-
-    margin:
-      0 !important;
-
-    padding:
-      10px 9px !important;
+  .waiter-bill-filter {
+    grid-template-columns: 1fr 1fr;
   }
+
+  .waiter-stat-row {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .waiter-orders-page {
+    padding: 22px 18px 36px;
+  }
+
+  .waiter-order-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .waiter-order-card {
+    padding: 18px;
+  }
+
+  .waiter-order-card-header {
+    gap: 10px;
+  }
+
+  .waiter-order-card-header h3 {
+    font-size: 18px;
+  }
+
+  .waiter-order-table-badge {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .waiter-order-info {
+    gap: 8px;
+  }
+
+  .waiter-order-info > div {
+    padding: 10px;
+  }
+
+  .waiter-order-info strong {
+    font-size: 11px;
+  }
+
+  .waiter-order-item {
+    gap: 10px;
+  }
+
+  .waiter-order-item-meta {
+    gap: 7px;
+  }
+
+  .waiter-order-item-meta span,.waiter-order-item-meta strong {
+    font-size: 10px;
+  }
+
+  .waiter-order-total strong {
+    font-size: 19px;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .waiter-orders-page {
+    padding: 16px 10px 30px;
+  }
+
+  .waiter-order-page-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .waiter-order-page-heading h2 {
+    font-size: 24px;
+  }
+
+  .waiter-order-page-heading p {
+    font-size: 13px;
+  }
+
+  .waiter-order-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .waiter-orders-refresh {
+    align-self: flex-start;
+    min-height: 40px;
+    padding: 0 13px;
+    font-size: 12px;
+  }
+
+  .waiter-order-card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .waiter-order-card-header {
+    gap: 8px;
+  }
+
+  .waiter-order-label {
+    font-size: 9px;
+  }
+
+  .waiter-order-card-header h3 {
+    font-size: 16px;
+  }
+
+  .waiter-order-table-badge {
+    padding: 6px 7px;
+    gap: 4px;
+    font-size: 9px;
+  }
+
+  .waiter-order-info {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    margin-top: 13px;
+  }
+
+  .waiter-order-info > div {
+    padding: 8px 9px;
+  }
+
+  .waiter-order-info span {
+    font-size: 9px;
+  }
+
+  .waiter-order-info strong {
+    font-size: 10px;
+  }
+
+  .waiter-order-items {
+    margin-top: 13px;
+    padding-top: 12px;
+  }
+
+  .waiter-order-items-title {
+    font-size: 9px;
+  }
+
+  .waiter-order-item {
+    align-items: flex-start;
+    gap: 7px;
+    padding: 9px 0;
+  }
+
+  .waiter-order-item-main strong {
+    font-size: 11px;
+  }
+
+  .waiter-order-item-main small {
+    font-size: 9px;
+  }
+
+  .waiter-order-item-meta {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
+  .waiter-order-item-meta span,.waiter-order-item-meta strong {
+    font-size: 9px;
+  }
+
+  .waiter-order-total {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .waiter-order-total span {
+    font-size: 10px;
+  }
+
+  .waiter-order-total strong {
+    font-size: 16px;
+  }
+
+  .waiter-order-status-box {
+    gap: 8px;
+    margin-top: 13px;
+    padding: 9px;
+    border-radius: 11px;
+  }
+
+  .waiter-order-status-icon {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+  }
+
+  .waiter-order-status-content {
+    gap: 2px;
+  }
+
+  .waiter-order-status-content span {
+    font-size: 8px;
+  }
+
+  .waiter-order-status-content strong {
+    font-size: 10px;
+  }
+
+}
+
+@media (max-width: 420px) {
+
+  .waiter-orders-page {
+    padding: 14px 8px 28px;
+  }
+
+  .waiter-order-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .waiter-order-card {
+    padding: 11px;
+    border-radius: 14px;
+  }
+
+  .waiter-order-card-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .waiter-order-table-badge {
+    align-self: flex-start;
+  }
+
+  .waiter-order-card-header h3 {
+    font-size: 14px;
+  }
+
+  .waiter-order-info > div {
+    padding: 7px 8px;
+  }
+
+  .waiter-order-info strong {
+    font-size: 10px;
+  }
+
+  .waiter-order-items-title {
+    font-size: 8px;
+  }
+
+  .waiter-order-item-main strong {
+    font-size: 10px;
+  }
+
+  .waiter-order-item-meta span,.waiter-order-item-meta strong {
+    font-size: 9px;
+  }
+
+  .waiter-order-status-box {
+    padding: 8px;
+  }
+
+  .waiter-order-status-icon {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+
+  .waiter-order-status-content strong {
+    font-size: 9px;
+  }
+
+}
+
+@media (max-width: 340px) {
+
+  .waiter-orders-page {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .waiter-order-grid {
+    gap: 7px;
+  }
+
+  .waiter-order-card {
+    padding: 9px;
+  }
+
+  .waiter-order-table-badge {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .waiter-order-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .waiter-order-item-meta {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
 }
