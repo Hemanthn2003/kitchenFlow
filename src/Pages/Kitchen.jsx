@@ -17,7 +17,9 @@ import "./Kitchen.css";
 
 
 const Kitchen = () => {
+const API_URL = import.meta.env.VITE_API_URL;
 
+fetch(`${API_URL}/api/waiter/me`);
   /* =====================================================
      KITCHEN MENU
      ===================================================== */
@@ -182,7 +184,7 @@ const Kitchen = () => {
 
       const response =
         await fetch(
-          "http://localhost:5000/api/auth/logout",
+          `${API_URL}/api/auth/logout`,
           {
             method: "POST",
 

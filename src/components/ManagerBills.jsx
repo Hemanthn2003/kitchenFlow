@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import Icon from "./Icon.jsx";
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL;
+
 
 const ManagerBills = ({
   bills = [],

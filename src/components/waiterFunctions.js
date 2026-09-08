@@ -3,14 +3,13 @@
 // KitchenFlow Waiter API / business functions
 // ============================================================
 
-const API_URL = "http://localhost:5000/api";
-
+const API_URL = import.meta.env.VITE_API_URL;
 // ============================================================
 // GENERIC API REQUEST
 // ============================================================
 
 export const apiRequest = async (endpoint, options = {}) => {
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const response = await fetch(`${API_URL}/api${endpoint}`, {
     credentials: "include",
     ...options,
     headers: {
@@ -654,7 +653,7 @@ export const logoutWaiter =
   async ({ navigate }) => {
     try {
       await fetch(
-        `${API_URL}/auth/logout`,
+        `${API_URL}/api/auth/logout`,
         {
           method: "POST",
           credentials: "include",

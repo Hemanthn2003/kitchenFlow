@@ -39,8 +39,7 @@ import {
 import "./Waiter.css";
 import "./WaiterDropModal.css";
 
-const API_URL = "http://localhost:5000/api";
-
+const API_URL = import.meta.env.VITE_API_URL;
 const Waiter = () => {
   const navigate = useNavigate();
 
@@ -208,7 +207,7 @@ const Waiter = () => {
         // ------------------------------------------------------
 
         const response = await fetch(
-          `${API_URL}/waiter/me`,
+          `${API_URL}/api/waiter/me`,
           {
             method: "GET",
             credentials: "include",

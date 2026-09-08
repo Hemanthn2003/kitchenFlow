@@ -68,6 +68,7 @@ const Manager = () => {
   // ==========================================================
   // GENERAL STATE
   // ==========================================================
+   const API_URL = import.meta.env.VITE_API_URL;
 
   const [menuOpen, setMenuOpen] =
     useState(false);
@@ -428,7 +429,7 @@ const Manager = () => {
     try {
       const response =
         await fetch(
-          "http://localhost:5000/api/manager/tables",
+         `${API_URL}/api/manager/tables`,
           {
             method: "GET",
             credentials: "include",
@@ -499,7 +500,7 @@ const Manager = () => {
     try {
       const response =
         await fetch(
-          "http://localhost:5000/api/manager/bills",
+          `${API_URL}/api/manager/bills`,
           {
             method: "GET",
             credentials: "include",
@@ -612,7 +613,7 @@ const Manager = () => {
 
       const response =
         await fetch(
-          `http://localhost:5000/api/manager/bills/${billId}/generate`,
+          `${API_URL}/api/manager/bills/${billId}/generate`,
           {
             method: "PATCH",
             credentials: "include",
@@ -710,7 +711,7 @@ const Manager = () => {
 
       const response =
         await fetch(
-          `http://localhost:5000/api/manager/bills/${billId}/pay`,
+          `${API_URL}/api/manager/bills/${billId}/pay`,
           {
             method: "PATCH",
             credentials: "include",

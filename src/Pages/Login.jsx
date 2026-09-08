@@ -12,8 +12,7 @@ import {
 import "./Login.css";
 
 
-const API_URL = "http://localhost:5000/api/auth";
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Login() {
 
@@ -90,7 +89,7 @@ function Login() {
 
 
       const response = await fetch(
-        `${API_URL}/login`,
+        `${API_URL}/api/auth/login`,
         {
           method: "POST",
 
@@ -363,7 +362,7 @@ function Login() {
 
 
       const response = await fetch(
-        `${API_URL}/forgot-password`,
+        `${API_URL}/api/auth/forgot-password`,
         {
           method: "POST",
 
@@ -489,7 +488,7 @@ function Login() {
 
 
       const response = await fetch(
-        `${API_URL}/verify-otp`,
+        `${API_URL}/api/auth/verify-otp`,
         {
           method: "POST",
 
@@ -653,7 +652,7 @@ function Login() {
 
 
       const response = await fetch(
-        `${API_URL}/reset-password`,
+        `${API_URL}/api/auth/reset-password`,
         {
           method: "POST",
 
