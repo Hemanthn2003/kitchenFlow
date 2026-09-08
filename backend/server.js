@@ -5,8 +5,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-import http from "http";
-import { initializeSocket } from "./socket.js";
 /* =========================================================
    ROUTE IMPORTS
    ========================================================= */

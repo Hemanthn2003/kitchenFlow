@@ -344,6 +344,7 @@ router.patch(
               true,
 
           }
+
         ).lean();
 
 
@@ -580,11 +581,26 @@ router.get(
       }
 
 
+      /* =====================================================
+         ONLY CURRENT ORDERS
+
+         SERVED / ORDER_COMPLETED orders are intentionally
+         excluded so old orders never appear again.
+         ===================================================== */
+
       const orders =
         await Order.find({
 
           tableId:
             req.params.id,
+
+          status: {
+            $in: [
+              "ORDERED",
+              "PROCESSING",
+              "COOKED",
+            ],
+          },
 
         })
           .sort({
@@ -889,124 +905,18 @@ router.post(
 
   }
 );
-
-
-/* =========================================================
-   MARK ORDER AS SERVED
-
-   PATCH /api/waiter/orders/:id/serve
-   ========================================================= */
-
-router.patch(
-  "/orders/:id/serve",
-
-  authenticate,
-  authorizeRoles("WAITER"),
-
-  async (req, res) => {
-
-    try {
-
-      const waiterId =
-        req.user.id;
-
-
-      const order =
-        await Order.findOneAndUpdate(
-
-          {
-
-            _id:
-              req.params.id,
-
-            createdBy:
-              waiterId,
-
-            status:
-              "READY",
-
-          },
-
-          {
-
-            $set: {
-
-              status:
-                "SERVED",
-
-            },
-
-          },
-
-          {
-
-            returnDocument:
-              "after",
-
-            runValidators:
-              true,
-
-          }
-        ).lean();
-
-
-      if (!order) {
-
-        return res.status(404).json({
-
-          success:
-            false,
-
-          message:
-            "Ready order not found",
-
-        });
-
-      }
-
-
-      return res.status(200).json({
-
-        success:
-          true,
-
-        message:
-          "Order served successfully",
-
-        order,
-
-      });
-
-    } catch (error) {
-
-      console.error(
-        "Serve order error:",
-        error
-      );
-
-      return res.status(500).json({
-
-        success:
-          false,
-
-        message:
-          "Unable to serve order",
-
-      });
-
-    }
-
-  }
-);
-
-
 /* =========================================================
    CHECKOUT TABLE
 
    POST /api/waiter/tables/:id/checkout
 
-   Includes all served orders that have not
-   previously been added to a bill.
+   Creates a bill ONLY from the current COOKED orders.
+
+   IMPORTANT:
+   - Waiter does NOT mark orders SERVED.
+   - Orders remain COOKED after checkout.
+   - Manager marks the exact bill.orderIds as SERVED
+     only after payment.
    ========================================================= */
 
 router.post(
@@ -1025,6 +935,10 @@ router.post(
       const tableId =
         req.params.id;
 
+
+      /* =====================================================
+         VERIFY TABLE OWNERSHIP
+         ===================================================== */
 
       const table =
         await Table.findOne({
@@ -1054,6 +968,13 @@ router.post(
 
       }
 
+
+      /* =====================================================
+         PREVENT DUPLICATE ACTIVE BILLS
+
+         A table cannot have another checkout while an
+         existing bill is still CHECKOUT or GENERATED.
+         ===================================================== */
 
       const existingBill =
         await Bill.findOne({
@@ -1085,6 +1006,20 @@ router.post(
       }
 
 
+      /* =====================================================
+         GET ONLY CURRENT COOKED ORDERS
+
+         THIS IS THE IMPORTANT FIX.
+
+         Old paid orders are SERVED, therefore they are not
+         included here.
+
+         New/current orders are:
+           ORDERED -> PROCESSING -> COOKED
+
+         Only COOKED orders are eligible for checkout.
+         ===================================================== */
+
       const orders =
         await Order.find({
 
@@ -1094,9 +1029,16 @@ router.post(
             waiterId,
 
           status:
-            "SERVED",
+            "COOKED",
 
-        }).lean();
+        })
+          .sort({
+
+            createdAt:
+              1,
+
+          })
+          .lean();
 
 
       if (
@@ -1109,12 +1051,19 @@ router.post(
             false,
 
           message:
-            "No served orders available for checkout",
+            "No cooked orders available for checkout",
 
         });
 
       }
 
+
+      /* =====================================================
+         CREATE BILL ITEM SNAPSHOT
+
+         Only items belonging to the above COOKED orders
+         are copied into this bill.
+         ===================================================== */
 
       const billItems =
         [];
@@ -1131,10 +1080,12 @@ router.post(
                   item.quantity
                 ) || 1;
 
+
               const unitPrice =
                 Number(
                   item.unitPrice
                 ) || 0;
+
 
               billItems.push({
 
@@ -1165,6 +1116,10 @@ router.post(
       );
 
 
+      /* =====================================================
+         CALCULATE SUBTOTAL
+         ===================================================== */
+
       const subtotal =
         billItems.reduce(
 
@@ -1183,6 +1138,15 @@ router.post(
         );
 
 
+      /* =====================================================
+         CREATE A NEW BILL
+
+         Every checkout creates a NEW Bill document.
+
+         orderIds contains ONLY the exact COOKED orders
+         used for this checkout.
+         ===================================================== */
+
       const bill =
         await Bill.create({
 
@@ -1196,11 +1160,21 @@ router.post(
 
           waiterId,
 
+
+          /* ===============================================
+             EXACT ORDER IDs FOR THIS BILL
+             =============================================== */
+
           orderIds:
             orders.map(
               (order) =>
                 order._id
             ),
+
+
+          /* ===============================================
+             ONLY ITEMS FROM THESE ORDERS
+             =============================================== */
 
           items:
             billItems,
@@ -1221,6 +1195,13 @@ router.post(
 
         });
 
+
+      /* =====================================================
+         CHANGE TABLE TO BILL_REQUESTED
+
+         DO NOT change the orders here.
+         They remain COOKED.
+         ===================================================== */
 
       await Table.findByIdAndUpdate(
 
@@ -1269,6 +1250,7 @@ router.post(
         error
       );
 
+
       return res.status(500).json({
 
         success:
@@ -1310,6 +1292,7 @@ router.get(
 
       const waiterId =
         req.user.id;
+
 
       const {
         date,
@@ -1393,6 +1376,7 @@ router.get(
         const thirtyDaysAgo =
           new Date();
 
+
         thirtyDaysAgo.setDate(
           thirtyDaysAgo.getDate() - 30
         );
@@ -1441,6 +1425,7 @@ router.get(
         error
       );
 
+
       return res.status(500).json({
 
         success:
@@ -1462,7 +1447,9 @@ router.get(
 
    GET /api/waiter/ready-orders
 
-   Frontend can poll this endpoint.
+   Compatibility endpoint retained.
+
+   It does NOT mark anything SERVED.
    ========================================================= */
 
 router.get(
@@ -1573,6 +1560,7 @@ router.get(
         error
       );
 
+
       return res.status(500).json({
 
         success:
@@ -1587,8 +1575,6 @@ router.get(
 
   }
 );
-
-
 /* =========================================================
    GET LOGGED-IN WAITER BILLS
 
@@ -1663,6 +1649,7 @@ router.get(
         const thirtyDaysAgo =
           new Date();
 
+
         thirtyDaysAgo.setDate(
           thirtyDaysAgo.getDate() - 30
         );
@@ -1726,6 +1713,7 @@ router.get(
           new Date(
             selectedDate
           );
+
 
         nextDate.setDate(
           nextDate.getDate() + 1
@@ -1845,5 +1833,6 @@ router.get(
 
   }
 );
+
 
 export default router;

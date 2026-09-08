@@ -149,6 +149,7 @@ export const loadPickedTables = async ({
 
 // ============================================================
 // LOAD ORDERS FOR TABLE
+// GET /api/waiter/tables/:id/orders
 // ============================================================
 
 export const loadTableOrders = async ({
@@ -238,50 +239,6 @@ export const loadBills = async ({
     );
   } finally {
     setLoadingBills(false);
-  }
-};
-
-// ============================================================
-// LOAD READY ORDERS
-// ============================================================
-
-export const loadReadyOrders = async ({
-  force = false,
-  loadedRef,
-  setReadyOrders,
-  setReadyNotification,
-}) => {
-  if (
-    !force &&
-    loadedRef.current.ready
-  ) {
-    return;
-  }
-
-  try {
-    const data = await apiRequest(
-      "/waiter/ready-orders"
-    );
-
-    const orders =
-      data?.orders || [];
-
-    setReadyOrders(orders);
-
-    if (orders.length > 0) {
-      setReadyNotification(
-        orders[0]
-      );
-    }
-
-    loadedRef.current.ready = true;
-  } catch (error) {
-    console.error(
-      "Ready order error:",
-      error
-    );
-
-    loadedRef.current.ready = false;
   }
 };
 
@@ -567,77 +524,6 @@ export const placeOrder = async ({
 };
 
 // ============================================================
-// SERVE ORDER
-// PATCH /api/waiter/orders/:id/serve
-// ============================================================
-
-export const serveOrder = async ({
-  order,
-  setActionLoading,
-  setServeOrder,
-  setReadyNotification,
-  setReadyOrders,
-  loadTableOrders,
-  showMessage,
-}) => {
-  if (!order?._id) {
-    return;
-  }
-
-  try {
-    setActionLoading(
-      `serve-${order._id}`
-    );
-
-    await apiRequest(
-      `/waiter/orders/${order._id}/serve`,
-      {
-        method: "PATCH",
-      }
-    );
-
-    showMessage(
-      "success",
-      "Order marked as served"
-    );
-
-    setServeOrder(null);
-
-    setReadyNotification(
-      null
-    );
-
-    setReadyOrders(
-      (previous) =>
-        previous.filter(
-          (item) =>
-            String(item._id) !==
-            String(order._id)
-        )
-    );
-
-    if (order.tableId) {
-      await loadTableOrders(
-        order.tableId
-      );
-    }
-  } catch (error) {
-    console.error(
-      "Serve order error:",
-      error
-    );
-
-    showMessage(
-      "error",
-      error?.message ||
-        "Unable to serve order"
-    );
-  } finally {
-    setActionLoading("");
-  }
-};
-
-// ============================================================
 // CHECKOUT TABLE
 // POST /api/waiter/tables/:id/checkout
 // ============================================================
@@ -648,6 +534,7 @@ export const checkoutTable = async ({
   setTables,
   setPickedTables,
   setBills,
+  setTableOrders,
   setExpandedTable,
   setCheckoutConfirmTable,
   loadedRef,
@@ -709,6 +596,23 @@ export const checkoutTable = async ({
       ]);
     }
 
+    // IMPORTANT:
+    // Remove cached orders for this table.
+    // After the manager pays, the same table can be
+    // picked again for a NEW session. We must not show
+    // the previous session's orders from React state.
+    setTableOrders((current) => {
+      const next = {
+        ...current,
+      };
+
+      delete next[
+        table._id
+      ];
+
+      return next;
+    });
+
     setExpandedTable(null);
 
     setCheckoutConfirmTable(
@@ -722,6 +626,8 @@ export const checkoutTable = async ({
       "success",
       `Checkout request sent for Table ${table.tableNumber}`
     );
+
+    return data;
   } catch (error) {
     console.error(
       "Checkout error:",
@@ -733,6 +639,8 @@ export const checkoutTable = async ({
       error?.message ||
         "Unable to checkout table"
     );
+
+    return null;
   } finally {
     setActionLoading("");
   }

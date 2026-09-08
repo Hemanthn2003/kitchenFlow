@@ -18,8 +18,6 @@ import WaiterBillsPage from "../components/WaiterBillsPage.jsx";
 import {
   DropTableModal,
   CheckoutModal,
-  ReadyOrderModal,
-  ServeOrderModal,
 } from "../components/WaiterModals.jsx";
 
 import {
@@ -28,11 +26,9 @@ import {
   loadPickedTables,
   loadTableOrders,
   loadBills,
-  loadReadyOrders,
   pickTable,
   dropTable,
   placeOrder,
-  serveOrder,
   checkoutTable,
   logoutWaiter,
   getTableStats,
@@ -116,18 +112,6 @@ const Waiter = () => {
   const [orderDrafts, setOrderDrafts] = useState({});
 
   // ==========================================================
-  // READY ORDERS
-  // ==========================================================
-
-  const [readyOrders, setReadyOrders] = useState([]);
-
-  const [readyNotification, setReadyNotification] =
-    useState(null);
-
-  const [serveOrderState, setServeOrderState] =
-    useState(null);
-
-  // ==========================================================
   // CONFIRMATION MODALS
   // ==========================================================
 
@@ -160,35 +144,132 @@ const Waiter = () => {
     menu: false,
     picked: false,
     bills: false,
-    ready: false,
   });
 
   // ==========================================================
-  // LOAD USER FROM LOCAL STORAGE
+  // LOAD USER + COMPLETE WAITER PROFILE
   // ==========================================================
 
   useEffect(() => {
-    try {
-      const storedUser =
-        localStorage.getItem("kitchenFlowUser") ||
-        localStorage.getItem("user");
+    let cancelled = false;
 
-      if (!storedUser) {
-        navigate("/login");
-        return;
+    const loadWaiterProfile = async () => {
+      try {
+        const storedUser =
+          localStorage.getItem("kitchenFlowUser") ||
+          localStorage.getItem("user");
+
+        if (!storedUser) {
+          navigate("/login");
+          return;
+        }
+
+        let parsedUser;
+
+        try {
+          parsedUser = JSON.parse(storedUser);
+        } catch (error) {
+          console.error(
+            "Invalid stored user:",
+            error
+          );
+
+          localStorage.removeItem(
+            "kitchenFlowUser"
+          );
+
+          localStorage.removeItem(
+            "user"
+          );
+
+          navigate("/login");
+          return;
+        }
+
+        if (cancelled) {
+          return;
+        }
+
+        // Show stored user immediately.
+        setUser(parsedUser);
+
+        // ------------------------------------------------------
+        // Fetch complete waiter profile.
+        //
+        // Login only stores basic details.
+        // /api/waiter/me returns imageUrl/profileImage too.
+        // ------------------------------------------------------
+
+        const response = await fetch(
+          `${API_URL}/waiter/me`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Unable to load waiter profile (${response.status})`
+          );
+        }
+
+        const data = await response.json();
+
+        if (
+          !data?.success ||
+          !data?.waiter
+        ) {
+          throw new Error(
+            data?.message ||
+              "Unable to load waiter profile"
+          );
+        }
+
+        const waiterProfile =
+          data.waiter;
+
+        if (cancelled) {
+          return;
+        }
+
+        // Complete waiter object including profile image.
+        setUser(waiterProfile);
+
+        // Keep localStorage updated so other pages/components
+        // also have the latest waiter profile.
+        localStorage.setItem(
+          "kitchenFlowUser",
+          JSON.stringify(
+            waiterProfile
+          )
+        );
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            waiterProfile
+          )
+        );
+      } catch (error) {
+        console.error(
+          "Unable to load waiter profile:",
+          error
+        );
+
+        // Do NOT immediately redirect when the profile request
+        // fails. The stored user is still usable.
       }
+    };
 
-      const parsedUser = JSON.parse(storedUser);
+    loadWaiterProfile();
 
-      setUser(parsedUser);
-    } catch (error) {
-      console.error("Unable to load waiter:", error);
-
-      localStorage.removeItem("kitchenFlowUser");
-      localStorage.removeItem("user");
-
-      navigate("/login");
-    }
+    return () => {
+      cancelled = true;
+    };
   }, [navigate]);
 
   // ==========================================================
@@ -241,13 +322,6 @@ const Waiter = () => {
         showMessage,
       });
 
-      await loadReadyOrders({
-        force: true,
-        loadedRef,
-        setReadyOrders,
-        setReadyNotification,
-      });
-
       return;
     }
 
@@ -289,12 +363,6 @@ const Waiter = () => {
         setPickedTables,
         showMessage,
       });
-
-      loadReadyOrders({
-        loadedRef,
-        setReadyOrders,
-        setReadyNotification,
-      });
     }
 
     if (
@@ -315,79 +383,21 @@ const Waiter = () => {
   ]);
 
   // ==========================================================
-  // READY ORDER SOUND
-  // ==========================================================
-
-  useEffect(() => {
-    if (!readyNotification) {
-      return;
-    }
-
-    try {
-      const AudioContextClass =
-        window.AudioContext ||
-        window.webkitAudioContext;
-
-      if (!AudioContextClass) {
-        return;
-      }
-
-      const context =
-        new AudioContextClass();
-
-      const oscillator =
-        context.createOscillator();
-
-      const gain =
-        context.createGain();
-
-      oscillator.connect(gain);
-
-      gain.connect(
-        context.destination
-      );
-
-      oscillator.frequency.value = 850;
-
-      gain.gain.setValueAtTime(
-        0.0001,
-        context.currentTime
-      );
-
-      gain.gain.exponentialRampToValueAtTime(
-        0.3,
-        context.currentTime + 0.02
-      );
-
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        context.currentTime + 0.5
-      );
-
-      oscillator.start();
-
-      oscillator.stop(
-        context.currentTime + 0.5
-      );
-    } catch (error) {
-      console.error(
-        "Notification sound error:",
-        error
-      );
-    }
-  }, [readyNotification]);
-
-  // ==========================================================
   // PICK TABLE
   // ==========================================================
 
   const handlePick = (table) => {
     return pickTable({
       table,
+
       setActionLoading,
+
       setTables,
+
       setPickedTables,
+
       loadedRef,
+
       showMessage,
     });
   };
@@ -441,6 +451,11 @@ const Waiter = () => {
       setPickedTables,
 
       setBills,
+
+      // Clear the current table's cached orders after
+      // checkout so a future session does not display
+      // the previous session's orders.
+      setTableOrders,
 
       setExpandedTable,
 
@@ -537,38 +552,14 @@ const Waiter = () => {
   const handlePlaceOrder = (table) => {
     return placeOrder({
       table,
+
       menuItems,
+
       orderDrafts,
+
       setActionLoading,
+
       setOrderDrafts,
-
-      loadTableOrders: (tableId) =>
-        loadTableOrders({
-          tableId,
-          setTableOrders,
-          showMessage,
-        }),
-
-      showMessage,
-    });
-  };
-
-  // ==========================================================
-  // SERVE ORDER
-  // ==========================================================
-
-  const handleServe = (order) => {
-    return serveOrder({
-      order,
-
-      setActionLoading,
-
-      setServeOrder:
-        setServeOrderState,
-
-      setReadyNotification,
-
-      setReadyOrders,
 
       loadTableOrders: (tableId) =>
         loadTableOrders({
@@ -733,7 +724,9 @@ const Waiter = () => {
                 },
 
                 setLoadingBills,
+
                 setBills,
+
                 showMessage,
               })
             }
@@ -744,8 +737,11 @@ const Waiter = () => {
 
               await loadBills({
                 filters: {},
+
                 setLoadingBills,
+
                 setBills,
+
                 showMessage,
               });
             }}
@@ -777,32 +773,6 @@ const Waiter = () => {
           setCheckoutConfirmTable(null)
         }
         onConfirm={confirmCheckout}
-      />
-
-      {/* ======================================================
-          READY ORDER NOTIFICATION
-          ====================================================== */}
-
-      <ReadyOrderModal
-        order={readyNotification}
-        onServe={(order) => {
-          setServeOrderState(order);
-
-          setReadyNotification(null);
-        }}
-      />
-
-      {/* ======================================================
-          SERVE ORDER
-          ====================================================== */}
-
-      <ServeOrderModal
-        order={serveOrderState}
-        actionLoading={actionLoading}
-        onServe={handleServe}
-        onClose={() =>
-          setServeOrderState(null)
-        }
       />
 
     </div>

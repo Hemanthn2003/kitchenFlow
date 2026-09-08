@@ -1493,8 +1493,6 @@ router.delete(
 
   }
 );
-
-
 /* =========================================================
    GET ALL BILLS
 
@@ -1975,9 +1973,19 @@ router.patch(
       }
 
 
+      /*
+       * IMPORTANT:
+       *
+       * DO NOT change orders to SERVED here.
+       *
+       * Orders remain COOKED after bill generation.
+       * They become SERVED only after Manager completes
+       * payment in the /pay route below.
+       */
+
+
       const updatedBill =
         await Bill.findByIdAndUpdate(
-
           billId,
 
           {
@@ -1985,9 +1993,6 @@ router.patch(
 
               status:
                 "GENERATED",
-
-              managerId:
-                req.user.id,
 
               generatedAt:
                 new Date(),
@@ -2002,7 +2007,6 @@ router.patch(
             runValidators:
               true,
           }
-
         );
 
 
@@ -2063,6 +2067,10 @@ router.patch(
    GENERATED
       ↓
    PAID
+
+   COOKED ORDERS
+      ↓
+   SERVED
 
    Releases the table after successful payment.
    ========================================================= */
@@ -2236,6 +2244,41 @@ router.patch(
 
       }
 
+
+      /* =====================================================
+         MARK ONLY THIS BILL'S ORDERS AS SERVED
+
+         IMPORTANT:
+         Only the exact order IDs stored in this bill
+         are affected.
+
+         Only orders that are currently COOKED are changed.
+         Historical SERVED orders remain untouched.
+         ===================================================== */
+
+      await Order.updateMany(
+        {
+          _id: {
+            $in:
+              bill.orderIds || [],
+          },
+
+          status:
+            "COOKED",
+        },
+
+        {
+          $set: {
+            status:
+              "SERVED",
+          },
+        }
+      );
+
+
+      /* =====================================================
+         MARK BILL AS PAID
+         ===================================================== */
 
       const updatedBill =
         await Bill.findByIdAndUpdate(
@@ -2425,184 +2468,168 @@ router.patch(
 
   }
 );
-
-
 /* =========================================================
-   ORDER STATUS UPDATE HELPER
+   UPDATE ORDER STATUS
    ========================================================= */
 
-const updateOrderStatus =
-  async (
-    req,
-    res
-  ) => {
+const updateOrderStatus = async (
+  req,
+  res
+) => {
 
-    try {
+  try {
 
-      const orderId =
-        req.params.id;
-
-
-      if (
-        !isValidObjectId(
-          orderId
-        )
-      ) {
-
-        return res
-          .status(400)
-          .json({
-
-            success:
-              false,
-
-            message:
-              "Invalid order ID",
-
-          });
-
-      }
+    const {
+      status:
+        requestedStatus,
+    } = req.body;
 
 
-      const requestedStatus =
-        String(
-          req.body?.status ||
-          ""
-        )
-          .trim()
-          .toUpperCase();
+    const allowedStatuses = [
+      "ORDERED",
+      "PROCESSING",
+      "COOKED",
+      "SERVED",
+    ];
 
 
-      const allowedStatuses = [
-        "ORDERED",
-        "PROCESSING",
-        "COOKED",
-        "SERVED",
-      ];
-
-
-      if (
-        !allowedStatuses.includes(
-          requestedStatus
-        )
-      ) {
-
-        return res
-          .status(400)
-          .json({
-
-            success:
-              false,
-
-            message:
-              "Invalid order status",
-
-          });
-
-      }
-
-
-      const databaseStatus =
-        requestedStatus ===
-        "COOKED"
-          ? "READY"
-          : requestedStatus;
-
-
-      const order =
-        await Order.findByIdAndUpdate(
-
-          orderId,
-
-          {
-            $set: {
-
-              status:
-                databaseStatus,
-
-            },
-          },
-
-          {
-            returnDocument:
-              "after",
-
-            runValidators:
-              true,
-          }
-
-        ).lean();
-
-
-      if (
-        !order
-      ) {
-
-        return res
-          .status(404)
-          .json({
-
-            success:
-              false,
-
-            message:
-              "Order not found",
-
-          });
-
-      }
-
-
-      return res
-        .status(200)
-        .json({
-
-          success:
-            true,
-
-          message:
-            "Order status updated successfully",
-
-          status:
-            requestedStatus,
-
-          databaseStatus,
-
-          order,
-
-        });
-
-    } catch (
-      error
+    if (
+      !requestedStatus ||
+      !allowedStatuses.includes(
+        requestedStatus
+      )
     ) {
 
-      console.error(
-        "Order status update error:",
-        error
-      );
-
-
       return res
-        .status(500)
+        .status(400)
         .json({
 
           success:
             false,
 
           message:
-            "Unable to update order status",
+            "Invalid order status",
 
         });
 
     }
 
-  };
+
+    const orderId =
+      req.params.id;
+
+
+    if (
+      !isValidObjectId(
+        orderId
+      )
+    ) {
+
+      return res
+        .status(400)
+        .json({
+
+          success:
+            false,
+
+          message:
+            "Invalid order ID",
+
+        });
+
+    }
+
+
+    const order =
+      await Order.findById(
+        orderId
+      );
+
+
+    if (
+      !order
+    ) {
+
+      return res
+        .status(404)
+        .json({
+
+          success:
+            false,
+
+          message:
+            "Order not found",
+
+        });
+
+    }
+
+
+    /*
+     * Keep the database status exactly as requested.
+     *
+     * COOKED must remain COOKED.
+     * It must NOT be converted to READY.
+     *
+     * SERVED is allowed here for compatibility,
+     * but the normal KitchenFlow flow should reach
+     * SERVED through Manager payment.
+     */
+
+    const databaseStatus =
+      requestedStatus;
+
+
+    order.status =
+      databaseStatus;
+
+
+    await order.save();
+
+
+    return res
+      .status(200)
+      .json({
+
+        success:
+          true,
+
+        message:
+          "Order status updated successfully",
+
+        order,
+
+      });
+
+  } catch (
+    error
+  ) {
+
+    console.error(
+      "Update order status error:",
+      error
+    );
+
+
+    return res
+      .status(500)
+      .json({
+
+        success:
+          false,
+
+        message:
+          "Unable to update order status",
+
+      });
+
+  }
+
+};
 
 
 /* =========================================================
-   UPDATE ORDER STATUS
-
-   PATCH /api/manager/orders/:id/status
+   MANAGER ORDER STATUS ROUTES
    ========================================================= */
 
 router.patch(
@@ -2618,14 +2645,8 @@ router.patch(
 );
 
 
-/* =========================================================
-   BACKWARD COMPATIBILITY
-
-   PATCH /api/manager/:id/status
-   ========================================================= */
-
-router.patch(
-  "/:id/status",
+router.put(
+  "/orders/:id/status",
 
   authenticate,
 
@@ -2638,15 +2659,11 @@ router.patch(
 
 
 /* =========================================================
-   MANAGER ROOT
-
-   GET /api/manager
-
-   BACKWARD COMPATIBILITY
+   GET MANAGER ORDERS
    ========================================================= */
 
 router.get(
-  "/",
+  "/orders",
 
   authenticate,
 
@@ -2661,8 +2678,85 @@ router.get(
 
     try {
 
+      const {
+        status,
+        tableId,
+      } =
+        req.query;
+
+
+      const query =
+        {};
+
+
+      if (
+        status
+      ) {
+
+        query.status =
+          String(
+            status
+          )
+            .trim()
+            .toUpperCase();
+
+      }
+
+
+      if (
+        tableId
+      ) {
+
+        if (
+          !isValidObjectId(
+            tableId
+          )
+        ) {
+
+          return res
+            .status(400)
+            .json({
+
+              success:
+                false,
+
+              message:
+                "Invalid table ID",
+
+            });
+
+        }
+
+
+        query.tableId =
+          tableId;
+
+      }
+
+
       const orders =
-        await getEnrichedOrders();
+        await Order.find(
+          query
+        )
+          .sort({
+            createdAt:
+              -1,
+          })
+          .populate({
+            path:
+              "tableId",
+
+            select:
+              "_id tableNumber status",
+          })
+          .populate({
+            path:
+              "waiterId",
+
+            select:
+              "_id name email",
+          })
+          .lean();
 
 
       return res
@@ -2681,7 +2775,7 @@ router.get(
     ) {
 
       console.error(
-        "Manager root error:",
+        "Manager orders error:",
         error
       );
 
@@ -2694,7 +2788,7 @@ router.get(
             false,
 
           message:
-            "Unable to fetch manager data",
+            "Unable to fetch orders",
 
         });
 
@@ -2705,7 +2799,31 @@ router.get(
 
 
 /* =========================================================
-   EXPORT
+   HEALTH / ROUTER EXPORT
    ========================================================= */
+
+router.get(
+  "/health",
+
+  (
+    req,
+    res
+  ) => {
+
+    return res
+      .status(200)
+      .json({
+
+        success:
+          true,
+
+        message:
+          "Manager routes are working",
+
+      });
+
+  }
+);
+
 
 export default router;
