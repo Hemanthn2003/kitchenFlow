@@ -14,6 +14,7 @@ const Header = ({
     .trim()
     .toUpperCase();
 
+  const isAdmin = normalizedRole === "ADMIN";
   const isWaiter = normalizedRole === "WAITER";
   const isKitchen = normalizedRole === "KITCHEN";
 
@@ -21,22 +22,41 @@ const Header = ({
      PAGE TITLE
      ========================================================= */
 
-  const pageTitle = isKitchen
-    ? activePage === "orders"
-      ? "Orders"
-      : "Orders"
-    : isWaiter
-      ? activePage === "tables"
+  let pageTitle = "Overview";
+
+  if (isAdmin) {
+    const adminPageTitles = {
+      home: "Overview",
+      users: "Employees",
+      analytics: "Analytics",
+      "table-performance": "Table Performance",
+      bills: "Bills",
+      settings: "Settings",
+      "popular-dishes": "Popular Dishes",
+    };
+
+    pageTitle =
+      adminPageTitles[activePage] ||
+      "Overview";
+  } else if (isKitchen) {
+    pageTitle =
+      activePage === "orders"
+        ? "Orders"
+        : "Orders";
+  } else if (isWaiter) {
+    pageTitle =
+      activePage === "tables"
         ? "Tables"
         : activePage === "picked"
           ? "Your Tables"
           : activePage === "bills"
             ? "Bills"
-            :activePage === "my-orders"
-            ?"My Orders"
-            : "Waiter"
-            
-      : activePage === "home"
+            : activePage === "my-orders"
+              ? "My Orders"
+              : "Waiter";
+  } else {
+    pageTitle =
+      activePage === "home"
         ? "Overview"
         : activePage === "orders"
           ? "Orders"
@@ -47,18 +67,31 @@ const Header = ({
               : activePage === "bills"
                 ? "Bills"
                 : activePage;
-
+  }
 
   /* =========================================================
      DASHBOARD LABEL
      ========================================================= */
 
-  const dashboardLabel = isKitchen
-    ? "KITCHEN DASHBOARD"
-    : isWaiter
-      ? "WAITER DASHBOARD"
-      : "MANAGER DASHBOARD";
+  const dashboardLabel = isAdmin
+    ? "ADMIN DASHBOARD"
+    : isKitchen
+      ? "KITCHEN DASHBOARD"
+      : isWaiter
+        ? "WAITER DASHBOARD"
+        : "MANAGER DASHBOARD";
 
+  /* =========================================================
+     CURRENT USER ROLE
+     ========================================================= */
+
+  const currentUserRole = isAdmin
+    ? "Admin"
+    : isKitchen
+      ? "Kitchen"
+      : isWaiter
+        ? "Waiter"
+        : "Manager";
 
   return (
     <header className="manager-header">
@@ -81,7 +114,6 @@ const Header = ({
           />
         </button>
 
-
         <div className="header-heading">
 
           <span>
@@ -95,7 +127,6 @@ const Header = ({
         </div>
 
       </div>
-
 
       {/* =====================================================
           RIGHT SIDE
@@ -125,16 +156,9 @@ const Header = ({
           </span>
         </button>
 
-
         <CurrentUser
           user={user}
-          role={
-            isKitchen
-              ? "Kitchen"
-              : isWaiter
-                ? "Waiter"
-                : "Manager"
-          }
+          role={currentUserRole}
           variant="header"
         />
 

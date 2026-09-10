@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
    ========================================================= */
 
 import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import managerRoutes from "./routes/managerRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import menuRoutes from "./routes/menuRoutes.js";
@@ -124,6 +125,17 @@ app.use(
   authRoutes
 );
 
+/* =========================================================
+   Admin ROUTES
+
+   BASE:
+   /api/Admin
+   ========================================================= */
+
+app.use(
+  "/api/admin",
+  adminRoutes
+);
 
 /* =========================================================
    MANAGER ROUTES
